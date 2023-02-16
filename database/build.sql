@@ -18,7 +18,7 @@ CREATE TABLE Parents(
    NomParent VARCHAR(15) NOT NULL,
    PrenomParent VARCHAR(15) NOT NULL,
    MailParent VARCHAR(40) CHECK (MailParent LIKE '%@%.%'),
-   MdpParent TEXT CHECK(LEN(MdpParent))>=8 AND LEN(MdpParent) <=20,
+   MdpParent TEXT,
    PRIMARY KEY(IdParent)
 );
 
@@ -36,7 +36,7 @@ CREATE TABLE Enseignements(
    NiveauEns CHAR(4) CHECK(NiveauEns IN ('6EME', '5EME', '4EME', '3EME')),
    VolHEns DECIMAL(3,1) NOT NULL,
    DureeMinEns INT NOT NULL DEFAULT 1,
-   OptionEns BOOLEAN NOT NULL DEFAULT 'false',
+   OptionEns BOOLEAN NOT NULL DEFAULT 0,
    PRIMARY KEY(IdEns)
 );
 
@@ -44,8 +44,8 @@ CREATE TABLE Enseignants(
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
    NomProf VARCHAR(15) NOT NULL,
    PrenomProf VARCHAR(15) NOT NULL,
-   MdpProf TEXT CHECK (LEN(MdpProf))>=8 AND LEN(MdpProf) <=20,
-   MailProf VARCHAR(40) CHECK (MailProf LIKE '%@college-VH.com'),
+   MdpProf TEXT,
+   MailProf VARCHAR(40) CHECK (MailProf LIKE '%@college-vh\.com'),
    VolHProf DECIMAL(3,1) NOT NULL,
    PRIMARY KEY(IdProf)
 );
@@ -76,10 +76,10 @@ CREATE TABLE Eleves(
    IdEleve VARCHAR(10) CHECK (IdEleve LIKE 'ELV%'),
    NomEleve VARCHAR(15)  NOT NULL,
    PrenomEleve VARCHAR(15)  NOT NULL,
-   MdpEleve TEXT CHECK(LEN(MdpEleve))>=8 AND LEN(MdpEleve) <=20,
-   AnneeNaisEleve DATE CHECK (AnneNaisEleve>2000 AND AnneNaisEleve<2100),
+   MdpEleve TEXT,
+   AnneeNaisEleve DATE CHECK (AnneeNaisEleve>2000 AND AnneeNaisEleve<2100),
    NiveauEleve VARCHAR(4)  CHECK (NiveauEleve LIKE '%EME'),
-   IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV'%),
+   IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV%'),
    PRIMARY KEY(IdEleve),
    FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
 );
@@ -139,8 +139,8 @@ CREATE TABLE Unites(
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
-   FOREIGN KEY(IdSalle, TypeSalle) REFERENCES ContraintesSalles(IdSalle, TypeSalle),
-   FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
+   FOREIGN KEY(TypeSalle, IdCours) REFERENCES ContraintesSalles(TypeSalle, IdCours),
+   FOREIGN KEY(IdSalle) REFERENCES Salles(IdSalle)
 );
 
 
