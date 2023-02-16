@@ -3,14 +3,17 @@ html, body {
     padding-left: 2%;
     padding-right: 2%;
     font-family: Arial;
+    background-color: #f6f5f5;
 }
 
 h1 {
+    margin-left: 20px;
     float: left;
     font-size : 40px;
     text-align: center;
     display: block;
     width: 35%;
+    font-weight: bolder;
 }
 
 .header {
@@ -19,11 +22,12 @@ h1 {
 
 h3 {
     display: block;
+    font-size: 16px;
     float: left;
 }
 .topnav{
     clear: left;
-    background-color: #e2d6bc;
+    background-color: #DEEAEA;
 }
 
 .topnav a{
@@ -35,11 +39,12 @@ h3 {
 }
 
 .topnav a:hover{
-    background-color: #f9f9f9;
+    background-color: #d6e4e4;
 }
 
 h2 {
     font-size: 28px;
+    margin-top: 38px;
     text-align: center;
 }
 
@@ -88,5 +93,51 @@ h2 {
 
 .content{
     clear: left;
+}
+
+.central{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+}
+
+form {
+    padding: 50px;
+    margin: 20px;
+}
+
+.my_input{
+    margin-bottom: 25px;
+    margin-top: 5px;
+    display: block;
+    margin-left: 20px;
+}
+
+input{
+    padding: 10px;
+    background-color: #F7D5D5;
+    border: none;
+    border-radius: 8px;
+}
+
+label{
+    padding: 10px;
+    font-weight: bold;
+
+}
+
+button {
+    background-color: #F53C3C;
+    color: white;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+
 }
 
