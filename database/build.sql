@@ -140,7 +140,7 @@ CREATE TABLE Unites(
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
    FOREIGN KEY(TypeSalle, IdCours) REFERENCES ContraintesSalles(TypeSalle, IdCours),
-   FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
+   FOREIGN KEY(IdSalle) REFERENCES Salles(IdSalle)
 );
 
 
