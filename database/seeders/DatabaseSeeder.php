@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder {
      * @return void
      */
     public function run(){
-        touch('database/database.sql');
         $repository = new Repository();
         $repository->createDatabase();
 
