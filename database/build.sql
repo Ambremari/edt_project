@@ -45,7 +45,7 @@ CREATE TABLE Enseignants(
    NomProf VARCHAR(15) NOT NULL,
    PrenomProf VARCHAR(15) NOT NULL,
    MdpProf TEXT,
-   MailProf VARCHAR(40) CHECK (MailProf LIKE '%@college-vh\.com'),
+   MailProf VARCHAR(40) UNIQUE CHECK (MailProf LIKE '%@college-vh\.com'),
    VolHProf DECIMAL(3,1) NOT NULL,
    PRIMARY KEY(IdProf)
 );
