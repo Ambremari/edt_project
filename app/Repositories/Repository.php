@@ -10,7 +10,7 @@ class Repository {
     function createDatabase(): void {
         DB::unprepared(file_get_contents('database/build.sql'));
     }
-    public function insertTeacher($username)
+    public function updateTeacher($username)
     {
         $user = DB::table('Enseignants')->where('IdProf', $username)->get();
         if (!$user) {
@@ -28,16 +28,15 @@ class Repository {
         return null;
     }
     
-    private function createPassword($length)
+    private function createPassword($IdProf,$length)
     {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        $charsLength = strlen($chars);
-        $password = '';
-    
-        for ($i = 0; $i < $length; $i++) {
-            $password .= $chars[rand(0, $charsLength - 1)];
-        }
-    
+        $password = Str::random($length);
+
+        $hashedPassword = Hash::make($password);
+
+        DB::table('Enseignants')->where('IdProf', $IdProf)->update(['MdpProf' => $hashedPassword]);
+
         return $password;
+
     }
 };
