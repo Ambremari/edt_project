@@ -36,7 +36,7 @@ CREATE TABLE Enseignements(
    NiveauEns CHAR(4)  NOT NULL,
    VolHEns DECIMAL(3,1)   NOT NULL,
    DureeMinEns INT NOT NULL DEFAULT 1,
-   OptionEns BOOLEAN NOT NULL DEFAULT 'false',
+   OptionEns BOOLEAN NOT NULL DEFAULT 0,
    PRIMARY KEY(IdEns)
 );
 
@@ -139,7 +139,7 @@ CREATE TABLE Unites(
    IdCours VARCHAR(10) ,
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
-   FOREIGN KEY(IdSalle, TypeSalle) REFERENCES ContraintesSalles(IdSalle, TypeSalle),
+   FOREIGN KEY(TypeSalle, IdCours) REFERENCES ContraintesSalles(TypeSalle, IdCours),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
 );
 
