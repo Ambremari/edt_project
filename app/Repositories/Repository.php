@@ -33,6 +33,6 @@ class Repository {
                     ->toArray();
         if(empty($teacher))
             throw new Exception('Enseignant inconnu'); 
-        return $teacher[0];
+        return $teacher;
     }
 }

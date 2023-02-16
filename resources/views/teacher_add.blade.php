@@ -4,6 +4,17 @@
 
 @section('content')
 <form method="POST" action="{{route('teacher.add')}}">
+    @csrf
+    @if ($errors->any())
+        <div class="alert alert-warning">
+            L'enseignant' n'a pas pu être ajoutée &#9785;
+        </div>  
+    @endif
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
     <div>
         <label for="name">Nom</label>
         <input type="text" id="name" name="name" minlength="2" maxlength="15"
@@ -36,7 +47,7 @@
         @enderror
 
         <label for="timeamount">Volume horaire hebdomadaire</label>
-        <input type="number" id="timeamount" name="timeamount" min="1" max="50"
+        <input type="number" id="timeamount" name="timeamount" min="1.0" max="50.0"
             aria-describedby="timeamount_feedback"
             value="{{ old('timeamount') }}" required>
         @error('timeamount')

@@ -9,7 +9,7 @@ class Data
     {
         return [
             ['IdProf' => 'PRF001', 
-            'NomProf' => 'Paris', 
+            'NomProf' => 'Dupont', 
             'PrenomProf' => 'Jean', 
             'MailProf' => 'jean.dupont@college-vh.com',
             'MdpProf' => null,
