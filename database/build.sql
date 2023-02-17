@@ -12,6 +12,16 @@ DROP TABLE IF EXISTS Enseignants;
 DROP TABLE IF EXISTS Enseignements;
 DROP TABLE IF EXISTS Divisions;
 DROP TABLE IF EXISTS Parents;
+DROP TABLE IF EXISTS Directeurs;
+
+CREATE TABLE Directeurs(
+   IdDir VARCHAR(10) CHECK (IdDir LIKE 'DIR%'),
+   NomDir VARCHAR(15) NOT NULL,
+   PrenomDir VARCHAR(15) NOT NULL,
+   MdpDir TEXT,
+   MailDir VARCHAR(40) UNIQUE,
+   PRIMARY KEY(IdDir)
+);
 
 CREATE TABLE Parents(
    IdParent VARCHAR(10) CHECK(IdParent LIKE 'PRT%'),

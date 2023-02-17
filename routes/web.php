@@ -18,6 +18,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', [Controller::class, 'loginChoice'])
+    ->name('login');
+
+Route::post('/login', [Controller::class, 'loginDir'])
+    ->name('login.dir');
+
+Route::post('/logout', [Controller::class, 'logout'])
+    ->name('logout.post');
+
 Route::get('/bee/saisie/enseignant', [Controller::class, 'addTeacherForm'])
     ->name('teacher.form');
 

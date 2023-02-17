@@ -8,7 +8,7 @@
     @csrf
     @if ($errors->any())
         <div class="alert alert-warning">
-            L'enseignant' n'a pas pu être ajoutée &#9785;
+            L'enseignant n'a pas pu être ajouté &#9785;
         </div>  
     @endif
     @if (session('status'))

@@ -8,19 +8,22 @@
         <div class="header">
             <h3>Collège Jean Rachid</h3>
             <h1>Mon emploi du temps<h1>
-            <h3 style="float:right">
+            <h4 style="float:right; text-align: right">
                 Bienvenue <br>
                 @if (session()->has('user'))
-                        <form method="POST" action="{{route('logout.post')}}">
-                            @csrf 
-                                <button type="submit">Déconnexion</a>
-                            </div>
-                        </form>
+                {{ session()->get('user')['firstname'] }} {{ session()->get('user')['name'] }}<br>
+                Identifiant : {{ session()->get('user')['id'] }}
+                    <form method="POST" action="{{route('logout.post')}}">
+                        @csrf 
+                            <button class="header_button" type="submit">Déconnexion</a>
+                        </div>
+                    </form>
                 @else
-                        <a href="/login">Connexion</a>
+                        <a href="/login">Se connecter</a>
                 @endif
-            </h3>
+            </h4>
         </div>
+        @if (session()->has('user'))
         <div class="topnav">
             <div class="dropdown">
                 <span><a href="#">Base Elèves et Enseignants</a></span>
@@ -87,11 +90,29 @@
                 </div>    
             </div>
         </div>
+        @endif
             <h2>@yield('title')</h2>
         <div>
         </div>
        <div class="content">
         @yield('content')
        </div>
+
+       <script>
+function openPage(pageName,elmnt) {
+  var i, tabcontent;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(pageName).style.display = "block";
+  elmnt.style.backgroundColor = "#F7D5D5";
+}
+</script>
     </body>
+    
 </html>

@@ -22,9 +22,12 @@ class FormTest extends TestCase{
                                                     'MailProf' => 'jane.doe@college-vh.com',
                                                     'VolHProf' => 15.0
                                                     ])
-                                                ->once();
+                                                ->once()
+                                                ->andReturn(1);
         });
-        $response = $this->post('/bee/saisie/enseignant', ['name' => 'Doe',
+        $response = $this->withHeader('Referer', '/bee/saisie/enseignant')
+                         ->withSession(['user' => ['id' => 'DIR001', 'role' => 'Director']])
+                         ->post('/bee/saisie/enseignant', ['name' => 'Doe',
                                                         'firstname' => 'Jane',
                                                         'email' => 'jane.doe@college-vh.com',
                                                         'timeamount' => 15]);

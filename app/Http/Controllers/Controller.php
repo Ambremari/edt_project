@@ -18,10 +18,16 @@ class Controller extends BaseController{
     }
 
     public function addTeacherForm(){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey)
+            return redirect()->route('login');
         return view('teacher_add');
     }
 
     public function addTeacher(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey)
+            return redirect()->route('login');
         $rules = [
             'name' => ['required', 'min:2', 'max:15'],
             'firstname' => ['required', 'min:2', 'max:15'],
@@ -52,5 +58,34 @@ class Controller extends BaseController{
             return redirect()->route('teacher.form')->withInput()->withErrors("Impossible d'ajouter l'enseignant.");
         }
         return redirect()->route('teacher.form')->with('status', 'Enseignant ajouté avec succès !');
+    }
+
+    public function loginChoice(){
+        return view('login');
+    }
+
+    public function loginDir(Request $request, Repository $repository){
+        $rules = [
+            'id' => ['required', 'exists:Directeurs,IdDir'],
+            'password' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez saisir un e-mail.',
+            'id.exists' => "Cet utilisateur n'existe pas.",
+            'password.required' => "Vous devez saisir un mot de passe.",
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try {
+            $user = $this->repository->getUserDirector($validatedData['id'], $validatedData['password']);
+            $request->session()->put('user', $user);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
+        }
+        return redirect()->route('teacher.form');
+    }
+
+    public function logout(Request $request) {
+        $request->session()->forget('user');
+        return redirect()->route('login');
     }
 }
