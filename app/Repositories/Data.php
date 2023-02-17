@@ -12,7 +12,6 @@ class Data
             'NomProf' => 'Dupont', 
             'PrenomProf' => 'Jean', 
             'MailProf' => 'jean.dupont@college-vh.com',
-            'MdpProf' => null,
             'VolHProf' => 35.0],
         ];
     }

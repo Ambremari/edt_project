@@ -20,6 +20,8 @@ class RepositoryTest extends TestCase{
     function testTeachersAndInsertTeacher(): void{
         $teachers = $this->data->teachers();
         $this->repository->insertTeacher($teachers[0]);
-        $this->assertEquals($this->repository->teachers(), [$teachers[0]]);
+        $newteacher = $teachers[0];
+        $newteacher['MdpProf'] = null;
+        $this->assertEquals($this->repository->teachers(), [$newteacher]);
     }
 }

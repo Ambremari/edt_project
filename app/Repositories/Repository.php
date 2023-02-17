@@ -16,7 +16,7 @@ class Repository {
             $id = substr($id, 3, 10);
             $teacher['IdProf'] = "PRF".$id;
         }
-        if(!array_key_exists('MdpProf', $teacher)){
+        if(array_key_exists('MdpProf', $teacher)){
             $passwordHash = Hash::make($teacher['MdpProf']);
             $teacher['MdpProf'] = $passwordHash;
         }

@@ -17,7 +17,7 @@ class Controller extends BaseController{
         $this->repository = $repository;
     }
 
-    public function addTeacherForm(){
+    public function addTeacherForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey)
             return redirect()->route('login');

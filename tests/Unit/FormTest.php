@@ -15,6 +15,12 @@ class FormTest extends TestCase{
         $this->repository->createDatabase();
     }
 
+    public function testAddTeacherRedirectsIfUserIsNotAuthenticated(){
+        $response = $this->get('/bee/saisie/enseignant');
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
+
     public function testAddTeacher(){
         $this->mock(Repository::class, function ($mock) {
             $mock->shouldReceive('insertTeacher')->with(['NomProf' => 'Doe',
@@ -22,15 +28,13 @@ class FormTest extends TestCase{
                                                     'MailProf' => 'jane.doe@college-vh.com',
                                                     'VolHProf' => 15.0
                                                     ])
-                                                ->once()
-                                                ->andReturn(1);
+                                                ->once();
         });
-        $response = $this->withHeader('Referer', '/bee/saisie/enseignant')
-                         ->withSession(['user' => ['id' => 'DIR001']])
+        $response = $this->withSession(['user' => ['id' => 'DIR001', 'name' => 'Test', 'firstname' => 'test']])
                          ->post('/bee/saisie/enseignant', ['name' => 'Doe',
                                                         'firstname' => 'Jane',
                                                         'email' => 'jane.doe@college-vh.com',
-                                                        'timeamount' => 15]);
+                                                        'timeamount' => 15.0]);
         $response->assertStatus(302);
         $response->assertRedirect('/bee/saisie/enseignant');
     }

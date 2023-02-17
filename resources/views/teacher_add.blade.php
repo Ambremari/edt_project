@@ -53,7 +53,7 @@
         @enderror
         <div class="my_input">
             <label for="timeamount">Volume horaire hebdomadaire</label>
-            <input type="number" id="timeamount" name="timeamount" min="1.0" max="50.0"
+            <input type="number" id="timeamount" name="timeamount" min="1" max="50"
                 aria-describedby="timeamount_feedback"
                 value="{{ old('timeamount') }}" required>
         </div>
