@@ -5,9 +5,12 @@ namespace Tests\Unit;
 use Exception;
 use Tests\TestCase;
 use App\Repositories\Repository;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class AuthFormTest extends TestCase 
 {
+    use WithoutMiddleware;
+
     public function setUp(): void{
         parent::setUp();
         $this->repository = new Repository();
@@ -23,9 +26,10 @@ class AuthFormTest extends TestCase
             'MdpDir' => 'mdptest001']);
         $this->mock(Repository::class, function ($mock) {
             $mock->shouldReceive('getUserDirector')->with('DIRtest', 'mdptest001')
-                                           ->once()->andReturn(['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'test']);
+                                                   ->once()
+                                                   ->andReturn(['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'test']);
         });
-        $response = $this->post('/login', ['id' => 'DIRtest', 'password'=>'mdptest001']);
+        $response = $this->post('/login/dir', ['id' => 'DIRtest', 'password'=>'mdptest001']);
         $response->assertStatus(302);
         $response->assertSessionHas('user', ['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'test']);
         $response->assertRedirect('/bee/saisie/enseignant');
@@ -39,7 +43,7 @@ class AuthFormTest extends TestCase
             'MailDir' => 'test@college-vh.com',
             'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
-                         ->post('/login', ['password'=>'mdptest001']);
+                         ->post('/login/dir', ['password'=>'mdptest001']);
         $response->assertStatus(302);
         $response->assertRedirect('/login');
         $response->assertSessionHasErrors(["id"=>"Vous devez saisir un identifiant."]);
@@ -53,13 +57,13 @@ class AuthFormTest extends TestCase
             'MailDir' => 'test@college-vh.com',
             'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
-                         ->post('/login', ['id' => 'DIRnewtest', 'password'=>'mdptest001']);
+                         ->post('/login/dir', ['id' => 'DIRnewtest', 'password'=>'mdptest001']);
         $response->assertStatus(302);
         $response->assertRedirect('/login');
         $response->assertSessionHasErrors(["id"=>"Cet utilisateur n'existe pas."]);
     }
 
-    public function testDirLoginRedirectsIfPasswordIsAbsent(){
+    public function testLoginDirRedirectsIfPasswordIsAbsent(){
         $this->repository->insertDirector([
             'IdDir' => 'DIRtest', 
             'NomDir' => 'Test', 
@@ -67,7 +71,7 @@ class AuthFormTest extends TestCase
             'MailDir' => 'test@college-vh.com',
             'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
-                         ->post('/login', ['id' => 'DIRtest']);
+                         ->post('/login/dir', ['id' => 'DIRtest']);
         $response->assertStatus(302);
         $response->assertRedirect('/login');
         $response->assertSessionHasErrors(["password"=>"Vous devez saisir un mot de passe."]);
@@ -81,7 +85,7 @@ class AuthFormTest extends TestCase
             'MailDir' => 'test@college-vh.com',
             'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
-                         ->post('/login', ['id' => 'DIRtest', 'password'=>'secret256']);
+                         ->post('/login/dir', ['id' => 'DIRtest', 'password'=>'secret256']);
         $response->assertStatus(302);
         $response->assertRedirect('/login');
     }
@@ -92,6 +96,6 @@ class AuthFormTest extends TestCase
                          ->post('/logout');
         $response->assertStatus(302);
         $response->assertSessionMissing('user');
-        $response->assertRedirect('/');
+        $response->assertRedirect('/login');
     }
 }

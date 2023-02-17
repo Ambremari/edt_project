@@ -26,19 +26,25 @@ class Repository {
 
     function teachers() : array{
         return DB::table('Enseignants')
-                    ->get()
+                    ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
     }
 
     function getTeacher(string $name, string $firstname) : array{
         $teacher = DB::table('Enseignants')
-                    ->where('nomProf', $name)
-                    ->where('firstname', $firstname)
-                    ->get()
+                    ->where('NomProf', $name)
+                    ->where('PrenomProf', $firstname)
+                    ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
         if(empty($teacher))
             throw new Exception('Enseignant inconnu'); 
         return $teacher;
+    }
+
+    function directors() : array{
+        return DB::table('Directeurs')
+                    ->get('IdDir')
+                    ->toArray();
     }
 
     function insertDirector(array $director): void {

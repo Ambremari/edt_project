@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::get('/login', [Controller::class, 'loginChoice'])
     ->name('login');
 
-Route::post('/login', [Controller::class, 'loginDir'])
+Route::post('/login/dir', [Controller::class, 'loginDir'])
     ->name('login.dir');
 
 Route::post('/logout', [Controller::class, 'logout'])

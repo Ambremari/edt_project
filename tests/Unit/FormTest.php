@@ -6,6 +6,7 @@ use Exception;
 use Tests\TestCase;
 use App\Repositories\Repository;
 use App\Repositories\Data;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class FormTest extends TestCase{
 
@@ -22,6 +23,7 @@ class FormTest extends TestCase{
     }
 
     public function testAddTeacher(){
+        $this->withoutMiddleware();
         $this->mock(Repository::class, function ($mock) {
             $mock->shouldReceive('insertTeacher')->with(['NomProf' => 'Doe',
                                                     'PrenomProf' => 'Jane',
@@ -30,8 +32,7 @@ class FormTest extends TestCase{
                                                     ])
                                                 ->once();
         });
-        $response = $this->withSession(['user' => ['id' => 'DIR001', 'name' => 'Test', 'firstname' => 'test']])
-                         ->post('/bee/saisie/enseignant', ['name' => 'Doe',
+        $response = $this->post('/bee/saisie/enseignant', ['name' => 'Doe',
                                                         'firstname' => 'Jane',
                                                         'email' => 'jane.doe@college-vh.com',
                                                         'timeamount' => 15.0]);
