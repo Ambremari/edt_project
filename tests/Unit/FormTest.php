@@ -26,7 +26,7 @@ class FormTest extends TestCase{
                                                 ->andReturn(1);
         });
         $response = $this->withHeader('Referer', '/bee/saisie/enseignant')
-                         ->withSession(['user' => ['id' => 'DIR001', 'role' => 'Director']])
+                         ->withSession(['user' => ['id' => 'DIR001']])
                          ->post('/bee/saisie/enseignant', ['name' => 'Doe',
                                                         'firstname' => 'Jane',
                                                         'email' => 'jane.doe@college-vh.com',

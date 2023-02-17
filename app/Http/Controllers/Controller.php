@@ -70,7 +70,7 @@ class Controller extends BaseController{
             'password' => ['required']
         ];
         $messages = [
-            'id.required' => 'Vous devez saisir un e-mail.',
+            'id.required' => 'Vous devez saisir un identifiant.',
             'id.exists' => "Cet utilisateur n'existe pas.",
             'password.required' => "Vous devez saisir un mot de passe.",
         ];
