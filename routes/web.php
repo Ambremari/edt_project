@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,18 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/login', [Controller::class, 'loginChoice'])
+    ->name('login');
+
+Route::post('/login/dir', [Controller::class, 'loginDir'])
+    ->name('login.dir');
+
+Route::post('/logout', [Controller::class, 'logout'])
+    ->name('logout.post');
+
+Route::get('/bee/saisie/enseignant', [Controller::class, 'addTeacherForm'])
+    ->name('teacher.form');
+
+Route::post('/bee/saisie/enseignant', [Controller::class, 'addTeacher'])
+    ->name('teacher.add');

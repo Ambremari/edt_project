@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder {
     public function run(){
         $repository = new Repository();
         $repository->createDatabase();
+        $repository->insertDirector([
+                                'IdDir' => 'DIR001', 
+                                'NomDir' => 'Principal', 
+                                'PrenomDir' => 'Adjoint', 
+                                'MailDir' => 'admin@college-vh.com',
+                                'MdpDir' => 'mdpadmin001']);
 
     }
 }
