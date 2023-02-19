@@ -78,6 +78,6 @@ class RepositoryTest extends TestCase{
         $this->repository->insertTeacher($teacher);
         $teacher['VolHProf'] = 15;
         $this->repository->updateTeacher($teacher);
-        $this->assertEquals($this->repository->getTeacher($teacher['NomProf'], $teacher['PrenomProf']), [$teacher]);
+        $this->assertEquals($this->repository->getTeacher($teacher['IdProf']), $teacher);
     }
 }

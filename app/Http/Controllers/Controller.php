@@ -26,14 +26,14 @@ class Controller extends BaseController{
 
     public function addTeacherForm(Request $request){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         return view('teacher_add');
     }
 
     public function addTeacher(Request $request){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $rules = [
             'name' => ['required', 'min:2', 'max:15'],
@@ -69,7 +69,7 @@ class Controller extends BaseController{
 
     public function updateTeacherList(Request $request){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $teachers = $this->repository->teachers();
         return view('teacher_update', ['teachers' => $teachers]);
@@ -77,7 +77,7 @@ class Controller extends BaseController{
 
     public function updateTeacherForm(Request $request, string $idProf){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $teachers = $this->repository->teachers();
         $teacher = $this->repository->getTeacher($idProf);
@@ -86,12 +86,13 @@ class Controller extends BaseController{
 
     public function updateTeacher(Request $request){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $rules = [
+            'id' => ['required'],
             'name' => ['required', 'min:2', 'max:15'],
             'firstname' => ['required', 'min:2', 'max:15'],
-            'email' => ['required', 'unique:Enseignants,MailProf'],
+            'email' => ['required', 'email'],
             'timeamount' => ['required', 'between:1.0,50.0']
         ];
         $messages = [
@@ -102,12 +103,13 @@ class Controller extends BaseController{
             'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
             'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
             'email.required' => 'Vous devez saisir une adresse mail.',
+            'email.email' => 'Vous devez saisir une adresse mail valide.',
             'timeamount.required' => 'Vous devez saisir le volume horaire.',
-            'timeamount.between' => 'Vous devez saisir un volume horarire  entre 1 et 50.',
-            'email.unique' => 'Cette adresse mail est déjà utilisée.',
+            'timeamount.between' => 'Vous devez saisir un volume horarire  entre 1 et 50.'
         ];
         $validatedData = $request->validate($rules, $messages);
         $teacher = [
+                'IdProf' => $validatedData['id'],
                 'NomProf' => $validatedData['name'], 
                 'PrenomProf' => $validatedData['firstname'], 
                 'MailProf' => $validatedData['email'],
@@ -115,9 +117,9 @@ class Controller extends BaseController{
         try{
             $this->repository->updateTeacher($teacher);
         } catch (Exception $exception) {
-            return redirect()->route('teacher.update.form')->withInput()->withErrors("Impossible de modifier l'enseignant.");
+            return redirect()->route('teacher.update.form', ['idProf' => $teacher['IdProf']])->withInput()->withErrors("Impossible de modifier l'enseignant.");
         }
-        return redirect()->route('teacher.update.form')->with('status', 'Enseignant modifié avec succès !');
+        return redirect()->route('teacher.update.form', ['idProf' => $teacher['IdProf']])->with('status', 'Enseignant modifié avec succès !');
     }
 
     public function loginChoice(){

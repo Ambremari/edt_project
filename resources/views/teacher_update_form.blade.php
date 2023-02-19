@@ -21,6 +21,7 @@
     @endif
     <div>
         <p>Enseignant {{ $teacher['IdProf'] }}<p>
+        <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <div class="my_input" style="display: inline-block">
             <label for="name">Nom</label>
             <input type="text" id="name" name="name" minlength="2" maxlength="15"
