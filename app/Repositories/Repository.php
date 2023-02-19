@@ -53,7 +53,7 @@ class Repository {
         return $teacher;
     }
 
-    function createPasswordTeacher(string $id,string $email, string $password): void{
+    function createPasswordTeacher(string $id, string $email, string $password): void{
         $users = DB::table('Enseignants')
                 ->where('MailProf', $email)
                 ->where('IdProf', $id)
@@ -65,13 +65,13 @@ class Repository {
         $user = $users[0];
         $hashedPassword = Hash::make($password);
         DB::table('Enseignants')
-            ->where('IdProf', $IdProf)
+            ->where('IdProf', $id)
             ->update(['MdpProf' => $hashedPassword]);
     }
 
     function getUserTeacher(string $id, string $password): array{
         $users = DB::table('Enseignants')
-                ->where('IdDir', $id)
+                ->where('IdProf', $id)
                 ->get()
                 ->toArray();
         if(empty($users))

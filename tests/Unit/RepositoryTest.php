@@ -20,35 +20,50 @@ class RepositoryTest extends TestCase{
 
     function testTeachersAndInsertTeacher(): void{
         $teachers = $this->data->teachers();
-        $this->repository->insertTeacher($teachers[0]);
-        $this->assertEquals($this->repository->teachers(), [$teachers[0]]);
+        $this->repository->insertTeacher($teachers[1]);
+        $this->assertEquals($this->repository->teachers(), [$teachers[1]]);
     }
 
     function testGetTeacher(): void{
         $teachers = $this->data->teachers();
-        $teacher = $teachers[0];
+        $teacher = $teachers[1];
         $this->repository->insertTeacher($teacher);
         $this->assertEquals($this->repository->getTeacher($teacher['NomProf'], $teacher['PrenomProf']), [$teacher]);
     }
 
+    function testGetUserTeacher(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[0];
+        $this->repository->insertTeacher($teacher);
+        $this->assertEquals($this->repository->getUserTeacher($teacher['IdProf'], $teacher['MdpProf']), [
+                                                            'id' => $teacher['IdProf'], 
+                                                            'name'=> $teacher['NomProf'], 
+                                                            'firstname'=> $teacher['PrenomProf'],
+                                                            'role' => 'prof']);
+    }
+
+    function testCreatePasswordTeacher(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[1];
+        $this->repository->insertTeacher($teacher);
+        $this->repository->createPasswordTeacher($teacher['IdProf'], $teacher['MailProf'], 'mdptest001');
+        $this->assertEquals($this->repository->getUserTeacher($teacher['IdProf'], 'mdptest001'), [
+                                                            'id' => $teacher['IdProf'], 
+                                                            'name'=> $teacher['NomProf'], 
+                                                            'firstname'=> $teacher['PrenomProf'],
+                                                            'role' => 'prof']);
+    }
+
     function testDirectorsAndInsertDirector(): void{
-        $director = [
-            'IdDir' => 'DIRtest', 
-            'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
-            'MailDir' => 'test@college-vh.com',
-            'MdpDir' => 'mdptest001'];
+        $directors = $this->data->directors();
+        $director = $directors[0];
         $this->repository->insertDirector($director);
         $this->assertEquals($this->repository->directors(), [['IdDir' => $director['IdDir']]]);
     }
 
     function testGetUserDirector(): void{
-        $director = [
-            'IdDir' => 'DIRtest', 
-            'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
-            'MailDir' => 'test@college-vh.com',
-            'MdpDir' => 'mdptest001'];
+        $directors = $this->data->directors();
+        $director = $directors[0];
         $this->repository->insertDirector($director);
         $this->assertEquals($this->repository->getUserDirector($director['IdDir'], $director['MdpDir']), [
                                                             'id' => $director['IdDir'], 
