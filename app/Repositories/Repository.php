@@ -77,4 +77,34 @@ class Repository {
             'firstname'=> $user['PrenomDir'],
             'role'=> 'dir'];  
     }
+    
+    public function updateTeacher($username)
+    {
+        $user = DB::table('Enseignants')->where('IdProf', $username)->get();
+        if (!$user) {
+            $password = $this->createPassword(); 
+            $hashedPassword = Hash::make($password);
+
+            $user = new User;
+            $user->username = $username;
+            $user->password = $hashedPassword;
+
+            $user->save();
+            return $password;
+        }
+
+        return null;
+    }
+
+    private function createPassword($IdProf,$length)
+    {
+        $password = Str::random($length);
+
+        $hashedPassword = Hash::make($password);
+
+        DB::table('Enseignants')->where('IdProf', $IdProf)->update(['MdpProf' => $hashedPassword]);
+
+        return $password;
+
+    }
 }
