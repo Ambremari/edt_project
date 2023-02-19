@@ -12,7 +12,7 @@
                 Bienvenue <br>
                 @if (session()->has('user'))
                 {{ session()->get('user')['firstname'] }} {{ session()->get('user')['name'] }}<br>
-                Identifiant : {{ session()->get('user')['id'] }}
+                Identifiant : {{ session()->get('user')['id'] }}<br>
                     <form method="POST" action="{{route('logout.post')}}">
                         @csrf 
                             <button class="header_button" type="submit">Déconnexion</a>
@@ -90,6 +90,17 @@
                 </div>    
             </div>
         </div>
+        @endif
+
+        @if (session()->has('user') && session()->get('user')['role'] == 'prof')
+        <div class="topnav">
+            <div class="dropdown">
+                <span><a href="#">Mon Emploi du Temps</a></span>
+            </div>
+            <div class="dropdown">
+                <span><a href="#">Mes Contraintes</a></span>
+            </div>
+            </div>
         @endif
             <h2>@yield('title')</h2>
         <div>

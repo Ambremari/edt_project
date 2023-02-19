@@ -88,7 +88,7 @@ class Controller extends BaseController{
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
         }
-        return redirect()->route('teacher.form');
+        return redirect()->route('welcome.page');
     }
 
     public function createPasswordForm(){
