@@ -67,6 +67,59 @@ class Controller extends BaseController{
         return redirect()->route('teacher.form')->with('status', 'Enseignant ajouté avec succès !');
     }
 
+    public function updateTeacherList(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+            return redirect()->route('login');
+        $teachers = $this->repository->teachers();
+        return view('teacher_update', ['teachers' => $teachers]);
+    }
+
+    public function updateTeacherForm(Request $request, string $idProf){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+            return redirect()->route('login');
+        $teachers = $this->repository->teachers();
+        $teacher = $this->repository->getTeacher($idProf);
+        return view('teacher_update_form', ['teacher'=> $teacher, 'teachers' => $teachers]);
+    }
+
+    public function updateTeacher(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey && $request->session()['user']['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'name' => ['required', 'min:2', 'max:15'],
+            'firstname' => ['required', 'min:2', 'max:15'],
+            'email' => ['required', 'unique:Enseignants,MailProf'],
+            'timeamount' => ['required', 'between:1.0,50.0']
+        ];
+        $messages = [
+            'name.required' => 'Vous devez saisir un nom.',
+            'firstname.required' => 'Vous devez saisir un prénom.',
+            'name.min' => "Le nom doit contenir au moins :min caractères.",
+            'name.max' => "Le nom doit contenir au plus :max caractères.",
+            'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
+            'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
+            'email.required' => 'Vous devez saisir une adresse mail.',
+            'timeamount.required' => 'Vous devez saisir le volume horaire.',
+            'timeamount.between' => 'Vous devez saisir un volume horarire  entre 1 et 50.',
+            'email.unique' => 'Cette adresse mail est déjà utilisée.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $teacher = [
+                'NomProf' => $validatedData['name'], 
+                'PrenomProf' => $validatedData['firstname'], 
+                'MailProf' => $validatedData['email'],
+                'VolHProf' => $validatedData['timeamount']];
+        try{
+            $this->repository->updateTeacher($teacher);
+        } catch (Exception $exception) {
+            return redirect()->route('teacher.update.form')->withInput()->withErrors("Impossible de modifier l'enseignant.");
+        }
+        return redirect()->route('teacher.update.form')->with('status', 'Enseignant modifié avec succès !');
+    }
+
     public function loginChoice(){
         return view('login');
     }

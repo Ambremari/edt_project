@@ -201,4 +201,40 @@ button {
     display: none;
 }
 
+#teacherInput{
+    background-image: url('/css/searchicon.png'); 
+    background-position: 10px 12px; 
+    background-repeat: no-repeat; 
+    width: 40%; 
+    font-size: 16px; 
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 12px;
+    margin-right: 6%;
+}
 
+#teacherList {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: 30%;
+    text-align: left;
+    padding: 0;
+    width: 45%;
+    height: 500px;
+    overflow: auto;
+  }
+
+#teacherList li a {
+    border: 1px solid #ddd; 
+    margin-top: -1px; 
+    background-color: #f6f6f6; 
+    padding: 12px; 
+    text-decoration: none; 
+    font-size: 18px; 
+    color: black; 
+    display: block; 
+}
+  
+  #teacherList li a:hover:not(.header) {
+    background-color: #eee;
+  }

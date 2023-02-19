@@ -38,7 +38,7 @@
                     <div class="dropdown-sub">
                         <a href="#">Modification</a>
                         <div class="dropdown-subcontent">
-                            <a href="#">Enseignants</a>
+                            <a href="{{route('teacher.update.list')}}">Enseignants</a>
                             <a href="#">Elèves</a>
                         </div>
                     </div>

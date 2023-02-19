@@ -40,3 +40,13 @@ Route::get('/bee/saisie/enseignant', [Controller::class, 'addTeacherForm'])
 
 Route::post('/bee/saisie/enseignant', [Controller::class, 'addTeacher'])
     ->name('teacher.add');
+
+Route::get('/bee/modif/enseignant', [Controller::class, 'updateTeacherList'])
+    ->name('teacher.update.list');
+
+Route::post('/bee/modif/enseignant', [Controller::class, 'updateTeacher'])
+    ->name('teacher.update');
+
+Route::get('/bee/modif/enseignant/{idProf}', [Controller::class, 'updateTeacherForm'])
+    ->where('idProf', '[PRF].*')
+    ->name('teacher.update.form');

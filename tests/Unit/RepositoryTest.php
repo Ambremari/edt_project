@@ -28,7 +28,7 @@ class RepositoryTest extends TestCase{
         $teachers = $this->data->teachers();
         $teacher = $teachers[1];
         $this->repository->insertTeacher($teacher);
-        $this->assertEquals($this->repository->getTeacher($teacher['NomProf'], $teacher['PrenomProf']), [$teacher]);
+        $this->assertEquals($this->repository->getTeacher($teacher['IdProf']), $teacher);
     }
 
     function testGetUserTeacher(): void{
@@ -70,5 +70,14 @@ class RepositoryTest extends TestCase{
                                                             'name'=> $director['NomDir'], 
                                                             'firstname'=> $director['PrenomDir'],
                                                             'role' => 'dir']);
+    }
+
+    function testUpdateTeacher(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[1];
+        $this->repository->insertTeacher($teacher);
+        $teacher['VolHProf'] = 15;
+        $this->repository->updateTeacher($teacher);
+        $this->assertEquals($this->repository->getTeacher($teacher['NomProf'], $teacher['PrenomProf']), [$teacher]);
     }
 }

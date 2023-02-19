@@ -65,7 +65,7 @@ class Data
             'VolHProf' => 35.0],
             ['IdProf' => 'PRF010', 
             'NomProf' => 'Henry', 
-            'PrenomProf' => 'pierre', 
+            'PrenomProf' => 'Pierre', 
             'MailProf' => 'pierre.henry@college-vh.com',
             'VolHProf' => 35.0],
             ['IdProf' => 'PRF011', 

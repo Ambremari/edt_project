@@ -38,19 +38,20 @@ class Repository {
 
     function teachers() : array{
         return DB::table('Enseignants')
+                    ->orderBy('NomProf')
+                    ->orderBy('PrenomProf')
                     ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
     }
 
-    function getTeacher(string $name, string $firstname) : array{
+    function getTeacher(string $id) : array{
         $teacher = DB::table('Enseignants')
-                    ->where('NomProf', $name)
-                    ->where('PrenomProf', $firstname)
+                    ->where('IdProf', $id)
                     ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
         if(empty($teacher))
             throw new Exception('Enseignant inconnu'); 
-        return $teacher;
+        return $teacher[0];
     }
 
     function createPasswordTeacher(string $id, string $email, string $password): void{
@@ -84,6 +85,18 @@ class Repository {
             'name'=> $user['NomProf'], 
             'firstname'=> $user['PrenomProf'],
             'role'=> 'prof'];  
+    }
+
+    function updateTeacher(array $teacher): void{
+        $users = DB::table('Enseignants')
+                ->where('IdProf', $teacher['IdProf'])
+                ->get()
+                ->toArray();
+        if(empty($users))
+            throw new Exception('Utilisateur inconnu');
+        DB::table('Enseignants')
+            ->where('IdProf', $teacher['IdProf'])
+            ->update($teacher);
     }
 
     function directors() : array{
