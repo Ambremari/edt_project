@@ -5,9 +5,21 @@ namespace App\Repositories;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+use App\Repositories\Data;
+
 class Repository {
     function createDatabase(): void {
         DB::unprepared(file_get_contents('database/build.sql'));
+    }
+
+    function fillDatabase(): void{
+        $data = new Data();
+        $directors = $data->directors();
+        $teachers = $data->teachers();
+        foreach($teachers as $row)
+            $this->insertTeacher($row);
+        foreach($directors as $row)
+            $this->insertDirector($row);
     }
 
     function insertTeacher(array $teacher): void {
@@ -39,6 +51,39 @@ class Repository {
         if(empty($teacher))
             throw new Exception('Enseignant inconnu'); 
         return $teacher;
+    }
+
+    function createPasswordTeacher(string $id,string $email, string $password): void{
+        $users = DB::table('Enseignants')
+                ->where('MailProf', $email)
+                ->where('IdProf', $id)
+                ->where('MdpProf', null)
+                ->get()
+                ->toArray();
+        if(empty($users))
+            throw new Exception('Utilisateur inconnu');
+        $user = $users[0];
+        $hashedPassword = Hash::make($password);
+        DB::table('Enseignants')
+            ->where('IdProf', $IdProf)
+            ->update(['MdpProf' => $hashedPassword]);
+    }
+
+    function getUserTeacher(string $id, string $password): array{
+        $users = DB::table('Enseignants')
+                ->where('IdDir', $id)
+                ->get()
+                ->toArray();
+        if(empty($users))
+            throw new Exception('Utilisateur inconnu');
+        $user = $users[0];
+        if(!Hash::check($password, $user['MdpProf']))    
+            throw new Exception('Utilisateur inconnu');
+        return [
+            'id' => $user['IdProf'], 
+            'name'=> $user['NomProf'], 
+            'firstname'=> $user['PrenomProf'],
+            'role'=> 'prof'];  
     }
 
     function directors() : array{
@@ -77,34 +122,6 @@ class Repository {
             'firstname'=> $user['PrenomDir'],
             'role'=> 'dir'];  
     }
+
     
-    public function updateTeacher($username)
-    {
-        $user = DB::table('Enseignants')->where('IdProf', $username)->get();
-        if (!$user) {
-            $password = $this->createPassword(); 
-            $hashedPassword = Hash::make($password);
-
-            $user = new User;
-            $user->username = $username;
-            $user->password = $hashedPassword;
-
-            $user->save();
-            return $password;
-        }
-
-        return null;
-    }
-
-    private function createPassword($IdProf,$length)
-    {
-        $password = Str::random($length);
-
-        $hashedPassword = Hash::make($password);
-
-        DB::table('Enseignants')->where('IdProf', $IdProf)->update(['MdpProf' => $hashedPassword]);
-
-        return $password;
-
-    }
 }

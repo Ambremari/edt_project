@@ -14,15 +14,23 @@ use App\Http\Controllers\Controller;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [Controller::class, 'welcomePage'])
+    ->name('welcome.page');
 
 Route::get('/login', [Controller::class, 'loginChoice'])
     ->name('login');
 
 Route::post('/login/dir', [Controller::class, 'loginDir'])
     ->name('login.dir');
+
+Route::get('/firstlogin', [Controller::class, 'createPasswordForm'])
+    ->name('first.login');
+
+Route::post('/firstlogin/teacher', [Controller::class, 'createPasswordTeacher'])
+    ->name('first.teacher');
+
+Route::post('/login/teacher', [Controller::class, 'loginTeacher'])
+    ->name('login.teacher');
 
 Route::post('/logout', [Controller::class, 'logout'])
     ->name('logout.post');

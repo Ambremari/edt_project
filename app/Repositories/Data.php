@@ -5,6 +5,15 @@ namespace App\Repositories;
 
 class Data
 {
+    function directors(){
+        return [
+            ['IdDir' => 'DIR001', 
+            'NomDir' => 'Principal', 
+            'PrenomDir' => 'Adjoint', 
+            'MailDir' => 'admin@college-vh.com',
+            'MdpDir' => 'mdpadmin001'],
+        ];
+    }
     function teachers()
     {
         return [
@@ -12,7 +21,8 @@ class Data
             'NomProf' => 'Dupont', 
             'PrenomProf' => 'Jean', 
             'MailProf' => 'jean.dupont@college-vh.com',
-            'VolHProf' => 35.0],
+            'VolHProf' => 35.0,
+            'MdpProf' => 'mdpjean001'],
             ['IdProf' => 'PRF002', 
             'NomProf' => 'Dubois', 
             'PrenomProf' => 'Jean-Luc', 
@@ -65,8 +75,8 @@ class Data
             'VolHProf' => 35.0],
             ['IdProf' => 'PRF012', 
             'NomProf' => 'Henry', 
-            'PrenomProf' => 'pierre', 
-            'MailProf' => 'pierre.henry@college-vh.com',
+            'PrenomProf' => 'Paul', 
+            'MailProf' => 'paul.henry@college-vh.com',
             'VolHProf' => 35.0],
             ['IdProf' => 'PRF013', 
             'NomProf' => 'Saez', 

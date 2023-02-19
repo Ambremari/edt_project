@@ -27,12 +27,12 @@ h4 {
     float: left;
 }
 
-.header a{
+a{
     text-decoration: none;
     color: black;
 }
 
-.header a:hover{
+a:hover{
     text-decoration: none;
     color: #F53C3C;
 }
@@ -158,6 +158,7 @@ button {
     padding-right: 15px;
     padding-top: 12px;
     padding-bottom: 12px;
+    margin-bottom: 15px;
     font-size: 15px;
     border: none;
     border-radius: 8px;

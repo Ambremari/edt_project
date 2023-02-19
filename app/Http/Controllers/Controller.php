@@ -17,6 +17,13 @@ class Controller extends BaseController{
         $this->repository = $repository;
     }
 
+    public function welcomePage(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey)
+            return redirect()->route('login');
+        return view('base');
+    }
+
     public function addTeacherForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey && $request->session()['user']['role'] != 'dir')
@@ -82,6 +89,55 @@ class Controller extends BaseController{
             return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
         }
         return redirect()->route('teacher.form');
+    }
+
+    public function createPasswordForm(){
+        return view('first_login');
+    }
+
+    public function createPasswordTeacher(Request $request, Repository $repository){
+        $rules = [
+            'id' => ['required', 'exists:Enseignants,IdProf'],
+            'email' => ['required', 'email', 'exists:Enseignants,MailProf'],
+            'password' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez saisir un identifiant.',
+            'id.exists' => "Cet utilisateur n'existe pas.",
+            'email.required' => 'Vous devez saisir un e-mail.',
+            'email.email' => 'Vous devez saisir un e-mail valide.',
+            'email.exists' => "Cet utilisateur n'existe pas.",
+            'password.required' => "Vous devez saisir un mot de passe.",
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try {
+            $this->repository->createPasswordTeacher($validatedData['id'], $validatedData['email'], $validatedData['password']);
+            $user = $this->repository->getUserTeacher($validatedData['id'], $validatedData['password']);
+            $request->session()->put('user', $user);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
+        }
+        return redirect()->route('welcome.page');
+    }
+
+    public function loginTeacher(Request $request, Repository $repository){
+        $rules = [
+            'id' => ['required', 'exists:Enseignants,IdProf'],
+            'password' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez saisir un identifiant.',
+            'id.exists' => "Cet utilisateur n'existe pas.",
+            'password.required' => "Vous devez saisir un mot de passe.",
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try {
+            $user = $this->repository->getUserTeacher($validatedData['id'], $validatedData['password']);
+            $request->session()->put('user', $user);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
+        }
+        return redirect()->route('welcome.page');
     }
 
     public function logout(Request $request) {
