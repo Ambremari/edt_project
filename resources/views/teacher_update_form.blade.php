@@ -25,7 +25,7 @@
             <label for="name">Nom</label>
             <input type="text" id="name" name="name" minlength="2" maxlength="15"
                 aria-describedby="name_feedback"
-                value="{{ old('name') }}" required>
+                value="{{ $teacher['NomProf'] }}" required>
         </div>
         @error('name')
         <div id="name_feedback" class="invalid-feedback">
@@ -36,7 +36,7 @@
             <label for="firstname">Prénom</label>
             <input type="text" id="firstname" name="firstname" minlength="2" maxlength="15"
                 aria-describedby="firstname_feedback"
-                value="{{ old('firstname') }}" required>
+                value="{{ $teacher['PrenomProf'] }}" required>
         </div>
         @error('firstname')
         <div id="firstname_feedback" class="invalid-feedback">
@@ -48,7 +48,7 @@
             <input type="text" id="email" name="email" minlength="2" maxlength="40"
                 aria-describedby="email_feedback"
                 style="width:260px"
-                value="{{ old('email') }}" required>
+                value="{{ $teacher['MailProf'] }}" required>
         </div>
         @error('email')
         <div id="email_feedback" class="invalid-feedback">
@@ -59,7 +59,7 @@
             <label for="timeamount">Volume horaire hebdomadaire</label>
             <input type="number" id="timeamount" name="timeamount" min="1" max="50"
                 aria-describedby="timeamount_feedback"
-                value="{{ old('timeamount') }}" required>
+                value="{{ $teacher['VolHProf'] }}" required>
         </div>
             @error('timeamount')
         <div id="timeamount_feedback" class="invalid-feedback">
