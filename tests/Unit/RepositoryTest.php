@@ -53,6 +53,7 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getUserDirector($director['IdDir'], $director['MdpDir']), [
                                                             'id' => $director['IdDir'], 
                                                             'name'=> $director['NomDir'], 
-                                                            'firstname'=> $director['PrenomDir']]);
+                                                            'firstname'=> $director['PrenomDir'],
+                                                            'role' => 'dir']);
     }
 }

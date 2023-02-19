@@ -15,33 +15,27 @@ class AuthFormTest extends TestCase
         parent::setUp();
         $this->repository = new Repository();
         $this->repository->createDatabase();
-    }
-
-    public function testLoginDir(){
         $this->repository->insertDirector([
             'IdDir' => 'DIRtest', 
             'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
+            'PrenomDir' => 'Test', 
             'MailDir' => 'test@college-vh.com',
             'MdpDir' => 'mdptest001']);
+    }
+
+    public function testLoginDir(){
         $this->mock(Repository::class, function ($mock) {
             $mock->shouldReceive('getUserDirector')->with('DIRtest', 'mdptest001')
                                                    ->once()
-                                                   ->andReturn(['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'test']);
+                                                   ->andReturn(['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'Test', 'role' => 'dir']);
         });
         $response = $this->post('/login/dir', ['id' => 'DIRtest', 'password'=>'mdptest001']);
         $response->assertStatus(302);
-        $response->assertSessionHas('user', ['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'test']);
+        $response->assertSessionHas('user', ['id'=>'DIRtest', 'name' => 'Test', 'firstname' => 'Test', 'role' => 'dir']);
         $response->assertRedirect('/bee/saisie/enseignant');
     }
 
     public function testLoginDirRedirectsIfIdIsAbsent(){
-        $this->repository->insertDirector([
-            'IdDir' => 'DIRtest', 
-            'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
-            'MailDir' => 'test@college-vh.com',
-            'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
                          ->post('/login/dir', ['password'=>'mdptest001']);
         $response->assertStatus(302);
@@ -50,12 +44,6 @@ class AuthFormTest extends TestCase
     }
 
     public function testLoginDirRedirectsIfIdDoesNotExist(){
-        $this->repository->insertDirector([
-            'IdDir' => 'DIRtest', 
-            'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
-            'MailDir' => 'test@college-vh.com',
-            'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
                          ->post('/login/dir', ['id' => 'DIRnewtest', 'password'=>'mdptest001']);
         $response->assertStatus(302);
@@ -64,12 +52,6 @@ class AuthFormTest extends TestCase
     }
 
     public function testLoginDirRedirectsIfPasswordIsAbsent(){
-        $this->repository->insertDirector([
-            'IdDir' => 'DIRtest', 
-            'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
-            'MailDir' => 'test@college-vh.com',
-            'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
                          ->post('/login/dir', ['id' => 'DIRtest']);
         $response->assertStatus(302);
@@ -78,12 +60,6 @@ class AuthFormTest extends TestCase
     }
 
     public function testLoginDirRedirectsIfPasswordIsIncorrect(){
-        $this->repository->insertDirector([
-            'IdDir' => 'DIRtest', 
-            'NomDir' => 'Test', 
-            'PrenomDir' => 'test', 
-            'MailDir' => 'test@college-vh.com',
-            'MdpDir' => 'mdptest001']);
         $response = $this->withHeader('Referer', '/login')
                          ->post('/login/dir', ['id' => 'DIRtest', 'password'=>'secret256']);
         $response->assertStatus(302);
@@ -92,7 +68,7 @@ class AuthFormTest extends TestCase
 
     public function testLogout() {
         $response = $this->withHeader('Referer', '/login')
-                         ->withSession(['user' => ['id'=>'IDtest', 'name' => 'Test', 'firstname' => 'test']])
+                         ->withSession(['user' => ['id'=>'IDtest', 'name' => 'Test', 'firstname' => 'Test', 'role' => 'dir']])
                          ->post('/logout');
         $response->assertStatus(302);
         $response->assertSessionMissing('user');

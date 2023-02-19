@@ -23,7 +23,7 @@
                 @endif
             </h4>
         </div>
-        @if (session()->has('user'))
+        @if (session()->has('user') && session()->get('user')['role'] == 'dir')
         <div class="topnav">
             <div class="dropdown">
                 <span><a href="#">Base Elèves et Enseignants</a></span>

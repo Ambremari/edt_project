@@ -74,6 +74,7 @@ class Repository {
         return [
             'id' => $user['IdDir'], 
             'name'=> $user['NomDir'], 
-            'firstname'=> $user['PrenomDir']];  
+            'firstname'=> $user['PrenomDir'],
+            'role'=> 'dir'];  
     }
 }

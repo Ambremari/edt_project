@@ -19,14 +19,14 @@ class Controller extends BaseController{
 
     public function addTeacherForm(Request $request){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey)
+        if(!$hasKey && $request->session()['user']['role'] != 'dir')
             return redirect()->route('login');
         return view('teacher_add');
     }
 
     public function addTeacher(Request $request){
         $hasKey = $request->session()->has('user');
-        if(!$hasKey)
+        if(!$hasKey && $request->session()['user']['role'] != 'dir')
             return redirect()->route('login');
         $rules = [
             'name' => ['required', 'min:2', 'max:15'],
