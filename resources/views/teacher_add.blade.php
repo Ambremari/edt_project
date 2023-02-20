@@ -54,6 +54,7 @@
         <div class="my_input">
             <label for="timeamount">Volume horaire hebdomadaire</label>
             <input type="number" id="timeamount" name="timeamount" min="1" max="50"
+                step=".5"
                 aria-describedby="timeamount_feedback"
                 value="{{ old('timeamount') }}" required>
         </div>

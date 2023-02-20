@@ -135,11 +135,10 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $rules = [
-            'lib' => ['required', 'min:2', 'max:15'],
+            'lib' => ['required', 'min:2', 'max:40'],
             'grade' => ['required'],
             'timeamount' => ['required', 'between:1.0,10.0'],
-            'mintime' => ['required', 'between:1, 4'],
-            'option' => ['boolean']
+            'mintime' => ['required', 'between:1, 4']
         ];
         $messages = [
             'lib.required' => 'Vous devez saisir un libellé.',
@@ -152,12 +151,16 @@ class Controller extends BaseController{
             'mintime.between' => 'Vous devez saisir une durée minimale entre 1 et 4.',
         ];
         $validatedData = $request->validate($rules, $messages);
-        $teacher = [
+        if($request->has('option'))
+            $option = true;
+        else
+            $option = false;
+        $subject = [
                 'LibelleEns' => $validatedData['lib'], 
                 'NiveauEns' => $validatedData['grade'], 
                 'VolHEns' => $validatedData['timeamount'],
                 'DureeMinEns' => $validatedData['mintime'],
-                'OptionEns' => $validatedData['option']];
+                'OptionEns' => $option];
         try{
             $this->repository->insertSubject($subject);
         } catch (Exception $exception) {

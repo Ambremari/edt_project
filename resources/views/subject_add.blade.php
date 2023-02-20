@@ -8,7 +8,7 @@
     @csrf
     @if ($errors->any())
         <div class="alert alert-warning">
-            L'enseignement n'a pas pu être ajouté' &#9785;
+            L'enseignement n'a pas pu être ajouté &#9785;
         </div>  
     @endif
     @if (session('status'))
@@ -46,7 +46,8 @@
         @enderror
         <div class="my_input" style="display: inline-block">
             <label for="timeamount">Volume horaire hebdomadaire</label>
-            <input type="number" id="timeamount" name="timeamount" min="1" max="50"
+            <input type="number" id="timeamount" name="timeamount" min="0.5" max="10"
+                step=".5"
                 aria-describedby="timeamount_feedback"
                 style="width:45px"
                 value="{{ old('timeamount') }}" required>
@@ -70,7 +71,7 @@
         @enderror
         <div class="my_input" style="display: inline-block">
             <label class="form-check-label" for="option">Optionnel</label>
-            <input class="form-check-input" type="checkbox" value="" id="option" name="option">
+            <input class="form-check-input" type="checkbox" value="option" id="option" name="option">
         </div>
         @error('option')
         <div id="option_feedback" class="invalid-feedback">

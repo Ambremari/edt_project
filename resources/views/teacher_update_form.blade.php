@@ -60,6 +60,7 @@
             <label for="timeamount">Volume horaire hebdomadaire</label>
             <input type="number" id="timeamount" name="timeamount" min="1" max="50"
                 aria-describedby="timeamount_feedback"
+                step=".5"
                 value="{{ $teacher['VolHProf'] }}" required>
         </div>
             @error('timeamount')
