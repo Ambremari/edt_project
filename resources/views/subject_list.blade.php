@@ -30,7 +30,7 @@
               X
               @endif
             </td>
-            <td><a href="#">Modifier</a></td>
+            <td><a href="{{route('subject.update.form', ['idEns' => $row['IdEns']])}}">Modifier</a></td>
         </tr>
     @endforeach
 </table>

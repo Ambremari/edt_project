@@ -56,3 +56,10 @@ Route::get('/ens/creation', [Controller::class, 'showSubjects'])
 
 Route::post('/ens/creation', [Controller::class, 'addSubject'])
     ->name('subject.add');
+
+Route::post('/ens', [Controller::class, 'updateSubject'])
+    ->name('subject.update');
+
+Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.update.form');
