@@ -9,6 +9,7 @@
 </select>
 </div>
 
+<div class="myTable">
 <table id="subjectTable">
   <tr class="header">
     <th>Libellé</th>
@@ -29,3 +30,4 @@
         </tr>
     @endforeach
 </table>
+</div>

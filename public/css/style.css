@@ -271,9 +271,14 @@ table {
     margin-right: auto;
 }
 
-#subjectTable{
-    height: 200px;
+.myTable{
+    height: 500px;
     overflow: auto;
+}
+
+.myTable th {
+    position: sticky;
+    top: 0;
 }
 
 .filter {
