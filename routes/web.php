@@ -50,3 +50,9 @@ Route::post('/bee/modif/enseignant', [Controller::class, 'updateTeacher'])
 Route::get('/bee/modif/enseignant/{idProf}', [Controller::class, 'updateTeacherForm'])
     ->where('idProf', '[PRF].*')
     ->name('teacher.update.form');
+
+Route::get('/ens/creation', [Controller::class, 'showSubjects'])
+    ->name('subjects.show');
+
+Route::post('/ens/creation', [Controller::class, 'addSubject'])
+    ->name('subject.add');

@@ -122,6 +122,50 @@ class Controller extends BaseController{
         return redirect()->route('teacher.update.form', ['idProf' => $teacher['IdProf']])->with('status', 'Enseignant modifié avec succès !');
     }
 
+    public function showSubjects(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
+        return view('subject_add', ['subjects' => $subjects]);
+    }
+
+    public function addSubject(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'lib' => ['required', 'min:2', 'max:15'],
+            'grade' => ['required'],
+            'timeamount' => ['required', 'between:1.0,10.0'],
+            'mintime' => ['required', 'between:1, 4'],
+            'option' => ['boolean']
+        ];
+        $messages = [
+            'lib.required' => 'Vous devez saisir un libellé.',
+            'lib.min' => "Le libellé doit contenir au moins :min caractères.",
+            'lib.max' => "Le libellé doit contenir au plus :max caractères.",
+            'grade.required' => 'Vous devez sélectionner un niveau.',
+            'timeamount.required' => 'Vous devez saisir le volume horaire.',
+            'timeamount.between' => 'Vous devez saisir un volume horarire  entre 1 et 10.',
+            'mintime.required' => 'Vous devez saisir la durée minimale.',
+            'mintime.between' => 'Vous devez saisir une durée minimale entre 1 et 4.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $teacher = [
+                'LibelleEns' => $validatedData['lib'], 
+                'NiveauEns' => $validatedData['grade'], 
+                'VolHEns' => $validatedData['timeamount'],
+                'DureeMinEns' => $validatedData['mintime'],
+                'OptionEns' => $validatedData['option']];
+        try{
+            $this->repository->insertSubject($subject);
+        } catch (Exception $exception) {
+            return redirect()->route('subject.add')->withInput()->withErrors("Impossible d'ajouter l'enseignement.");
+        }
+        return redirect()->route('subject.add')->with('status', 'Enseignement ajouté avec succès !');
+    }
+
     public function loginChoice(){
         return view('login');
     }

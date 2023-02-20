@@ -17,10 +17,13 @@ class Repository {
         $data = new Data();
         $directors = $data->directors();
         $teachers = $data->teachers();
+        $subjects = $data->subjects();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
             $this->insertDirector($row);
+        foreach($subjects as $row)
+            $this->insertSubject($row);
     }
 
     function insertTeacher(array $teacher): void {
@@ -135,6 +138,46 @@ class Repository {
             'name'=> $user['NomDir'], 
             'firstname'=> $user['PrenomDir'],
             'role'=> 'dir'];  
+    }
+
+    function insertSubject(array $subject): void {
+        if(!array_key_exists('IdEns', $subject)){
+            $id = dechex(time());
+            $id = substr($id, 3, 10);
+            $subject['IdEns'] = "ENS".$id;
+        }
+        DB::table('Enseignements')
+            ->insert($subject);
+    }
+
+    function subjects() : array{
+        return DB::table('Enseignements')
+                    ->orderBy('NiveauEns')
+                    ->orderBy('LibelleEns')
+                    ->get()
+                    ->toArray();
+    }
+
+    function getSubject(string $id) : array{
+        $subject = DB::table('Enseignements')
+                    ->where('IdEns', $id)
+                    ->get()
+                    ->toArray();
+        if(empty($subject))
+            throw new Exception('Enseignement inconnu'); 
+        return $subject[0];
+    }
+
+    function updateSubject(array $subject): void{
+        $subjects = DB::table('Enseignements')
+                ->where('IdEns', $subject['IdEns'])
+                ->get()
+                ->toArray();
+        if(empty($subjects))
+            throw new Exception('Enseignement inconnu');
+        DB::table('Enseignements')
+            ->where('IdEns', $subject['IdEns'])
+            ->update($subject);
     }
 
     

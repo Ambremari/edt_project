@@ -80,4 +80,26 @@ class RepositoryTest extends TestCase{
         $this->repository->updateTeacher($teacher);
         $this->assertEquals($this->repository->getTeacher($teacher['IdProf']), $teacher);
     }
+
+    function testSubjectsAndInsertSubjects(): void{
+        $subjects = $this->data->subjects();
+        $this->repository->insertSubject($subjects[1]);
+        $this->assertEquals($this->repository->subjects(), [$subjects[1]]);
+    }
+
+    function testGetSubject(): void{
+        $subjects = $this->data->subjects();
+        $subject = $subjects[1];
+        $this->repository->insertSubject($subject);
+        $this->assertEquals($this->repository->getSubject($subject['IdEns']), $subject);
+    }
+
+    function testUpdateSubject(): void{
+        $subjects = $this->data->subjects();
+        $subject = $subjects[0];
+        $this->repository->insertSubject($subject);
+        $subject['VolHEns'] = 3;
+        $this->repository->updateSubject($subject);
+        $this->assertEquals($this->repository->getsubject($subject['IdEns']), $subject);
+    }
 }

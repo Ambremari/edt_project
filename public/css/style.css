@@ -135,6 +135,18 @@ input{
     border-radius: 8px;
 }
 
+select {
+    padding: 10px;
+    background-color: #F7D5D5;
+    border: none;
+    border-radius: 8px;
+}
+
+.form-check-input{
+    width: 20px;
+    height: 20px;
+}
+
 label{
     padding: 10px;
     font-weight: bold;
@@ -197,6 +209,14 @@ button {
     float: left;
 }
 
+.colup{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+
 .tabcontent{
     display: none;
 }
@@ -238,3 +258,26 @@ button {
   #teacherList li a:hover:not(.header) {
     background-color: #eee;
   }
+
+th, td {
+    padding : 10px;
+    width : 200px;
+    text-align: center;
+    background-color: #DEEAEA;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#subjectTable{
+    height: 200px;
+    overflow: auto;
+}
+
+.filter {
+    text-align: right;
+    margin-right: 5%;
+    margin-bottom: 10px;
+}

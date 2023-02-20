@@ -42,7 +42,7 @@ CREATE TABLE Divisions(
 
 CREATE TABLE Enseignements(
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
-   LibelleEns VARCHAR(15) NOT NULL,
+   LibelleEns VARCHAR(40) NOT NULL,
    NiveauEns CHAR(4) CHECK(NiveauEns IN ('6EME', '5EME', '4EME', '3EME')),
    VolHEns DECIMAL(3,1) NOT NULL,
    DureeMinEns INT NOT NULL DEFAULT 1,
