@@ -62,9 +62,9 @@
             </div>
 
             <div class="dropdown">
-                <span><a href="#">Enseignements</a></span>
+                <span><a href="{{route('subjects.show')}}">Enseignements</a></span>
                 <div class="dropdown-content">
-                    <a href="{{route('subjects.show')}}">Création</a>
+                    <a href="{{route('subjects.form')}}">Création</a>
                     <a href="#">Affectation</a>
                 </div>    
             </div>

@@ -127,6 +127,14 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $subjects = $this->repository->subjects();
+        return view('subjects', ['subjects' => $subjects]);
+    }
+
+    public function addSubjectForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
         return view('subject_add', ['subjects' => $subjects]);
     }
 
