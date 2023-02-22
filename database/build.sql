@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS Parentes;
 DROP TABLE IF EXISTS ContraintesProf;
 DROP TABLE IF EXISTS ContraintesEns;
 DROP TABLE IF EXISTS Cours;
+DROP TABLE IF EXISTS Enseigne;
 DROP TABLE IF EXISTS Eleves;
 DROP TABLE IF EXISTS Salles;
 DROP TABLE IF EXISTS TypeSalles;
@@ -94,14 +95,21 @@ CREATE TABLE Eleves(
    FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
 );
 
+CREATE TABLE Enseigne(
+   IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
+   IdEns VARCHAR(10)  CHECK (IdEns LIKE 'ENS%'),
+   PRIMARY KEY(IdProf, IdEns),
+   FOREIGN KEY(IdProf) REFERENCES Enseignants(IdProf),
+   FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
+);
+
 CREATE TABLE Cours(
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
    IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV%'),
    PRIMARY KEY(IdCours),
-   FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns),
-   FOREIGN KEY(IdProf) REFERENCES Enseignants(IdProf),
+   FOREIGN KEY(IdProf, IdEns) REFERENCES Enseigne(IdProf, IdEns),
    FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
 );
 
@@ -158,6 +166,11 @@ AS
    SELECT D.IdDiv, COUNT(IdEleve) EffectifReelDiv
    FROM Divisions D LEFT JOIN Eleves E ON D.IdDiv = E.IdDiv
    GROUP BY D.IdDiv;
+
+CREATE OR REPLACE VIEW Classes
+AS
+   SELECT IdDiv IdClasse, LibelleDiv LibelleClasse, NiveauDiv NiveauClasse
+   FROM Divisions;
 
 
 

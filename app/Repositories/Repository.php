@@ -202,7 +202,7 @@ class Repository {
                     ->toArray();
     }
 
-    function getdivision(string $id) : array{
+    function getDivision(string $id) : array{
         $division = DB::table('Divisions')
                     ->where('IdDiv', $id)
                     ->get()
@@ -214,14 +214,67 @@ class Repository {
 
     function updatedivision(array $division): void{
         $divisions = DB::table('Divisions')
-                ->where('IdDiv', $division['IdDiv'])
-                ->get()
-                ->toArray();
+                        ->where('IdDiv', $division['IdDiv'])
+                        ->get()
+                        ->toArray();
         if(empty($divisions))
             throw new Exception('Division inconnue');
         DB::table('Divisions')
             ->where('IdDiv', $division['IdDiv'])
             ->update($division);
+    }
+
+    function linkTeacherSubject(string $idProf, string $idEns): void{
+        DB::table('Enseigne')
+            ->insert(['IdProf' =>  $idProf,
+                     'IdEns' => $idEns]);
+    }
+
+    function subjectlinks() : array{
+        return DB::table('Enseigne')
+                    ->get()
+                    ->toArray();
+    }
+
+    function getTeacherSubjects(string $id) : array{
+        $subjects = DB::table('Enseigne as T')
+                    ->join('Enseignements as E', 'T.IdEns', '=', 'E.IdEns')
+                    ->where('IdProf', $id)
+                    ->get(['E.*'])
+                    ->toArray();
+        return $subjects;
+    }
+
+    function classes() : array{
+        return DB::table('Classes')
+                    ->get()
+                    ->toArray();
+    }
+
+    function linkTeacherDivision(string $idProf, string $idEns, array $classes): void{
+        foreach($classes as $idClass){
+            $id = dechex(time());
+            $id = substr($id, 3, 10);
+            $idCours = "CR".$id;
+            DB::table('Cours')
+                ->insert(['IdCours' => $idCours,
+                        'IdProf' =>  $idProf,
+                        'IdEns' => $idEns,
+                        'IdDiv' => $idClass]);
+        }
+    }
+
+    function lessons() : array{
+        return DB::table('Cours')
+                    ->get(['IdProf', 'IdEns', 'IdDiv'])
+                    ->toArray();
+    }
+
+    function getTeacherLessons(string $id) : array{
+        return DB::table('Cours')
+                    ->where('IdProf', $id)
+                    ->get(['IdProf', 'IdEns', 'IdDiv'])
+                    ->toArray();
     }
 
     

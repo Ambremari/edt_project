@@ -23,7 +23,7 @@
             <td>{{ $row['LibelleDiv'] }}</td>
             <td>{{ $row['NiveauDiv'] }}</td>
             <td>{{ $row['EffectifPrevDiv'] }}</td>
-            <td></td>
+            <td>{{ $row['EffectifReelDiv'] }}</td>
             <td><a href="{{route('division.update.form', ['idDiv' => $row['IdDiv']])}}">Modifier</a></td>
         </tr>
     @endforeach

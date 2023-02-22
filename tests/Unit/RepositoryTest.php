@@ -125,4 +125,43 @@ class RepositoryTest extends TestCase{
         $this->repository->updateDivision($division);
         $this->assertEquals($this->repository->getDivision($division['IdDiv']), $division);
     }
+
+    function testSubjectLinksAndLinkTeacherSubject(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[0];
+        $subjects = $this->data->subjects();
+        $subject = $subjects[0];
+        $this->repository->insertTeacher($teacher);
+        $this->repository->insertSubject($subject);
+        $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
+        $link = ['IdProf' => $teacher['IdProf'], 'IdEns' =>$subject['IdEns']];
+        $this->assertEquals($this->repository->subjectlinks(), [$link]);
+    }
+
+    function testTeacherSubjects(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[0];
+        $subjects = $this->data->subjects();
+        $subject = $subjects[0];
+        $this->repository->insertTeacher($teacher);
+        $this->repository->insertSubject($subject);
+        $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
+        $this->assertEquals($this->repository->getTeacherSubjects($teacher['IdProf']), [$subject]);
+    }
+
+    function testLessonsAndLinkTeacherDivision(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[0];
+        $subjects = $this->data->subjects();
+        $subject = $subjects[0];
+        $divisions = $this->data->divisions();
+        $division = $divisions[0];
+        $this->repository->insertTeacher($teacher);
+        $this->repository->insertSubject($subject);
+        $this->repository->insertDivision($division);
+        $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
+        $this->repository->linkTeacherDivision($teacher['IdProf'], $subject['IdEns'], [$division['IdDiv']]);
+        $link = ['IdProf' => $teacher['IdProf'], 'IdEns' =>$subject['IdEns'], 'IdDiv' =>$division['IdDiv']];
+        $this->assertEquals($this->repository->lessons(), [$link]);
+    }
 }

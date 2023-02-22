@@ -300,6 +300,76 @@ class Controller extends BaseController{
         return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->with('status', 'Division modifiée avec succès !');
     }
 
+    public function showLinkSubject(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $teachers = $this->repository->teachers();
+        return view('subject_link', ['teachers' => $teachers]);
+    }
+
+    public function linkTeacherSubjectForm(Request $request, string $idProf){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $teachers = $this->repository->teachers();
+        $subjects = $this->repository->subjects();
+        $classes = $this->repository->classes();
+        $teacher = $this->repository->getTeacher($idProf);
+        $teacherSubjects = $this->repository->getTeacherSubjects($idProf);
+        $teacherLessons = $this->repository->getTeacherLessons($idProf);
+        return view('subject_teacher_link', ['teacher'=> $teacher, 
+                                             'teachers' => $teachers, 
+                                             'subjects' => $subjects,
+                                             'classes' => $classes,
+                                             'teacher_subjects' => $teacherSubjects,
+                                             'teacher_lessons' => $teacherLessons]);
+    }
+
+    public function linkTeacherSubject(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+            $rules = [
+                'id' => ['required', 'exists:Enseignants,IdProf'],
+                'subject' => ['required', 'exists:Enseignements,IdEns']
+            ];
+            $messages = [
+                'id.required' => 'Vous devez choisir un enseignant.',
+                'subject.required' => 'Vous devez choisir un enseignement.',
+            ];
+            $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->linkTeacherSubject($validatedData['id'], $validatedData['subject']);
+        } catch (Exception $exception) {
+            return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->withInput()->withErrors("Impossible de réaliser l'affectation.");
+        }
+        return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->with('status', 'Affectation réalisée avec succès !');
+    }
+
+    public function linkTeacherDivision(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required', 'exists:Enseignants,IdProf'],
+            'subject' => ['required', 'exists:Enseignements,IdEns'],
+            'classes' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez choisir un enseignant.',
+            'subject.required' => 'Vous devez choisir un enseignement.',
+            'classes.required' => 'Vous devez choisir au moins une classe.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->linkTeacherDivision($validatedData['id'], $validatedData['subject'], $validatedData['classes']);
+        } catch (Exception $exception) {
+            return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->withInput()->withErrors("Impossible de réaliser l'affectation.");
+        }
+        return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->with('status', 'Affectation réalisée avec succès !');
+    }
+
     public function loginChoice(){
         return view('login');
     }

@@ -286,3 +286,17 @@ table {
     margin-right: 5%;
     margin-bottom: 10px;
 }
+
+.myList {
+    text-align: left;
+}
+
+.myList li{
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.myList button{
+    margin-top: 10px;
+
+}

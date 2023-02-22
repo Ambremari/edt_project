@@ -42,6 +42,7 @@
                             <a href="#">Elèves</a>
                         </div>
                     </div>
+                    <a href="#">Scolarité</a>
                     <div class="dropdown-sub">
                         <a href="#">Fiches</a>
                         <div class="dropdown-subcontent">
@@ -65,7 +66,7 @@
                 <span><a href="{{route('subjects.show')}}">Enseignements</a></span>
                 <div class="dropdown-content">
                     <a href="{{route('subjects.form')}}">Création</a>
-                    <a href="#">Affectation</a>
+                    <a href="{{route('link.subject')}}">Affectation</a>
                 </div>    
             </div>
 

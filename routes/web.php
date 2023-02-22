@@ -79,3 +79,19 @@ Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
 
 Route::post('/div/modif', [Controller::class, 'updateDivision'])
     ->name('division.update');
+
+Route::get('/ens/link', [Controller::class, 'showLinkSubject'])
+    ->name('link.subject');
+
+Route::get('/ens/link/{idProf}', [Controller::class, 'linkTeacherSubjectForm'])
+    ->where('idProf', '[PRF].*')
+    ->name('link.subject.form');
+
+Route::post('/ens/link', [Controller::class, 'linkTeacherSubject'])
+    ->name('link.subject');
+
+Route::post('/ens/link/{idProf}', [Controller::class, 'linkTeacherDivision'])
+    ->where('idProf', '[PRF].*')
+    ->name('link.division');
+
+

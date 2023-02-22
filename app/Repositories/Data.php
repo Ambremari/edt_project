@@ -608,6 +608,18 @@ class Data
             'LibelleDiv' => '6èmeA',
             'NiveauDiv' => '6EME',
             'EffectifPrevDiv' => 35],
+            ['IdDiv' => 'DIV002',
+            'LibelleDiv' => '5èmeA',
+            'NiveauDiv' => '5EME',
+            'EffectifPrevDiv' => 35],
+            ['IdDiv' => 'DIV003',
+            'LibelleDiv' => '4èmeA',
+            'NiveauDiv' => '4EME',
+            'EffectifPrevDiv' => 35],
+            ['IdDiv' => 'DIV004',
+            'LibelleDiv' => '3èmeA',
+            'NiveauDiv' => '3EME',
+            'EffectifPrevDiv' => 35],
         ];
     }
 }
