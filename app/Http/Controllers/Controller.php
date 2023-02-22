@@ -370,6 +370,27 @@ class Controller extends BaseController{
         return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->with('status', 'Affectation réalisée avec succès !');
     }
 
+    public function removeTeacherSubject(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+            $rules = [
+                'id' => ['required', 'exists:Enseignants,IdProf'],
+                'subject' => ['required', 'exists:Enseignements,IdEns']
+            ];
+            $messages = [
+                'id.required' => 'Vous devez choisir un enseignant.',
+                'subject.required' => 'Vous devez choisir un enseignement.',
+            ];
+            $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->removeTeacherSubject($validatedData['id'], $validatedData['subject']);
+        } catch (Exception $exception) {
+            return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->withInput()->withErrors("Impossible de supprimer l'affectation.");
+        }
+        return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->with('status', 'Affectation annulée avec succès !');
+    }
+
     public function loginChoice(){
         return view('login');
     }

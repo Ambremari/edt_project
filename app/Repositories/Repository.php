@@ -277,5 +277,15 @@ class Repository {
                     ->toArray();
     }
 
+    function removeTeacherSubject(string $idProf, string $idEns): void{
+        DB::table('Cours')
+            ->where('IdProf', $idProf)
+            ->where('IdEns', $idEns)
+            ->delete();
+        DB::table('Enseigne')
+            ->where('IdProf', $idProf)
+            ->where('IdEns', $idEns)
+            ->delete();
+    }
     
 }

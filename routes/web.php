@@ -94,4 +94,8 @@ Route::post('/ens/link/{idProf}', [Controller::class, 'linkTeacherDivision'])
     ->where('idProf', '[PRF].*')
     ->name('link.division');
 
+Route::post('/ens/link/remove', [Controller::class, 'removeTeacherSubject'])
+    ->name('link.subject.remove');
+
+
 

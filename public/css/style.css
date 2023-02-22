@@ -300,3 +300,10 @@ table {
     margin-top: 10px;
 
 }
+
+.suppr{
+    background-color: #DEEAEA;
+    color: black;
+    margin-left: 20px;
+    display: inline;
+}

@@ -23,7 +23,7 @@
         <p>Enseignant {{ $teacher['PrenomProf'] }} {{ $teacher['NomProf'] }}<p>
         <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <div class="my_input" style="display: inline-block">
-            <label for="subject">Enseignement</label>
+            <label for="subject">Nouvel Enseignement</label>
             <select class="form-control" id="subject" name="subject" minlength="2" maxlength="15"
                 aria-describedby="subject_feedback"
                 value="{{ old('subject') }}" required>
@@ -43,10 +43,18 @@
 <div class="myList">
 <ul>
 @foreach($teacher_subjects as $row)
+<form method="POST" action="{{ route('link.subject.remove') }}">
+    @csrf
+        <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
+        <input type="hidden" value="{{ $row['IdEns'] }}" name="subject">
+    <li>
+    {{ $row['LibelleEns'] }} {{ $row['NiveauEns'] }}
+    <button type="submit" class="suppr">Supprimer l'affectation</button>
+    </li>
+</form>
 <form method="POST" action="{{ route('link.division', ['idProf' => $teacher['IdProf']]) }}">
     @csrf
     <div>
-        <li>{{ $row['LibelleEns'] }} {{ $row['NiveauEns'] }}</li>
         <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <input type="hidden" value="{{ $row['IdEns'] }}" name="subject">
         @foreach($classes as $class)
