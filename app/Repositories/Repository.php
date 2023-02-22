@@ -18,12 +18,15 @@ class Repository {
         $directors = $data->directors();
         $teachers = $data->teachers();
         $subjects = $data->subjects();
+        $divisions = $data->divisions();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
             $this->insertDirector($row);
         foreach($subjects as $row)
             $this->insertSubject($row);
+        foreach($divisions as $row)
+            $this->insertDivision($row);
     }
 
     function insertTeacher(array $teacher): void {
@@ -178,6 +181,47 @@ class Repository {
         DB::table('Enseignements')
             ->where('IdEns', $subject['IdEns'])
             ->update($subject);
+    }
+
+    function insertDivision(array $division): void {
+        if(!array_key_exists('IdDiv', $division)){
+            $id = dechex(time());
+            $id = substr($id, 3, 10);
+            $division['IdDiv'] = "DIV".$id;
+        }
+        DB::table('Divisions')
+            ->insert($division);
+    }
+
+    function divisions() : array{
+        return DB::table('Divisions as D')
+                    ->join('DivisionCount as C', 'D.IdDiv', '=', 'C.IdDiv')
+                    ->orderBy('NiveauDiv')
+                    ->orderBy('LibelleDiv')
+                    ->get(['D.*', 'EffectifReelDiv'])
+                    ->toArray();
+    }
+
+    function getdivision(string $id) : array{
+        $division = DB::table('Divisions')
+                    ->where('IdDiv', $id)
+                    ->get()
+                    ->toArray();
+        if(empty($division))
+            throw new Exception('Division inconnue'); 
+        return $division[0];
+    }
+
+    function updatedivision(array $division): void{
+        $divisions = DB::table('Divisions')
+                ->where('IdDiv', $division['IdDiv'])
+                ->get()
+                ->toArray();
+        if(empty($divisions))
+            throw new Exception('Division inconnue');
+        DB::table('Divisions')
+            ->where('IdDiv', $division['IdDiv'])
+            ->update($division);
     }
 
     

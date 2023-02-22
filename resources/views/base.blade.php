@@ -55,7 +55,7 @@
             <div class="dropdown">
                 <span><a href="#">Structure</a></span>
                 <div class="dropdown-content">
-                    <a href="#">Divisions</a>
+                    <a href="{{route('division.form')}}">Divisions</a>
                     <a href="#">Groupes</a>
                     <a href="#">Affectation</a>
                 </div>    

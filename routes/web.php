@@ -66,3 +66,16 @@ Route::get('/ens', [Controller::class, 'showSubjects'])
 Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
     ->where('idEns', '[ENS].*')
     ->name('subject.update.form');
+
+Route::get('/div', [Controller::class, 'addDivisionForm'])
+    ->name('division.form');
+
+Route::post('/div', [Controller::class, 'addDivision'])
+    ->name('division.add');
+
+Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
+    ->where('idDiv', '[DIV].*')
+    ->name('division.update.form');
+
+Route::post('/div/modif', [Controller::class, 'updateDivision'])
+    ->name('division.update');

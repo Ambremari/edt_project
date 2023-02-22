@@ -153,4 +153,11 @@ CREATE TABLE Unites(
    FOREIGN KEY(IdSalle) REFERENCES Salles(IdSalle)
 );
 
+CREATE OR REPLACE VIEW DivisionCount
+AS
+   SELECT D.IdDiv, COUNT(IdEleve) EffectifReelDiv
+   FROM Divisions D LEFT JOIN Eleves E ON D.IdDiv = E.IdDiv
+   GROUP BY D.IdDiv;
+
+
 

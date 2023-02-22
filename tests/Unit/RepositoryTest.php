@@ -81,7 +81,7 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getTeacher($teacher['IdProf']), $teacher);
     }
 
-    function testSubjectsAndInsertSubjects(): void{
+    function testSubjectsAndInsertSubject(): void{
         $subjects = $this->data->subjects();
         $this->repository->insertSubject($subjects[1]);
         $this->assertEquals($this->repository->subjects(), [$subjects[1]]);
@@ -101,5 +101,28 @@ class RepositoryTest extends TestCase{
         $subject['VolHEns'] = 3;
         $this->repository->updateSubject($subject);
         $this->assertEquals($this->repository->getsubject($subject['IdEns']), $subject);
+    }
+
+    function testDivisionsAndInsertDivision(): void{
+        $divisions = $this->data->divisions();
+        $this->repository->insertDivision($divisions[0]);
+        $divisions[0]['EffectifReelDiv'] = 0;
+        $this->assertEquals($this->repository->divisions(), [$divisions[0]]);
+    }
+
+    function testGetDivision(): void{
+        $divisions = $this->data->divisions();
+        $division = $divisions[0];
+        $this->repository->insertDivision($division);
+        $this->assertEquals($this->repository->getDivision($division['IdDiv']), $division);
+    }
+
+    function testUpdateDivision(): void{
+        $divisions = $this->data->divisions();
+        $division = $divisions[0];
+        $this->repository->insertdivision($division);
+        $division['EffectifPrevDiv'] = 25;
+        $this->repository->updateDivision($division);
+        $this->assertEquals($this->repository->getDivision($division['IdDiv']), $division);
     }
 }

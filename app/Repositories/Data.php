@@ -601,4 +601,13 @@ class Data
             'OptionEns' => true],
         ];
     }
+    function divisions()
+    {
+        return [
+            ['IdDiv' => 'DIV001',
+            'LibelleDiv' => '6èmeA',
+            'NiveauDiv' => '6EME',
+            'EffectifPrevDiv' => 35],
+        ];
+    }
 }

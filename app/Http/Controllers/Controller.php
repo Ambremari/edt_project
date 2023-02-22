@@ -224,6 +224,82 @@ class Controller extends BaseController{
         return redirect()->route('subject.update.form', ['idEns' => $subject['IdEns']])->with('status', 'Enseignement modifié avec succès !');
     }
 
+    public function addDivisionForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $divisions = $this->repository->divisions();
+        return view('division_add', ['divisions' => $divisions]);
+    }
+
+    public function addDivision(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'lib' => ['required', 'min:2', 'max:40'],
+            'grade' => ['required'],
+            'headcount' => ['required', 'between:1.0,35.0']
+        ];
+        $messages = [
+            'lib.required' => 'Vous devez saisir un libellé.',
+            'lib.min' => "Le libellé doit contenir au moins :min caractères.",
+            'lib.max' => "Le libellé doit contenir au plus :max caractères.",
+            'grade.required' => 'Vous devez sélectionner un niveau.',
+            'headcount.required' => 'Vous devez saisir l\'effectif prévu.',
+            'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.'
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $division = [
+                'LibelleDiv' => $validatedData['lib'], 
+                'NiveauDiv' => $validatedData['grade'], 
+                'EffectifPrevDiv' => $validatedData['headcount']];
+        try{
+            $this->repository->insertDivision($division);
+        } catch (Exception $exception) {
+            return redirect()->route('division.form')->withInput()->withErrors("Impossible d'ajouter la divisoon.");
+        }
+        return redirect()->route('division.form')->with('status', 'Divison ajoutée avec succès !');
+    }
+
+    public function updateDivisionForm(Request $request, string $idDiv){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $divisions = $this->repository->divisions();
+        $division = $this->repository->getDivision($idDiv);
+        return view('division_update', ['division'=> $division, 'divisions' => $divisions]);
+    }
+
+    public function updateDivision(Request $request){
+        $rules = [
+            'id' => ['required'],
+            'lib' => ['required', 'min:2', 'max:40'],
+            'grade' => ['required'],
+            'headcount' => ['required', 'between:1.0,35.0']
+        ];
+        $messages = [
+            'lib.required' => 'Vous devez saisir un libellé.',
+            'lib.min' => "Le libellé doit contenir au moins :min caractères.",
+            'lib.max' => "Le libellé doit contenir au plus :max caractères.",
+            'grade.required' => 'Vous devez sélectionner un niveau.',
+            'headcount.required' => 'Vous devez saisir l\'effectif prévu.',
+            'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.'
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $division = [
+                'IdDiv' => $validatedData['id'],
+                'LibelleDiv' => $validatedData['lib'], 
+                'NiveauDiv' => $validatedData['grade'], 
+                'EffectifPrevDiv' => $validatedData['headcount']];
+        try{
+            $this->repository->updateDivision($division);
+        } catch (Exception $exception) {
+            return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->withInput()->withErrors("Impossible de modifier la division.");
+        }
+        return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->with('status', 'Division modifiée avec succès !');
+    }
+
     public function loginChoice(){
         return view('login');
     }
