@@ -57,16 +57,16 @@
     <div>
         <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <input type="hidden" value="{{ $row['IdEns'] }}" name="subject">
-        @foreach($classes as $class)
-        @if($class['NiveauClasse'] == $row['NiveauEns'])
+        @foreach($divisions as $div)
+        @if($div['NiveauDiv'] == $row['NiveauEns'])
         <div class="my_input" style="display: inline-block">
-        @if(in_array(['IdProf' => $teacher['IdProf'], 'IdEns' => $row['IdEns'], 'IdDiv' => $class['IdClasse']], $teacher_lessons))
-        <input class="form-check-input" type="checkbox" name="classes[]" value="{{ $class['IdClasse'] }}" id="option" checked>
+        @if(in_array(['IdProf' => $teacher['IdProf'], 'IdEns' => $row['IdEns'], 'IdDiv' => $div['IdDiv']], $teacher_lessons))
+        <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
         @else
-            <input class="form-check-input" type="checkbox" name="classes[]" value="{{ $class['IdClasse'] }}" id="option">
+            <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">
         @endif
             <label class="form-check-label" for="option">
-            {{ $class['LibelleClasse'] }}
+            {{ $div['LibelleDiv'] }}
             </label>
         </div>
         @endif

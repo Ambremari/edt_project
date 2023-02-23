@@ -314,14 +314,14 @@ class Controller extends BaseController{
             return redirect()->route('login');
         $teachers = $this->repository->teachers();
         $subjects = $this->repository->subjects();
-        $classes = $this->repository->classes();
+        $divisions = $this->repository->divisions();
         $teacher = $this->repository->getTeacher($idProf);
         $teacherSubjects = $this->repository->getTeacherSubjects($idProf);
         $teacherLessons = $this->repository->getTeacherLessons($idProf);
         return view('subject_teacher_link', ['teacher'=> $teacher, 
                                              'teachers' => $teachers, 
                                              'subjects' => $subjects,
-                                             'classes' => $classes,
+                                             'divisions' => $divisions,
                                              'teacher_subjects' => $teacherSubjects,
                                              'teacher_lessons' => $teacherLessons]);
     }
@@ -354,16 +354,16 @@ class Controller extends BaseController{
         $rules = [
             'id' => ['required', 'exists:Enseignants,IdProf'],
             'subject' => ['required', 'exists:Enseignements,IdEns'],
-            'classes' => ['required']
+            'divisions' => ['required']
         ];
         $messages = [
             'id.required' => 'Vous devez choisir un enseignant.',
             'subject.required' => 'Vous devez choisir un enseignement.',
-            'classes.required' => 'Vous devez choisir au moins une classe.',
+            'divisions.required' => 'Vous devez choisir au moins une division.',
         ];
         $validatedData = $request->validate($rules, $messages);
         try{
-            $this->repository->linkTeacherDivision($validatedData['id'], $validatedData['subject'], $validatedData['classes']);
+            $this->repository->linkTeacherDivision($validatedData['id'], $validatedData['subject'], $validatedData['divisions']);
         } catch (Exception $exception) {
             return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->withInput()->withErrors("Impossible de réaliser l'affectation.");
         }
@@ -545,5 +545,17 @@ class Controller extends BaseController{
     public function logout(Request $request) {
         $request->session()->forget('user');
         return redirect()->route('login');
+    }
+
+    public function showDivision(Request $request, string $idDiv){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $division = $this->repository->getDivision($idDiv);
+        $lessons = $this->repository->getDivisionLessons($idDiv);
+        $students = $this->repository->getDivisionStudents($idDiv);
+        return view('division_show', ['division'=> $division, 
+                                    'students' => $students,
+                                    'lessons' => $lessons]);
     }
 }

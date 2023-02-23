@@ -307,3 +307,20 @@ table {
     margin-left: 20px;
     display: inline;
 }
+
+.info {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+
+.info span {
+    margin: 40px;
+    background-color: #F7D5D5;
+    padding: 15px;
+    border-radius: 8px;
+}

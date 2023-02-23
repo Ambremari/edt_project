@@ -167,10 +167,11 @@ AS
    FROM Divisions D LEFT JOIN Eleves E ON D.IdDiv = E.IdDiv
    GROUP BY D.IdDiv;
 
-CREATE OR REPLACE VIEW Classes
+CREATE OR REPLACE VIEW LibellesCours
 AS
-   SELECT IdDiv IdClasse, LibelleDiv LibelleClasse, NiveauDiv NiveauClasse
-   FROM Divisions;
+   SELECT IdCours, IdDiv, LibelleEns, NomProf, PrenomProf
+   FROM (Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
+         JOIN Enseignants P ON C.IdProf = P.IdProf;
 
 
 

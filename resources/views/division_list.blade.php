@@ -17,6 +17,7 @@
     <th>Effectif prévu</th>
     <th>Effectif réel</th>
     <th></th>
+    <th></th>
   </tr>
   @foreach ($divisions as $row)
         <tr>
@@ -25,6 +26,7 @@
             <td>{{ $row['EffectifPrevDiv'] }}</td>
             <td>{{ $row['EffectifReelDiv'] }}</td>
             <td><a href="{{route('division.update.form', ['idDiv' => $row['IdDiv']])}}">Modifier</a></td>
+            <td><a href="{{route('division.show', ['idDiv' => $row['IdDiv']])}}">Fiche</a></td>
         </tr>
     @endforeach
 </table>

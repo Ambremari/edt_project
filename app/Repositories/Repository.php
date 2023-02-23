@@ -209,9 +209,10 @@ class Repository {
     }
 
     function getDivision(string $id) : array{
-        $division = DB::table('Divisions')
-                    ->where('IdDiv', $id)
-                    ->get()
+        $division = DB::table('Divisions as D')
+                    ->join('DivisionCount as C', 'D.IdDiv', '=', 'C.IdDiv')
+                    ->where('D.IdDiv', $id)
+                    ->get(['D.*', 'EffectifReelDiv'])
                     ->toArray();
         if(empty($division))
             throw new Exception('Division inconnue'); 
@@ -251,22 +252,24 @@ class Repository {
         return $subjects;
     }
 
-    function classes() : array{
-        return DB::table('Classes')
-                    ->get()
-                    ->toArray();
+    function removeTeacherSubjectDivision(string $idProf, string $idEns): void{
+        DB::table('Cours')
+            ->where('IdProf', $idProf)
+            ->where('IdEns', $idEns)
+            ->delete();
     }
 
-    function linkTeacherDivision(string $idProf, string $idEns, array $classes): void{
-        foreach($classes as $idClass){
+    function linkTeacherDivision(string $idProf, string $idEns, array $divisions): void{
+        $this->removeTeacherSubjectDivision($idProf, $idEns);
+        for($index = 0 ; $index < count($divisions) ; $index++){
             $id = dechex(time());
-            $id = substr($id, 3, 10);
-            $idCours = "CR".$id;
+            $id = substr($id, 4, 10);
+            $idCours = "CR".$id.$index;
             DB::table('Cours')
                 ->insert(['IdCours' => $idCours,
                         'IdProf' =>  $idProf,
                         'IdEns' => $idEns,
-                        'IdDiv' => $idClass]);
+                        'IdDiv' => $divisions[$index]]);
         }
     }
 
@@ -344,6 +347,20 @@ class Repository {
         DB::table('Salles')
             ->where('IdSalle', $classroom['IdSalle'])
             ->update($classroom);
+    }
+
+    function getDivisionLessons(string $id) : array{
+        return DB::table('LibellesCours')
+                    ->where('IdDiv', $id)
+                    ->get()
+                    ->toArray();
+    }
+
+    function getDivisionStudents(string $id) : array{
+        return DB::table('Eleves')
+                    ->where('IdDiv', $id)
+                    ->get()
+                    ->toArray();
     }
 
     

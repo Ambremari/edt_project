@@ -73,6 +73,10 @@ Route::get('/div', [Controller::class, 'addDivisionForm'])
 Route::post('/div', [Controller::class, 'addDivision'])
     ->name('division.add');
 
+Route::get('/div/info/{idDiv}', [Controller::class, 'showDivision'])
+    ->where('idDiv', '[DIV].*')
+    ->name('division.show');
+
 Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
     ->where('idDiv', '[DIV].*')
     ->name('division.update.form');
