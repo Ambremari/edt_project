@@ -197,4 +197,38 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getTeacherSubjects($teacher['IdProf']), []);
         $this->assertEquals($this->repository->getTeacherLessons($teacher['IdProf']), []);
     }
+
+    function testTypesAndInsertType(): void{
+        $types = $this->data->types();
+        $this->repository->insertType($types[0]);
+        $this->assertEquals($this->repository->types(), [$types[0]]);
+    }
+
+    function testClassroomsAndInsertClassroom(): void{
+        $types = $this->data->types();
+        $this->repository->insertType($types[0]);
+        $classrooms = $this->data->classrooms();
+        $this->repository->insertClassroom($classrooms[0]);
+        $this->assertEquals($this->repository->classrooms(), [$classrooms[0]]);
+    }
+
+    function testGetClassroom(): void{
+        $types = $this->data->types();
+        $this->repository->insertType($types[0]);
+        $classrooms = $this->data->classrooms();
+        $classroom = $classrooms[0];
+        $this->repository->insertClassroom($classroom);
+        $this->assertEquals($this->repository->getClassroom($classroom['IdSalle']), $classroom);
+    }
+
+    function testUpdateClassroom(): void{
+        $types = $this->data->types();
+        $this->repository->insertType($types[0]);
+        $classrooms = $this->data->classrooms();
+        $classroom = $classrooms[0];
+        $this->repository->insertClassroom($classroom);
+        $classroom['CapSalle'] = 25;
+        $this->repository->updateClassroom($classroom);
+        $this->assertEquals($this->repository->getClassroom($classroom['IdSalle']), $classroom);
+    }
 }

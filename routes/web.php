@@ -97,5 +97,17 @@ Route::post('/ens/link/{idProf}', [Controller::class, 'linkTeacherDivision'])
 Route::post('/ens/link/remove', [Controller::class, 'removeTeacherSubject'])
     ->name('link.subject.remove');
 
+Route::get('/college/salle', [Controller::class, 'addClassroomForm'])
+    ->name('classroom.form');
+
+Route::post('/college/salles', [Controller::class, 'addClassroom'])
+    ->name('classroom.add');
+
+Route::get('/college/salles/{idSalle}', [Controller::class, 'updateClassroomForm'])
+    ->where('idSalle', '[SAL].*')
+    ->name('classroom.update.form');
+
+Route::post('/college/salles/modif', [Controller::class, 'updateClassroom'])
+    ->name('classroom.update');
 
 

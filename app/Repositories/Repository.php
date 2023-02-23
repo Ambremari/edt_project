@@ -19,6 +19,8 @@ class Repository {
         $teachers = $data->teachers();
         $subjects = $data->subjects();
         $divisions = $data->divisions();
+        $types = $data->types();
+        $classrooms = $data->classrooms();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -27,6 +29,10 @@ class Repository {
             $this->insertSubject($row);
         foreach($divisions as $row)
             $this->insertDivision($row);
+        foreach($types as $row)
+            $this->insertType($row);
+        foreach($classrooms as $row)
+            $this->insertClassroom($row);
     }
 
     function insertTeacher(array $teacher): void {
@@ -212,7 +218,7 @@ class Repository {
         return $division[0];
     }
 
-    function updatedivision(array $division): void{
+    function updateDivision(array $division): void{
         $divisions = DB::table('Divisions')
                         ->where('IdDiv', $division['IdDiv'])
                         ->get()
@@ -287,5 +293,58 @@ class Repository {
             ->where('IdEns', $idEns)
             ->delete();
     }
+
+    function insertType(array $type): void {
+        DB::table('TypesSalles')
+            ->insert($type);
+    }
+
+    function types() : array{
+        return DB::table('TypesSalles')
+                    ->orderBy('TypeSalle')
+                    ->get()
+                    ->toArray();
+    }
+
+    function insertClassroom(array $classroom): void {
+        if(!array_key_exists('IdSalle', $classroom)){
+            $id = dechex(time());
+            $id = substr($id, 3, 10);
+            $classroom['IdSalle'] = "SAL".$id;
+        }
+        DB::table('Salles')
+            ->insert($classroom);
+    }
+
+    function classrooms() : array{
+        return DB::table('Salles')
+                    ->orderBy('TypeSalle')
+                    ->orderBy('LibelleSalle')
+                    ->get()
+                    ->toArray();
+    }
+
+    function getClassroom(string $id) : array{
+        $classroom = DB::table('Salles')
+                    ->where('IdSalle', $id)
+                    ->get()
+                    ->toArray();
+        if(empty($classroom))
+            throw new Exception('Salle inconnue'); 
+        return $classroom[0];
+    }
+
+    function updateClassroom(array $classroom): void{
+        $classrooms = DB::table('Salles')
+                        ->where('IdSalle', $classroom['IdSalle'])
+                        ->get()
+                        ->toArray();
+        if(empty($classrooms))
+            throw new Exception('Salle inconnue');
+        DB::table('Salles')
+            ->where('IdSalle', $classroom['IdSalle'])
+            ->update($classroom);
+    }
+
     
 }

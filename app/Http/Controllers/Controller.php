@@ -391,6 +391,84 @@ class Controller extends BaseController{
         return redirect()->route('link.subject.form', ['idProf' => $validatedData['id']])->with('status', 'Affectation annulée avec succès !');
     }
 
+    public function addClassroomForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $types = $this->repository->types();
+        $classrooms = $this->repository->classrooms();
+        return view('classroom_add', ['types' => $types,'classrooms' => $classrooms]);
+    }
+
+    public function addClassroom(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'lib' => ['required', 'min:2', 'max:40'],
+            'type' => ['required'],
+            'capacity' => ['required', 'between:1.0,100.0']
+        ];
+        $messages = [
+            'lib.required' => 'Vous devez saisir un libellé.',
+            'lib.min' => "Le libellé doit contenir au moins :min caractères.",
+            'lib.max' => "Le libellé doit contenir au plus :max caractères.",
+            'type.required' => 'Vous devez sélectionner un type de salle.',
+            'capacity.required' => 'Vous devez saisir la capacité.',
+            'capacity.between' => 'Vous devez saisir une capacité  entre 1 et 100.'
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $classroom = [
+                'LibelleSalle' => $validatedData['lib'], 
+                'TypeSalle' => $validatedData['type'], 
+                'CapSalle' => $validatedData['capacity']];
+        try{
+            $this->repository->insertClassroom($classroom);
+        } catch (Exception $exception) {
+            return redirect()->route('classroom.form')->withInput()->withErrors("Impossible d'ajouter la salle.");
+        }
+        return redirect()->route('classroom.form')->with('status', 'Salle ajoutée avec succès !');
+    }
+
+    public function updateClassroomForm(Request $request, string $idSalle){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $types = $this->repository->types();
+        $classrooms = $this->repository->classrooms();
+        $classroom = $this->repository->getClassroom($idSalle);
+        return view('classroom_update', ['classroom'=> $classroom, 'types' => $types, 'classrooms' => $classrooms]);
+    }
+
+    public function updateClassroom(Request $request){
+        $rules = [
+            'id' => ['required'],
+            'lib' => ['required', 'min:2', 'max:40'],
+            'type' => ['required'],
+            'capacity' => ['required', 'between:1.0,100.0']
+        ];
+        $messages = [
+            'lib.required' => 'Vous devez saisir un libellé.',
+            'lib.min' => "Le libellé doit contenir au moins :min caractères.",
+            'lib.max' => "Le libellé doit contenir au plus :max caractères.",
+            'type.required' => 'Vous devez sélectionner un type de salle.',
+            'capacity.required' => 'Vous devez saisir la capacité.',
+            'capacity.between' => 'Vous devez saisir une capacité  entre 1 et 100.'
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $classroom = [
+                'IdSalle' => $validatedData['id'],
+                'LibelleSalle' => $validatedData['lib'], 
+                'TypeSalle' => $validatedData['type'], 
+                'CapSalle' => $validatedData['capacity']];
+        try{
+            $this->repository->updateClassroom($classroom);
+        } catch (Exception $exception) {
+            return redirect()->route('classroom.update.form', ['idSalle' => $classroom['IdSalle']])->withInput()->withErrors("Impossible de modifier la salle.");
+        }
+        return redirect()->route('classroom.update.form', ['idSalle' => $classroom['IdSalle']])->with('status', 'Salle modifiée avec succès !');
+    }
+
     public function loginChoice(){
         return view('login');
     }

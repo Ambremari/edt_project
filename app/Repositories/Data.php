@@ -120,6 +120,17 @@ class Data
             'VolHProf' => 35.0],
         ];
     }
+
+    function types()
+    {
+        return [
+            ['TypeSalle' => 'Cours'],
+            ['TypeSalle' => 'TP'],
+            ['TypeSalle' => 'Informatique'],
+            ['TypeSalle' => 'Sport']
+        ];
+    }
+
     function classrooms()
     {
         return [
@@ -131,7 +142,7 @@ class Data
             'LibelleSalle' => 'Salle Marie Curie',
             'CapSalle' => 30,
             'TypeSalle' => 'Cours'],
-            ['IdSalle' => 'SAL003',
+            ['IdSalle' => 'SAL813',
             'LibelleSalle' => 'Salle Jules Hoffman',
             'CapSalle' => 30,
             'TypeSalle' => 'Cours'],
@@ -358,25 +369,25 @@ class Data
             'NiveauEns' => '6EME',
             'VolHEns' => 4,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS014',
             'LibelleEns' => 'Anglais LV1',
             'NiveauEns' => '5EME',
             'VolHEns' => 3,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS015',
             'LibelleEns' => 'Anglais LV1',
             'NiveauEns' => '4EME',
             'VolHEns' => 3,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS016',
             'LibelleEns' => 'Anglais LV1',
             'NiveauEns' => '3EME',
             'VolHEns' => 3,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS017',
             'LibelleEns' => 'Espagnol LV2',
             'NiveauEns' => '6EME',
@@ -388,19 +399,19 @@ class Data
             'NiveauEns' => '5EME',
             'VolHEns' => 2.5,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS019',
             'LibelleEns' => 'Espagnol LV2',
             'NiveauEns' => '4EME',
             'VolHEns' => 2.5,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS020',
             'LibelleEns' => 'Espagnol LV2',
             'NiveauEns' => '3EME',
             'VolHEns' => 2.5,
             'DureeMinEns' => 1,
-            'OptionEns' => false],
+            'OptionEns' => true],
             ['IdEns' => 'ENS021',
             'LibelleEns' => 'SVT-physique-chimie',
             'NiveauEns' => '6EME',

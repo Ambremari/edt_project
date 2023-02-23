@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS Cours;
 DROP TABLE IF EXISTS Enseigne;
 DROP TABLE IF EXISTS Eleves;
 DROP TABLE IF EXISTS Salles;
-DROP TABLE IF EXISTS TypeSalles;
+DROP TABLE IF EXISTS TypesSalles;
 DROP TABLE IF EXISTS Horaires;
 DROP TABLE IF EXISTS Enseignants;
 DROP TABLE IF EXISTS Enseignements;
@@ -69,18 +69,18 @@ CREATE TABLE Horaires(
    PRIMARY KEY(Horaire)
 );
 
-CREATE TABLE TypeSalles(
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+CREATE TABLE TypesSalles(
+   TypeSalle VARCHAR(15),
    PRIMARY KEY(TypeSalle)
 );
 
 CREATE TABLE Salles(
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   LibelleSalle VARCHAR(15) CHECK (LibelleSalle LIKE 'Salle %'),
+   LibelleSalle VARCHAR(40) CHECK (LibelleSalle LIKE 'Salle %'),
    CapSalle INT NOT NULL,
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+   TypeSalle VARCHAR(15),
    PRIMARY KEY(IdSalle),
-   FOREIGN KEY(TypeSalle) REFERENCES TypeSalles(TypeSalle)
+   FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle)
 );
 
 CREATE TABLE Eleves(
@@ -140,11 +140,11 @@ CREATE TABLE Parentes(
 );
 
 CREATE TABLE ContraintesSalles(
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+   TypeSalle VARCHAR(15),
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    VolHSalle DECIMAL(3,2) NOT NULL,
    PRIMARY KEY(TypeSalle, IdCours),
-   FOREIGN KEY(TypeSalle) REFERENCES TypeSalles(TypeSalle),
+   FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
 );
 
@@ -153,7 +153,7 @@ CREATE TABLE Unites(
    Semaine CHAR(1) CHECK (Semaine IN ('A', 'B')),
    Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+   TypeSalle VARCHAR(15),
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
