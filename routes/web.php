@@ -114,4 +114,21 @@ Route::get('/college/salles/{idSalle}', [Controller::class, 'updateClassroomForm
 Route::post('/college/salles/modif', [Controller::class, 'updateClassroom'])
     ->name('classroom.update');
 
+Route::get('/grp', [Controller::class, 'addGroupForm'])
+    ->name('group.form');
+
+Route::post('/grp', [Controller::class, 'addGroup'])
+    ->name('group.add');
+
+Route::get('/grp/info/{idGrp}', [Controller::class, 'showGroup'])
+    ->where('idGrp', '[GRP].*')
+    ->name('group.show');
+
+Route::get('/grp/modif/{idGrp}', [Controller::class, 'updateGroupForm'])
+    ->where('idGrp', '[GRP].*')
+    ->name('group.update.form');
+
+Route::post('/grp/modif', [Controller::class, 'updateGroup'])
+    ->name('group.update');
+
 

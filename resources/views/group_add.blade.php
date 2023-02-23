@@ -1,14 +1,14 @@
 @extends('base')
 
-@section('title', 'Ajouter une division')
+@section('title', 'Ajouter un groupe')
 
 @section('content')
 <div class="colup">
-<form method="POST" action="{{route('division.add')}}">
+<form method="POST" action="{{route('group.add')}}">
     @csrf
     @if ($errors->any())
         <div class="alert alert-warning">
-            La division n'a pas pu être ajoutée &#9785;
+            Le groupe n'a pas pu être ajouté &#9785;
         </div>  
     @endif
     @if (session('status'))
@@ -61,6 +61,6 @@
 </form>
 </div>
 <div class="coldown">
-    @include('division_list')
+    @include('group_list')
 </div>
 @endsection

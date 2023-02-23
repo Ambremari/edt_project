@@ -665,4 +665,18 @@ class Data
             'EffectifPrevDiv' => 35],
         ];
     }
+
+    function groups()
+    {
+        return [
+            ['IdGrp' => 'GRP001',
+            'LibelleGrp' => 'Latin',
+            'NiveauGrp' => '6EME',
+            'EffectifPrevGrp' => 35],
+            ['IdGrp' => 'GRP002',
+            'LibelleGrp' => 'Latin',
+            'NiveauGrp' => '5EME',
+            'EffectifPrevGrp' => 35],
+        ];
+    }
 }

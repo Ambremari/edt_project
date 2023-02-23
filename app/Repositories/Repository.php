@@ -19,6 +19,7 @@ class Repository {
         $teachers = $data->teachers();
         $subjects = $data->subjects();
         $divisions = $data->divisions();
+        $groups = $data->groups();
         $types = $data->types();
         $classrooms = $data->classrooms();
         foreach($teachers as $row)
@@ -29,6 +30,8 @@ class Repository {
             $this->insertSubject($row);
         foreach($divisions as $row)
             $this->insertDivision($row);
+        foreach($groups as $row)
+            $this->insertGroup($row);
         foreach($types as $row)
             $this->insertType($row);
         foreach($classrooms as $row)
@@ -231,6 +234,48 @@ class Repository {
             ->update($division);
     }
 
+    function insertGroup(array $group): void {
+        if(!array_key_exists('IdGrp', $group)){
+            $id = dechex(time());
+            $id = substr($id, 3, 10);
+            $group['IdGrp'] = "GRP".$id;
+        }
+        DB::table('Groupes')
+            ->insert($group);
+    }
+
+    function groups() : array{
+        return DB::table('Groupes as G')
+                    ->join('GroupCount as C', 'G.IdGrp', '=', 'C.IdGrp')
+                    ->orderBy('NiveauGrp')
+                    ->orderBy('LibelleGrp')
+                    ->get(['G.*', 'EffectifReelGrp'])
+                    ->toArray();
+    }
+
+    function getGroup(string $id) : array{
+        $group = DB::table('Groupes as G')
+                    ->join('GroupCount as C', 'G.IdGrp', '=', 'C.IdGrp')
+                    ->where('G.IdGrp', $id)
+                    ->get(['G.*', 'EffectifReelGrp'])
+                    ->toArray();
+        if(empty($group))
+            throw new Exception('Group inconnu'); 
+        return $group[0];
+    }
+
+    function updateGroup(array $group): void{
+        $groups = DB::table('Groupes')
+                        ->where('IdGrp', $group['IdGrp'])
+                        ->get()
+                        ->toArray();
+        if(empty($groups))
+            throw new Exception('Groupe inconnu');
+        DB::table('Groupes')
+            ->where('IdGrp', $group['IdGrp'])
+            ->update($group);
+    }
+
     function linkTeacherSubject(string $idProf, string $idEns): void{
         DB::table('Enseigne')
             ->insert(['IdProf' =>  $idProf,
@@ -252,15 +297,15 @@ class Repository {
         return $subjects;
     }
 
-    function removeTeacherSubjectDivision(string $idProf, string $idEns): void{
+    function removeTeacherSubjectClass(string $idProf, string $idEns): void{
         DB::table('Cours')
             ->where('IdProf', $idProf)
             ->where('IdEns', $idEns)
             ->delete();
     }
 
-    function linkTeacherDivision(string $idProf, string $idEns, array $divisions): void{
-        $this->removeTeacherSubjectDivision($idProf, $idEns);
+    function linkTeacherClass(string $idProf, string $idEns, array $divisions, array $groups): void{
+        $this->removeTeacherSubjectClass($idProf, $idEns);
         for($index = 0 ; $index < count($divisions) ; $index++){
             $id = dechex(time());
             $id = substr($id, 4, 10);
@@ -271,18 +316,29 @@ class Repository {
                         'IdEns' => $idEns,
                         'IdDiv' => $divisions[$index]]);
         }
+        for($index = 0 ; $index < count($groups) ; $index++){
+            $id = dechex(time());
+            $id = substr($id, 5, 10);
+            $idCours = "CR".$id."G".$index;
+            DB::table('Cours')
+                ->insert(['IdCours' => $idCours,
+                        'IdProf' =>  $idProf,
+                        'IdEns' => $idEns,
+                        'IdGrp' => $groups[$index]]);
+        }
     }
+
 
     function lessons() : array{
         return DB::table('Cours')
-                    ->get(['IdProf', 'IdEns', 'IdDiv'])
+                    ->get(['IdProf', 'IdEns', 'IdDiv', 'IdGrp'])
                     ->toArray();
     }
 
     function getTeacherLessons(string $id) : array{
         return DB::table('Cours')
                     ->where('IdProf', $id)
-                    ->get(['IdProf', 'IdEns', 'IdDiv'])
+                    ->get(['IdProf', 'IdEns', 'IdDiv', 'IdGrp'])
                     ->toArray();
     }
 
@@ -359,6 +415,20 @@ class Repository {
     function getDivisionStudents(string $id) : array{
         return DB::table('Eleves')
                     ->where('IdDiv', $id)
+                    ->get()
+                    ->toArray();
+    }
+
+    function getGroupLessons(string $id) : array{
+        return DB::table('LibellesCours')
+                    ->where('IdGrp', $id)
+                    ->get()
+                    ->toArray();
+    }
+
+    function getGroupStudents(string $id) : array{
+        return DB::table('CompoGroupes')
+                    ->where('IdGrp', $id)
                     ->get()
                     ->toArray();
     }

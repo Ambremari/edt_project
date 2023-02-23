@@ -4,13 +4,16 @@ DROP TABLE IF EXISTS Parentes;
 DROP TABLE IF EXISTS ContraintesProf;
 DROP TABLE IF EXISTS ContraintesEns;
 DROP TABLE IF EXISTS Cours;
+DROP TABLE IF EXISTS CompoGroupes;
 DROP TABLE IF EXISTS Enseigne;
+DROP TABLE IF EXISTS LiensGroupes;
 DROP TABLE IF EXISTS Eleves;
 DROP TABLE IF EXISTS Salles;
 DROP TABLE IF EXISTS TypesSalles;
 DROP TABLE IF EXISTS Horaires;
 DROP TABLE IF EXISTS Enseignants;
 DROP TABLE IF EXISTS Enseignements;
+DROP TABLE IF EXISTS Groupes;
 DROP TABLE IF EXISTS Divisions;
 DROP TABLE IF EXISTS Parents;
 DROP TABLE IF EXISTS Directeurs;
@@ -40,6 +43,15 @@ CREATE TABLE Divisions(
    EffectifPrevDiv INT NOT NULL DEFAULT 35,
    PRIMARY KEY(IdDiv)
 );
+
+CREATE TABLE Groupes(
+   IdGrp VARCHAR(10) CHECK (IdGrp LIKE 'GRP%'),
+   LibelleGrp VARCHAR(40)  NOT NULL,
+   NiveauGrp VARCHAR(4)  NOT NULL CHECK (NiveauGrp IN ('6EME', '5EME', '4EME', '3EME')),
+   EffectifPrevGrp INT NOT NULL DEFAULT 35,
+   PRIMARY KEY(IdGrp)
+);
+
 
 CREATE TABLE Enseignements(
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
@@ -95,6 +107,14 @@ CREATE TABLE Eleves(
    FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
 );
 
+CREATE TABLE LiensGroupes(
+   IdDiv VARCHAR(10) ,
+   IdGrp VARCHAR(10) ,
+   PRIMARY KEY(IdDiv, IdGrp),
+   FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv),
+   FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
+);
+
 CREATE TABLE Enseigne(
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
    IdEns VARCHAR(10)  CHECK (IdEns LIKE 'ENS%'),
@@ -103,14 +123,25 @@ CREATE TABLE Enseigne(
    FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
 );
 
+CREATE TABLE CompoGroupes(
+   IdEleve VARCHAR(10) ,
+   IdGrp VARCHAR(10) ,
+   PRIMARY KEY(IdEleve, IdGrp),
+   FOREIGN KEY(IdEleve) REFERENCES Eleves(IdEleve),
+   FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
+);
+
+
 CREATE TABLE Cours(
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
    IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV%'),
+   IdGrp VARCHAR(10) CHECK (IdGrp LIKE 'GRP%'),
    PRIMARY KEY(IdCours),
    FOREIGN KEY(IdProf, IdEns) REFERENCES Enseigne(IdProf, IdEns),
-   FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
+   FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv),
+   FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
 );
 
 CREATE TABLE ContraintesEns(
@@ -167,9 +198,15 @@ AS
    FROM Divisions D LEFT JOIN Eleves E ON D.IdDiv = E.IdDiv
    GROUP BY D.IdDiv;
 
+CREATE OR REPLACE VIEW GroupCount
+AS
+   SELECT G.IdGrp, COUNT(IdEleve) EffectifReelGrp
+   FROM Groupes G LEFT JOIN CompoGroupes C ON G.IdGrp = C.IdGrp
+   GROUP BY G.IdGrp;
+
 CREATE OR REPLACE VIEW LibellesCours
 AS
-   SELECT IdCours, IdDiv, LibelleEns, NomProf, PrenomProf
+   SELECT IdCours, IdDiv, IdGrp, LibelleEns, NomProf, PrenomProf
    FROM (Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
          JOIN Enseignants P ON C.IdProf = P.IdProf;
 
