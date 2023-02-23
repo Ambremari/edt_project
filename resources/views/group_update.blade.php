@@ -36,10 +36,10 @@
                 aria-describedby="grade_feedback"
                 onchange="filterGroupDivision()"
                 value="{{ $group['NiveauGrp'] }}" required>
-                <option value="6EME">6ème</option>
-                <option value="5EME">5ème</option>
-                <option value="4EME">4ème</option>
-                <option value="3EME">3ème</option>
+                <option value="6EME" {{ $group['NiveauGrp'] == "6EME" ? "selected" : "" }}>6ème</option>
+                <option value="5EME" {{ $group['NiveauGrp'] == "5EME" ? "selected" : "" }}>5ème</option>
+                <option value="4EME" {{ $group['NiveauGrp'] == "4EME" ? "selected" : "" }}>4ème</option>
+                <option value="3EME" {{ $group['NiveauGrp'] == "3EME" ? "selected" : "" }}>3ème</option>
             </select>
         </div>
         @error('grade')
@@ -64,7 +64,7 @@
         @foreach($divisions as $div)
             <div class="my_input" style="display: inline-block">
                 <span class="{{ $div['NiveauDiv'] }}">
-                @if(in_array(['IdGrp' => $group['IdGrp'], 'IdDiv' => $div['IdDiv']], $group_div))
+                @if(in_array(['IdGrp' => $group['IdGrp'], 'IdDiv' => $div['IdDiv'], 'LibelleDiv' => $div['LibelleDiv']], $group_div))
                     <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
                 @else
                     <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">

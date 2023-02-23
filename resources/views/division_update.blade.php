@@ -35,10 +35,10 @@
             <select class="form-control" id="grade" name="grade" minlength="2" maxlength="15"
                 aria-describedby="grade_feedback"
                 value="{{ $division['NiveauDiv'] }}" required>
-                <option value="6EME">6ème</option>
-                <option value="5EME">5ème</option>
-                <option value="4EME">4ème</option>
-                <option value="3EME">3ème</option>
+                <option value="6EME" {{ $division['NiveauDiv'] == "6EME" ? "selected" : "" }}>6ème</option>
+                <option value="5EME" {{ $division['NiveauDiv'] == "5EME" ? "selected" : "" }}>5ème</option>
+                <option value="4EME" {{ $division['NiveauDiv'] == "4EME" ? "selected" : "" }}>4ème</option>
+                <option value="3EME" {{ $division['NiveauDiv'] == "3EME" ? "selected" : "" }}>3ème</option>
             </select>
         </div>
         @error('grade')

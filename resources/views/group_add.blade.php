@@ -34,11 +34,11 @@
                 aria-describedby="grade_feedback"
                 onchange="filterGroupDivision()"
                 value="{{ old('grade') }}" required>
-                <option value="" selected></option>
-                <option value="6EME">6ème</option>
-                <option value="5EME">5ème</option>
-                <option value="4EME">4ème</option>
-                <option value="3EME">3ème</option>
+                <option value=""></option>
+                <option value="6EME" {{ old('grade') == "6EME" ? "selected" : "" }}>6ème</option>
+                <option value="5EME" {{ old('grade') == "5EME" ? "selected" : "" }}>5ème</option>
+                <option value="4EME" {{ old('grade') == "4EME" ? "selected" : "" }}>4ème</option>
+                <option value="3EME" {{ old('grade') == "3EME" ? "selected" : "" }}>3ème</option>
             </select>
         </div>
         @error('grade')
