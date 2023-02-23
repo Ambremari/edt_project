@@ -18,6 +18,12 @@ Groupe {{ $group['LibelleGrp'] }}
 </ul>
 </div>
 <div class="colright">
+<span style="font-weight: bold;">Divisions associées</span>
+<div id="divisionList">
+    @foreach ($group_div as $row)
+    <span>{{ $row['LibelleDiv'] }}</span>
+    @endforeach
+</div>
 <table>
     <tr>
         <th>Enseignements</th>

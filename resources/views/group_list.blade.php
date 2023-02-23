@@ -16,6 +16,7 @@
     <th>Niveau</th>
     <th>Effectif prévu</th>
     <th>Effectif réel</th>
+    <th>Nombre de divisions associées</th>
     <th></th>
     <th></th>
   </tr>
@@ -25,6 +26,7 @@
             <td>{{ $row['NiveauGrp'] }}</td>
             <td>{{ $row['EffectifPrevGrp'] }}</td>
             <td>{{ $row['EffectifReelGrp'] }}</td>
+            <td>{{ $row['NbDivAssociees'] }}</td>
             <td><a href="{{route('group.update.form', ['idGrp' => $row['IdGrp']])}}">Modifier</a></td>
             <td><a href="{{route('group.show', ['idGrp' => $row['IdGrp']])}}">Fiche</a></td>
         </tr>

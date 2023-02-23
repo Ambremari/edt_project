@@ -204,11 +204,22 @@ AS
    FROM Groupes G LEFT JOIN CompoGroupes C ON G.IdGrp = C.IdGrp
    GROUP BY G.IdGrp;
 
+CREATE OR REPLACE VIEW GroupDivCount
+AS
+   SELECT G.IdGrp, COUNT(IdDiv) NbDivAssociees
+   FROM Groupes G LEFT JOIN LiensGroupes L ON G.IdGrp = L.IdGrp
+   GROUP BY G.IdGrp;
+
 CREATE OR REPLACE VIEW LibellesCours
 AS
    SELECT IdCours, IdDiv, IdGrp, LibelleEns, NomProf, PrenomProf
    FROM (Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
          JOIN Enseignants P ON C.IdProf = P.IdProf;
+
+CREATE OR REPLACE VIEW LibellesDiv
+AS
+   SELECT IdGrp, G.IdDiv, LibelleDiv
+   FROM LiensGroupes G JOIN Divisions D ON G.IdDiv = D.IdDiv;
 
 
 

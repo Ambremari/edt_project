@@ -34,6 +34,7 @@
             <label for="grade">Niveau</label>
             <select class="form-control" id="grade" name="grade" minlength="2" maxlength="15"
                 aria-describedby="grade_feedback"
+                onchange="filterGroupDivision()"
                 value="{{ $group['NiveauGrp'] }}" required>
                 <option value="6EME">6ème</option>
                 <option value="5EME">5ème</option>
@@ -50,7 +51,7 @@
             <label for="headcount">Effectif prévu</label>
             <input type="number" id="headcount" name="headcount" min="1" max="35"
                 aria-describedby="headcount_feedback"
-                style="width:45px"
+                style="width:50px"
                 value="{{ $group['EffectifPrevGrp'] }}" required>
         </div>
             @error('headcount')
@@ -58,6 +59,27 @@
             {{ $message }}
         </div>
         @enderror
+        <label style="display: block;">Divisions associées</label>
+        <div id="divOptions">
+        @foreach($divisions as $div)
+            <div class="my_input" style="display: inline-block">
+                <span class="{{ $div['NiveauDiv'] }}">
+                @if(in_array(['IdGrp' => $group['IdGrp'], 'IdDiv' => $div['IdDiv']], $group_div))
+                    <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
+                @else
+                    <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">
+                @endif    
+                    <label class="form-check-label" for="option">
+                    {{ $div['LibelleDiv'] }}
+                    </label>
+                </span>
+            </div>
+        @error('subject')
+        <div id="option_feedback" class="invalid-feedback">
+            {{ $message }}
+        </div>
+        @enderror
+        @endforeach
     </div>
     <button type="submit">Modifier</button>
 </form>
@@ -65,4 +87,27 @@
 <div class="coldown">
     @include('group_list')
 </div>
+<script>
+function filterGroupDivision() {
+  var select, filter, div, span, td, i, txtValue;
+  select = document.getElementById("grade");
+  filter = select.value;
+  div = document.getElementById("divOptions");
+  span = div.getElementsByTagName("span");
+
+  for (i = 0; i < span.length; i++) {
+    td = span[i].getAttribute("class");
+    if (td) {
+      if (td == filter) {
+        span[i].style.display = "";
+      } else {
+        span[i].style.display = "none";
+      }
+    }
+  }
+}
+
+filterGroupDivision();
+</script>
 @endsection
+

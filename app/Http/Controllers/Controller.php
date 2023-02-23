@@ -564,7 +564,8 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $groups = $this->repository->groups();
-        return view('group_add', ['groups' => $groups]);
+        $divisions = $this->repository->divisions();
+        return view('group_add', ['groups' => $groups, 'divisions' => $divisions]);
     }
 
     public function addGroup(Request $request){
@@ -574,7 +575,8 @@ class Controller extends BaseController{
         $rules = [
             'lib' => ['required', 'min:2', 'max:40'],
             'grade' => ['required'],
-            'headcount' => ['required', 'between:1.0,35.0']
+            'headcount' => ['required', 'between:1.0,35.0'],
+            'divisions' => ['required']
         ];
         $messages = [
             'lib.required' => 'Vous devez saisir un libellé.',
@@ -582,7 +584,8 @@ class Controller extends BaseController{
             'lib.max' => "Le libellé doit contenir au plus :max caractères.",
             'grade.required' => 'Vous devez sélectionner un niveau.',
             'headcount.required' => 'Vous devez saisir l\'effectif prévu.',
-            'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.'
+            'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.',
+            'divisions.required' => 'Vous devez choisir au moins une division.',
         ];
         $validatedData = $request->validate($rules, $messages);
         $group = [
@@ -590,9 +593,14 @@ class Controller extends BaseController{
                 'NiveauGrp' => $validatedData['grade'], 
                 'EffectifPrevGrp' => $validatedData['headcount']];
         try{
-            $this->repository->insertGroup($group);
+            $idGrp = $this->repository->insertGroup($group);
         } catch (Exception $exception) {
             return redirect()->route('group.form')->withInput()->withErrors("Impossible d'ajouter le groupe.");
+        }
+        try{
+            $this->repository->linkGroupDivision($idGrp, $validatedData['divisions']);
+        } catch (Exception $exception) {
+            return redirect()->route('group.form')->withErrors("Le groupe n'a pas été associé aux divisions");
         }
         return redirect()->route('group.form')->with('status', 'Groupe ajouté avec succès !');
     }
@@ -603,7 +611,12 @@ class Controller extends BaseController{
             return redirect()->route('login');
         $groups = $this->repository->groups();
         $group = $this->repository->getGroup($idGrp);
-        return view('group_update', ['group'=> $group, 'groups' => $groups]);
+        $divisions = $this->repository->divisions();
+        $groupDiv = $this->repository->getGroupDivisions($idGrp);
+        return view('group_update', ['group'=> $group, 
+                                     'groups' => $groups,
+                                     'divisions' => $divisions,
+                                     'group_div' => $groupDiv]);
     }
 
     public function updateGroup(Request $request){
@@ -611,7 +624,8 @@ class Controller extends BaseController{
             'id' => ['required'],
             'lib' => ['required', 'min:2', 'max:40'],
             'grade' => ['required'],
-            'headcount' => ['required', 'between:1.0,35.0']
+            'headcount' => ['required', 'between:1.0,35.0'],
+            'divisions' => ['required']
         ];
         $messages = [
             'lib.required' => 'Vous devez saisir un libellé.',
@@ -619,7 +633,8 @@ class Controller extends BaseController{
             'lib.max' => "Le libellé doit contenir au plus :max caractères.",
             'grade.required' => 'Vous devez sélectionner un niveau.',
             'headcount.required' => 'Vous devez saisir l\'effectif prévu.',
-            'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.'
+            'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.',
+            'divisions.required' => 'Vous devez choisir au moins une division.',
         ];
         $validatedData = $request->validate($rules, $messages);
         $group = [
@@ -632,6 +647,11 @@ class Controller extends BaseController{
         } catch (Exception $exception) {
             return redirect()->route('group.update.form', ['idGrp' => $group['IdGrp']])->withInput()->withErrors("Impossible de modifier le groupe.");
         }
+        try{
+            $this->repository->linkGroupDivision($validatedData['id'], $validatedData['divisions']);
+        } catch (Exception $exception) {
+            return redirect()->route('group.update.form', ['idGrp' => $group['IdGrp']])->withErrors("Le groupe n'a pas été associé aux divisions");
+        }
         return redirect()->route('group.update.form', ['idGrp' => $group['IdGrp']])->with('status', 'Groupe modifié avec succès !');
     }
 
@@ -642,8 +662,10 @@ class Controller extends BaseController{
         $group = $this->repository->getGroup($idGrp);
         $lessons = $this->repository->getGroupLessons($idGrp);
         $students = $this->repository->getGroupStudents($idGrp);
+        $groupDiv = $this->repository->getGroupDivisions($idGrp);
         return view('group_show', ['group'=> $group, 
                                     'students' => $students,
-                                    'lessons' => $lessons]);
+                                    'lessons' => $lessons,
+                                    'group_div' => $groupDiv]);
     }
 }

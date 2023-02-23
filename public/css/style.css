@@ -324,3 +324,24 @@ table {
     padding: 15px;
     border-radius: 8px;
 }
+
+#divisionList {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+    text-align: left;
+    padding: 0;
+    overflow: auto;
+  }
+
+  #divisionList span {
+    background-color: #f9f9f9; 
+    padding: 12px; 
+    margin: 5px;
+    text-decoration: none; 
+    font-size: 14px; 
+    color: black; 
+    display: inline-block; 
+    border-radius: 8px;
+}

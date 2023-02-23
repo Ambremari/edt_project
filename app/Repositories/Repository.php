@@ -234,22 +234,24 @@ class Repository {
             ->update($division);
     }
 
-    function insertGroup(array $group): void {
+    function insertGroup(array $group): string {
         if(!array_key_exists('IdGrp', $group)){
             $id = dechex(time());
             $id = substr($id, 3, 10);
             $group['IdGrp'] = "GRP".$id;
         }
         DB::table('Groupes')
-            ->insert($group);
+                 ->insert($group);
+        return $group['IdGrp'];
     }
 
     function groups() : array{
         return DB::table('Groupes as G')
                     ->join('GroupCount as C', 'G.IdGrp', '=', 'C.IdGrp')
+                    ->join('GroupDivCount as D', 'G.IdGrp', '=', 'D.IdGrp')
                     ->orderBy('NiveauGrp')
                     ->orderBy('LibelleGrp')
-                    ->get(['G.*', 'EffectifReelGrp'])
+                    ->get(['G.*', 'EffectifReelGrp', 'NbDivAssociees'])
                     ->toArray();
     }
 
@@ -428,6 +430,29 @@ class Repository {
 
     function getGroupStudents(string $id) : array{
         return DB::table('CompoGroupes')
+                    ->where('IdGrp', $id)
+                    ->get()
+                    ->toArray();
+    }
+
+    function removeGroupDivision(string $idGrp): void{
+        DB::table('LiensGroupes')
+            ->where('IdGrp', $idGrp)
+            ->delete();
+    }
+
+
+    function linkGroupDivision(string $idGrp, array $divisions): void{
+        $this->removeGroupDivision($idGrp);
+        foreach($divisions as $idDiv){
+            DB::table('LiensGroupes')
+                ->insert(['IdGrp' => $idGrp,
+                        'IdDiv' => $idDiv]);
+        }
+    }
+
+    function getGroupDivisions(string $id) : array{
+        return DB::table('LibellesDiv')
                     ->where('IdGrp', $id)
                     ->get()
                     ->toArray();

@@ -244,7 +244,7 @@ class RepositoryTest extends TestCase{
 
     function testGroupsAndInsertGroup(): void{
         $groups = $this->data->groups();
-        $this->repository->insertGroup($groups[0]);
+        $this->assertEquals($this->repository->insertGroup($groups[0]), $groups[0]['IdGrp']);
         $groups[0]['EffectifReelGrp'] = 0;
         $this->assertEquals($this->repository->groups(), [$groups[0]]);
     }
