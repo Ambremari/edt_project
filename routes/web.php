@@ -98,6 +98,12 @@ Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
 Route::post('/div/modif', [Controller::class, 'updateDivision'])
     ->name('division.update');
 
+Route::get('/div/fill', [Controller::class, 'fillDivisionForm'])
+    ->name('division.fill.form');
+
+Route::post('/div/fill', [Controller::class, 'fillDivision'])
+    ->name('division.fill');
+
 Route::get('/ens/link', [Controller::class, 'showLinkSubject'])
     ->name('link.subject');
 

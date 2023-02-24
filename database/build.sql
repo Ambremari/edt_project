@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS Parentes;
 DROP TABLE IF EXISTS ContraintesProf;
 DROP TABLE IF EXISTS ContraintesEns;
 DROP TABLE IF EXISTS Cours;
+DROP TABLE IF EXISTS Options;
 DROP TABLE IF EXISTS CompoGroupes;
 DROP TABLE IF EXISTS Enseigne;
 DROP TABLE IF EXISTS LiensGroupes;
@@ -129,6 +130,15 @@ CREATE TABLE CompoGroupes(
    FOREIGN KEY(IdEleve) REFERENCES Eleves(IdEleve),
    FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
 );
+
+CREATE TABLE Options(
+   IdEleve VARCHAR(10) ,
+   IdEns VARCHAR(10) ,
+   PRIMARY KEY(IdEleve, IdEns),
+   FOREIGN KEY(IdEleve) REFERENCES Eleves(IdEleve),
+   FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
+);
+
 
 
 CREATE TABLE Cours(

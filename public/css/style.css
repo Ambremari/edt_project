@@ -396,3 +396,31 @@ table {
     margin-bottom: 12px;
     margin-right: 6%;
 }
+
+.class_check{
+    margin-top: 70px;
+    margin-left: 20px;
+    margin-bottom: 50px;
+}
+
+.class_check span{
+    display: block;
+    margin-bottom: 15px;
+}
+
+.filterbox {
+    text-align: left;
+    margin-bottom: 20px;
+    margin-left: 20%;
+}
+
+#studentList span {
+    border: 1px solid #ddd; 
+    margin-top: -1px; 
+    background-color: #f6f6f6; 
+    padding: 12px; 
+    text-decoration: none; 
+    font-size: 18px; 
+    color: black; 
+    display: block; 
+}

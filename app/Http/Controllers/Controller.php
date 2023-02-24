@@ -620,6 +620,9 @@ class Controller extends BaseController{
     }
 
     public function updateGroup(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
         $rules = [
             'id' => ['required'],
             'lib' => ['required', 'min:2', 'max:40'],
@@ -705,7 +708,43 @@ class Controller extends BaseController{
             return redirect()->route('login');
         $students = $this->repository->students();
         $student = $this->repository->getStudent($idEleve);
+        $lessons = $this->repository->getLessonsLib();
+        $groups = $this->repository->getStudentGroup($idEleve);
         return view('student_show', ['students'=> $students, 
-                                    'student' => $student]);
+                                    'student' => $student,
+                                    'lessons' => $lessons,
+                                    'groups' => $groups]);
+    }
+
+    public function fillDivisionForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $students = $this->repository->studentsNoDivision();
+        $divisions = $this->repository->divisions();
+        return view('division_fill', ['students'=> $students,
+                                      'divisions' => $divisions]);
+    }
+
+    public function fillDivision(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required', 'exists:Divisions,IdDiv'],
+            'students' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez sélectionner une division.',
+            'id.exists' => 'Cette division n\'existe pas',
+            'students.required' => 'Vous devez choisir au moins un étudiant.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->addDivisionStudents($validatedData['id'], $validatedData['students']);
+        } catch (Exception $exception) {
+            return redirect()->route('division.fill.form')->withInput()->withErrors("L'affectation n'a pas été prise en compte");
+        }
+        return redirect()->route('division.fill.form')->with('status', 'Affectation réalisée avec succès');
     }
 }
