@@ -99,7 +99,7 @@ CREATE TABLE Eleves(
    NomEleve VARCHAR(15)  NOT NULL,
    PrenomEleve VARCHAR(15)  NOT NULL,
    MdpEleve TEXT,
-   AnneeNaisEleve DATE CHECK (AnneeNaisEleve>2000 AND AnneeNaisEleve<2100),
+   AnneeNaisEleve DECIMAL(4) CHECK (AnneeNaisEleve>2000 AND AnneeNaisEleve<2100),
    NiveauEleve VARCHAR(4)  CHECK (NiveauEleve LIKE '%EME'),
    IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV%'),
    PRIMARY KEY(IdEleve),

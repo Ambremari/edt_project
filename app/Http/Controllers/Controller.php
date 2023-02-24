@@ -552,7 +552,7 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $division = $this->repository->getDivision($idDiv);
-        $lessons = $this->repository->getDivisionLessons($idDiv);
+        $lessons = $this->repository->getDivisionLessonsLib($idDiv);
         $students = $this->repository->getDivisionStudents($idDiv);
         return view('division_show', ['division'=> $division, 
                                     'students' => $students,
@@ -660,7 +660,7 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $group = $this->repository->getGroup($idGrp);
-        $lessons = $this->repository->getGroupLessons($idGrp);
+        $lessons = $this->repository->getGroupLessonsLib($idGrp);
         $students = $this->repository->getGroupStudents($idGrp);
         $groupDiv = $this->repository->getGroupDivisions($idGrp);
         return view('group_show', ['group'=> $group, 
@@ -689,5 +689,23 @@ class Controller extends BaseController{
                                     'teacher' => $teacher,
                                     'lessons' => $lessons,
                                     'subjects' => $subjects]);
+    }
+
+    public function showStudents(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $students = $this->repository->students();
+        return view('students_show', ['students'=> $students]);
+    }
+
+    public function showStudent(Request $request, string $idEleve){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $students = $this->repository->students();
+        $student = $this->repository->getStudent($idEleve);
+        return view('student_show', ['students'=> $students, 
+                                    'student' => $student]);
     }
 }

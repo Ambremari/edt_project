@@ -54,6 +54,19 @@ class RepositoryTest extends TestCase{
                                                             'role' => 'prof']);
     }
 
+    function testStudentsAndInsertStudents(): void{
+        $students = $this->data->students();
+        $this->repository->insertStudent($students[0]);
+        $this->assertEquals($this->repository->students()[0]['IdEleve'], $students[0]['IdEleve']);
+    }
+
+    function testGetStudents(): void{
+        $students = $this->data->students();
+        $student = $students[0];
+        $this->repository->insertStudent($student);
+        $this->assertEquals($this->repository->getStudent($student['IdEleve'])['NomEleve'], $student['NomEleve']);
+    }
+
     function testDirectorsAndInsertDirector(): void{
         $directors = $this->data->directors();
         $director = $directors[0];
@@ -188,7 +201,7 @@ class RepositoryTest extends TestCase{
                  'PrenomProf' => $teacher['PrenomProf'],
                  'LibelleDiv' => $division['LibelleDiv'],
                  'LibelleGrp' => null];
-        $this->assertEquals($this->repository->getTeacherLessons($teacher['IdProf']), [$link]);
+        $this->assertEquals($this->repository->getTeacherLessonsLib($teacher['IdProf']), [$link]);
     }
 
     function testRemoveTeacherSubject(): void{
@@ -242,8 +255,28 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getClassroom($classroom['IdSalle']), $classroom);
     }
 
-    function testGetDivisionLesson(): void{
-
+    function testGetDivisionLessonLib(): void{
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[0];
+        $subjects = $this->data->subjects();
+        $subject = $subjects[0];
+        $divisions = $this->data->divisions();
+        $division = $divisions[0];
+        $this->repository->insertTeacher($teacher);
+        $this->repository->insertSubject($subject);
+        $this->repository->insertDivision($division);
+        $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
+        $this->repository->linkTeacherClass($teacher['IdProf'], $subject['IdEns'], [$division['IdDiv']], []);
+        $link = ['IdProf' => $teacher['IdProf'], 
+                 'IdEns' =>$subject['IdEns'], 
+                 'IdDiv' =>$division['IdDiv'], 
+                 'IdGrp' => null, 
+                 'LibelleEns' => $subject['LibelleEns'],
+                 'NomProf' => $teacher['NomProf'],
+                 'PrenomProf' => $teacher['PrenomProf'],
+                 'LibelleDiv' => $division['LibelleDiv'],
+                 'LibelleGrp' => null];
+        $this->assertEquals($this->repository->getDivisionLessonsLib($division['IdDiv']), [$link]);
     }
 
     function testGetDivisionStudent(): void{
@@ -277,7 +310,27 @@ class RepositoryTest extends TestCase{
     }
 
     function testGetGroupLesson(): void{
-
+        $teachers = $this->data->teachers();
+        $teacher = $teachers[0];
+        $subjects = $this->data->subjects();
+        $subject = $subjects[0];
+        $groups = $this->data->groups();
+        $group = $groups[0];
+        $this->repository->insertTeacher($teacher);
+        $this->repository->insertSubject($subject);
+        $this->repository->insertGroup($group);
+        $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
+        $this->repository->linkTeacherClass($teacher['IdProf'], $subject['IdEns'], [], [$group['IdGrp']]);
+        $link = ['IdProf' => $teacher['IdProf'], 
+                 'IdEns' =>$subject['IdEns'], 
+                 'IdDiv' => null, 
+                 'IdGrp' => $group['IdGrp'], 
+                 'LibelleEns' => $subject['LibelleEns'],
+                 'NomProf' => $teacher['NomProf'],
+                 'PrenomProf' => $teacher['PrenomProf'],
+                 'LibelleDiv' => null,
+                 'LibelleGrp' => $group['LibelleGrp']];
+        $this->assertEquals($this->repository->getGroupLessonsLib($group['IdGrp']), [$link]);
     }
 
     function testGetGroupStudent(): void{

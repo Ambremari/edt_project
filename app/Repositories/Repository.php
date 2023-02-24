@@ -22,6 +22,7 @@ class Repository {
         $groups = $data->groups();
         $types = $data->types();
         $classrooms = $data->classrooms();
+        $students = $data->students();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -36,7 +37,11 @@ class Repository {
             $this->insertType($row);
         foreach($classrooms as $row)
             $this->insertClassroom($row);
+        foreach($students as $row)
+            $this->insertStudent($row);
     }
+
+    ##########TEACHERS#############
 
     function insertTeacher(array $teacher): void {
         if(!array_key_exists('IdProf', $teacher)){
@@ -115,6 +120,86 @@ class Repository {
             ->update($teacher);
     }
 
+    ###############STUDENTS################
+
+    function insertStudent(array $student): void {
+        if(!array_key_exists('IdEleve', $student)){
+            $id = dechex(time());
+            $id = substr($id, 3, 10);
+            $student['IdEleve'] = "ELV".$id;
+        }
+        if(array_key_exists('MdpEleve', $student)){
+            $passwordHash = Hash::make($student['MdpEleve']);
+            $student['MdpEleve'] = $passwordHash;
+        }
+        DB::table('Eleves')
+            ->insert($student);
+    }
+
+    function students() : array{
+        return DB::table('Eleves')
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function getStudent(string $id) : array{
+        $student = DB::table('Eleves')
+                    ->where('IdEleve', $id)
+                    ->get()
+                    ->toArray();
+        if(empty($student))
+            throw new Exception('Elève inconnu'); 
+        return $student[0];
+    }
+
+    function createPasswordStudent(string $id, string $password): void{
+        $users = DB::table('Eleves')
+                ->where('IdEleve', $id)
+                ->where('MdpEleve', null)
+                ->get()
+                ->toArray();
+        if(empty($users))
+            throw new Exception('Utilisateur inconnu');
+        $user = $users[0];
+        $hashedPassword = Hash::make($password);
+        DB::table('Eleves')
+            ->where('IdEleve', $id)
+            ->update(['MdpEleve' => $hashedPassword]);
+    }
+
+    function getUserStudent(string $id, string $password): array{
+        $users = DB::table('Eleves')
+                ->where('IdEleve', $id)
+                ->get()
+                ->toArray();
+        if(empty($users))
+            throw new Exception('Utilisateur inconnu');
+        $user = $users[0];
+        if(!Hash::check($password, $user['MdpEleve']))    
+            throw new Exception('Utilisateur inconnu');
+        return [
+            'id' => $user['IdEleve'], 
+            'name'=> $user['NomEleve'], 
+            'firstname'=> $user['PrenomEleve'],
+            'role'=> 'eleve'];  
+    }
+
+    function updateStudent(array $student): void{
+        $users = DB::table('Eleves')
+                ->where('IdEleve', $student['IdEleve'])
+                ->get()
+                ->toArray();
+        if(empty($users))
+            throw new Exception('Utilisateur inconnu');
+        DB::table('Eleves')
+            ->where('IdEleve', $student['IdEleve'])
+            ->update($student);
+    }
+
+    ##################DIRECTORS#################
+
     function directors() : array{
         return DB::table('Directeurs')
                     ->get('IdDir')
@@ -151,6 +236,8 @@ class Repository {
             'firstname'=> $user['PrenomDir'],
             'role'=> 'dir'];  
     }
+
+    #########SUBJECTS#############
 
     function insertSubject(array $subject): void {
         if(!array_key_exists('IdEns', $subject)){
@@ -191,6 +278,8 @@ class Repository {
             ->where('IdEns', $subject['IdEns'])
             ->update($subject);
     }
+
+    #############DIVISIONS##############
 
     function insertDivision(array $division): void {
         if(!array_key_exists('IdDiv', $division)){
@@ -233,6 +322,8 @@ class Repository {
             ->where('IdDiv', $division['IdDiv'])
             ->update($division);
     }
+
+    #############GROUPS##############
 
     function insertGroup(array $group): string {
         if(!array_key_exists('IdGrp', $group)){
@@ -277,6 +368,7 @@ class Repository {
             ->where('IdGrp', $group['IdGrp'])
             ->update($group);
     }
+
 
     function linkTeacherSubject(string $idProf, string $idEns): void{
         DB::table('Enseigne')
@@ -414,7 +506,7 @@ class Repository {
             ->update($classroom);
     }
 
-    function getDivisionLessons(string $id) : array{
+    function getDivisionLessonsLib(string $id) : array{
         return DB::table('LibellesCours')
                     ->where('IdDiv', $id)
                     ->get()
@@ -428,7 +520,7 @@ class Repository {
                     ->toArray();
     }
 
-    function getGroupLessons(string $id) : array{
+    function getGroupLessonsLib(string $id) : array{
         return DB::table('LibellesCours')
                     ->where('IdGrp', $id)
                     ->get()

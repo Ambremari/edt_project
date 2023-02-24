@@ -29,25 +29,20 @@
                 <span><a href="#">Base Elèves et Enseignants</a></span>
                 <div class="dropdown-content">
                     <div class="dropdown-sub">
-                        <a href="#">Saisie</a>
+                        <a href="#">Elèves</a>
                         <div class="dropdown-subcontent">
-                            <a href="{{route('teacher.form')}}">Enseignants</a>
-                            <a href="#">Elèves</a>
+                            <a href="#">Saisie</a>
+                            <a href="#">Modification</a>
+                            <a href="#">Scolarité</a>
+                            <a href="{{route('students.show')}}">Fiches</a>
                         </div>
                     </div>
                     <div class="dropdown-sub">
-                        <a href="#">Modification</a>
+                        <a href="#">Enseignants</a>
                         <div class="dropdown-subcontent">
-                            <a href="{{route('teacher.update.list')}}">Enseignants</a>
-                            <a href="#">Elèves</a>
-                        </div>
-                    </div>
-                    <a href="#">Scolarité</a>
-                    <div class="dropdown-sub">
-                        <a href="#">Fiches</a>
-                        <div class="dropdown-subcontent">
-                            <a href="{{route('teachers.show')}}">Enseignants</a>
-                            <a href="#">Elèves</a>
+                            <a href="{{route('teacher.form')}}">Saisie</a>
+                            <a href="{{route('teacher.update.list')}}">Modification</a>
+                            <a href="{{route('teachers.show')}}">Fiches</a>
                         </div>
                     </div>
                 </div>    

@@ -58,6 +58,13 @@ Route::get('/bee/info/enseignant/{idProf}', [Controller::class, 'showTeacher'])
     ->where('idProf', '[PRF].*')
     ->name('teacher.show');
 
+Route::get('/bee/info/eleve', [Controller::class, 'showStudents'])
+    ->name('students.show');
+
+Route::get('/bee/info/eleve/{idEleve}', [Controller::class, 'showStudent'])
+    ->where('idEleve', '[ELV].*')
+    ->name('student.show');
+
 Route::get('/ens/creation', [Controller::class, 'addSubjectForm'])
     ->name('subjects.form');
 

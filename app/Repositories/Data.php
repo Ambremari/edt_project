@@ -14,6 +14,69 @@ class Data
             'MdpDir' => 'mdpadmin001'],
         ];
     }
+
+    function students()
+    {
+        return [
+            [ "IdEleve" => "ELV1002",
+                "PrenomEleve" => "Lani",
+                "NomEleve" => "Kim",
+                "AnneeNaisEleve" => "2009",
+                "NiveauEleve" => "4EME"],
+            ["IdEleve" => "ELV1006",
+                "PrenomEleve" => "Jeanette",
+                "NomEleve" => "Miles",
+                "AnneeNaisEleve" => "2011",
+                "NiveauEleve" => "5EME"],
+            ["IdEleve" => "ELV1010",
+                "PrenomEleve" => "Alea",
+                "NomEleve" => "Reynolds",
+                "AnneeNaisEleve" => "2008",
+                "NiveauEleve" => "3EME"],
+            ["IdEleve" => "ELV1014",
+                "PrenomEleve" => "Dane",
+                "NomEleve" => "Howe",
+                "AnneeNaisEleve" => "2013",
+                "NiveauEleve" => "6EME"],
+            ["IdEleve" => "ELV1018",
+                "PrenomEleve" => "Macey",
+                "NomEleve" => "Holden",
+                "AnneeNaisEleve" => "2010",
+                "NiveauEleve" => "6EME"],
+            ["IdEleve" => "ELV1022",
+                "PrenomEleve" => "Nora",
+                "NomEleve" => "Bean",
+                "AnneeNaisEleve" => "2008",
+                "NiveauEleve" => "4EME"],
+            ["IdEleve" => "ELV1026",
+                "PrenomEleve" => "Daniel",
+                "NomEleve" => "Bond",
+                "AnneeNaisEleve" => "2012",
+                "NiveauEleve" => "5EME"],
+            ["IdEleve" => "ELV1030",
+                "PrenomEleve" => "Michelle",
+                "NomEleve" => "Holmes",
+                "AnneeNaisEleve" => "2011",
+                "NiveauEleve" => "4EME"],
+            ["IdEleve" => "ELV1034",
+                "PrenomEleve" => "Nevada",
+                "NomEleve" => "Harvey",
+                "AnneeNaisEleve" => "2010",
+                "NiveauEleve" => "4EME"],
+            [ "IdEleve" => "ELV1038",
+                "PrenomEleve" => "Norman",
+                "NomEleve" => "Dyer",
+                "AnneeNaisEleve" => "2013",
+                "NiveauEleve" => "5EME"]
+        ];
+    }
+
+    function parents()
+    {
+        return [
+        ];
+    }
+
     function teachers()
     {
         return [
