@@ -58,23 +58,37 @@
         <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <input type="hidden" value="{{ $row['IdEns'] }}" name="subject">
         @foreach($divisions as $div)
-        @if($div['NiveauDiv'] == $row['NiveauEns'])
-        <div class="my_input" style="display: inline-block">
-        @if(in_array(['IdProf' => $teacher['IdProf'], 'IdEns' => $row['IdEns'], 'IdDiv' => $div['IdDiv']], $teacher_lessons))
-        <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
-        @else
-            <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">
-        @endif
-            <label class="form-check-label" for="option">
-            {{ $div['LibelleDiv'] }}
-            </label>
-        </div>
-        @endif
-        @error('subject')
-        <div id="option_feedback" class="invalid-feedback">
-            {{ $message }}
-        </div>
-        @enderror
+            @if($div['NiveauDiv'] == $row['NiveauEns'])
+                <div class="my_input" style="display: inline-block">
+                @if(in_array(['IdEns' => $row['IdEns'], 'IdDiv' => $div['IdDiv'], 'IdGrp' => null], $teacher_lessons))
+                    <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
+                @else
+                    <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">
+                @endif
+                <label class="form-check-label" for="option">
+                {{ $div['LibelleDiv'] }}
+                </label>
+                </div>
+            @endif
+        @endforeach
+        @foreach($groups as $grp)
+            @if($grp['NiveauGrp'] == $row['NiveauEns'])
+                <div class="my_input" style="display: inline-block">
+                @if(in_array(['IdEns' => $row['IdEns'], 'IdDiv' => null, 'IdGrp' => $grp['IdGrp']], $teacher_lessons))
+                    <input class="form-check-input" type="checkbox" name="groups[]" value="{{ $grp['IdGrp'] }}" id="optiong" checked>
+                @else
+                    <input class="form-check-input" type="checkbox" name="groups[]" value="{{ $grp['IdGrp'] }}" id="optiong">
+                @endif
+                <label class="form-check-label" for="optiong">
+                {{ $grp['LibelleGrp'] }}
+                </label>
+                </div>
+            @endif
+            @error('option')
+                <div id="optiong_feedback" class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
         @endforeach
     </div>
     <button type="submit">Affecter les divisions</button>

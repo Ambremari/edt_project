@@ -15,7 +15,6 @@
     <th>Libellé</th>
     <th>Niveau</th>
     <th>Volume horaire hebdomadaire</th>
-    <th>Durée minimale</th>
     <th>Optionnel</th>
     <th></th>
   </tr>
@@ -24,7 +23,6 @@
             <td>{{ $row['LibelleEns'] }}</td>
             <td>{{ $row['NiveauEns'] }}</td>
             <td>{{ $row['VolHEns'] }}</td>
-            <td>{{ $row['DureeMinEns'] }}</td>
             <td>
               @if($row['OptionEns'] != 0)
               X

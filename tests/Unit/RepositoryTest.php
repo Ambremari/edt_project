@@ -167,7 +167,7 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->lessons(), [$link]);
     }
 
-    function testGetTeacherLessons(): void{
+    function testGetTeacherLessonsLib(): void{
         $teachers = $this->data->teachers();
         $teacher = $teachers[0];
         $subjects = $this->data->subjects();
@@ -179,7 +179,15 @@ class RepositoryTest extends TestCase{
         $this->repository->insertDivision($division);
         $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
         $this->repository->linkTeacherClass($teacher['IdProf'], $subject['IdEns'], [$division['IdDiv']], []);
-        $link = ['IdProf' => $teacher['IdProf'], 'IdEns' =>$subject['IdEns'], 'IdDiv' =>$division['IdDiv'], 'IdGrp' => null];
+        $link = ['IdProf' => $teacher['IdProf'], 
+                 'IdEns' =>$subject['IdEns'], 
+                 'IdDiv' =>$division['IdDiv'], 
+                 'IdGrp' => null, 
+                 'LibelleEns' => $subject['LibelleEns'],
+                 'NomProf' => $teacher['NomProf'],
+                 'PrenomProf' => $teacher['PrenomProf'],
+                 'LibelleDiv' => $division['LibelleDiv'],
+                 'LibelleGrp' => null];
         $this->assertEquals($this->repository->getTeacherLessons($teacher['IdProf']), [$link]);
     }
 
@@ -246,6 +254,7 @@ class RepositoryTest extends TestCase{
         $groups = $this->data->groups();
         $this->assertEquals($this->repository->insertGroup($groups[0]), $groups[0]['IdGrp']);
         $groups[0]['EffectifReelGrp'] = 0;
+        $groups[0]['NbDivAssociees'] = 0;
         $this->assertEquals($this->repository->groups(), [$groups[0]]);
     }
 

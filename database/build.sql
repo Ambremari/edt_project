@@ -58,7 +58,6 @@ CREATE TABLE Enseignements(
    LibelleEns VARCHAR(40) NOT NULL,
    NiveauEns CHAR(4) CHECK(NiveauEns IN ('6EME', '5EME', '4EME', '3EME')),
    VolHEns DECIMAL(3,1) NOT NULL,
-   DureeMinEns INT NOT NULL DEFAULT 1,
    OptionEns BOOLEAN NOT NULL DEFAULT 0,
    PRIMARY KEY(IdEns)
 );
@@ -174,6 +173,7 @@ CREATE TABLE ContraintesSalles(
    TypeSalle VARCHAR(15),
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    VolHSalle DECIMAL(3,2) NOT NULL,
+   DureeMinSalle INT NOT NULL DEFAULT 1,
    PRIMARY KEY(TypeSalle, IdCours),
    FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
@@ -212,9 +212,11 @@ AS
 
 CREATE OR REPLACE VIEW LibellesCours
 AS
-   SELECT IdCours, IdDiv, IdGrp, LibelleEns, NomProf, PrenomProf
-   FROM (Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
-         JOIN Enseignants P ON C.IdProf = P.IdProf;
+   SELECT C.IdDiv, C.IdGrp, C.IdProf, C.IdEns, LibelleEns, NomProf, PrenomProf, LibelleDiv, LibelleGrp
+   FROM (((Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
+         JOIN Enseignants P ON C.IdProf = P.IdProf)
+         LEFT JOIN Divisions D ON C.IdDiv = D.IdDiv)
+         LEFT JOIN Groupes G ON C.IdGrp = G.IdGrp;
 
 CREATE OR REPLACE VIEW LibellesDiv
 AS

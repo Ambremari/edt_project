@@ -46,7 +46,7 @@
                     <div class="dropdown-sub">
                         <a href="#">Fiches</a>
                         <div class="dropdown-subcontent">
-                            <a href="#">Enseignants</a>
+                            <a href="{{route('teachers.show')}}">Enseignants</a>
                             <a href="#">Elèves</a>
                         </div>
                     </div>

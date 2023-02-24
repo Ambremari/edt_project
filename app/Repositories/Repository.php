@@ -164,8 +164,8 @@ class Repository {
 
     function subjects() : array{
         return DB::table('Enseignements')
-                    ->orderBy('NiveauEns')
                     ->orderBy('LibelleEns')
+                    ->orderBy('NiveauEns')
                     ->get()
                     ->toArray();
     }
@@ -337,10 +337,17 @@ class Repository {
                     ->toArray();
     }
 
+    function getTeacherLessonsLib(string $id) : array{
+        return DB::table('LibellesCours')
+                    ->where('IdProf', $id)
+                    ->get()
+                    ->toArray();
+    }
+
     function getTeacherLessons(string $id) : array{
         return DB::table('Cours')
                     ->where('IdProf', $id)
-                    ->get(['IdProf', 'IdEns', 'IdDiv', 'IdGrp'])
+                    ->get(['IdEns', 'IdDiv', 'IdGrp'])
                     ->toArray();
     }
 

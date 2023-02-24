@@ -58,18 +58,6 @@
         </div>
         @enderror
         <div class="my_input" style="display: inline-block">
-            <label for="mintime">Durée minimale</label>
-            <input type="number" id="mintime" name="mintime" min="1" max="4"
-                aria-describedby="mintime_feedback"
-                style="width:30px"
-                value="{{ old('mintime') }}" required>
-        </div>
-        @error('mintime')
-        <div id="mintime_feedback" class="invalid-feedback">
-            {{ $message }}
-        </div>
-        @enderror
-        <div class="my_input" style="display: inline-block">
             <label class="form-check-label" for="option">Optionnel</label>
             <input class="form-check-input" type="checkbox" value="option" id="option" name="option">
         </div>
