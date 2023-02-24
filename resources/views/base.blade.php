@@ -33,7 +33,7 @@
                         <div class="dropdown-subcontent">
                             <a href="#">Saisie</a>
                             <a href="#">Modification</a>
-                            <a href="#">Scolarité</a>
+                            <a href="{{route('student.option')}}">Scolarité</a>
                             <a href="{{route('students.show')}}">Fiches</a>
                         </div>
                     </div>

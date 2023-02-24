@@ -233,5 +233,12 @@ AS
    SELECT IdGrp, G.IdDiv, LibelleDiv
    FROM LiensGroupes G JOIN Divisions D ON G.IdDiv = D.IdDiv;
 
+CREATE OR REPLACE VIEW EnsOption
+AS
+   SELECT *
+   FROM Enseignements
+   WHERE OptionEns IS true;
+
+
 
 

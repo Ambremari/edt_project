@@ -65,6 +65,17 @@ Route::get('/bee/info/eleve/{idEleve}', [Controller::class, 'showStudent'])
     ->where('idEleve', '[ELV].*')
     ->name('student.show');
 
+Route::get('/bee/scol/eleve', [Controller::class, 'studentOption'])
+    ->name('student.option');
+
+Route::get('/bee/scol/eleve/{idEleve}', [Controller::class, 'studentOptionForm'])
+    ->where('idEleve', '[ELV].*')
+    ->name('student.option.form');
+
+Route::post('/bee/scol/eleve/{idEleve}', [Controller::class, 'addStudentOption'])
+    ->where('idEleve', '[ELV].*')
+    ->name('student.option.add');
+
 Route::get('/ens/creation', [Controller::class, 'addSubjectForm'])
     ->name('subjects.form');
 

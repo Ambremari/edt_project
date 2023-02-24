@@ -747,4 +747,49 @@ class Controller extends BaseController{
         }
         return redirect()->route('division.fill.form')->with('status', 'Affectation réalisée avec succès');
     }
+
+    public function studentOption(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $students = $this->repository->students();
+        return view('student_option', ['students'=> $students]);
+    }
+
+    public function studentOptionForm(Request $request, string $idEleve){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $students = $this->repository->students();
+        $student = $this->repository->getStudent($idEleve);
+        $subjects = $this->repository->optionalSubjects();
+        $studentOptions = $this->repository->getStudentOptions($idEleve);
+        return view('student_option_form', ['students'=> $students, 
+                                    'student' => $student,
+                                    'subjects' => $subjects,
+                                    'student_options' => $studentOptions]);
+    }
+
+    public function addStudentOption(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required', 'exists:Eleves,IdEleve'],
+            'options' => []
+        ];
+        $messages = [
+            'id.required' => 'Vous devez sélectionner un élève.',
+            'id.exists' => 'Cet élève n\'existe pas',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        if(!$request->has('options'))
+            $validatedData['options'] = [];
+        try{
+            $this->repository->addStudentOption($validatedData['id'], $validatedData['options']);
+        } catch (Exception $exception) {
+            return redirect()->route('student.option.form', ['idEleve' => $validatedData['id']])->withInput()->withErrors("L'affectation n'a pas été prise en compte");
+        }
+        return redirect()->route('student.option.form', ['idEleve' => $validatedData['id']])->with('status', 'Affectation réalisée avec succès');
+    }
 }

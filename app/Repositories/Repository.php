@@ -267,6 +267,14 @@ class Repository {
                     ->toArray();
     }
 
+    function optionalSubjects() : array{
+        return DB::table('EnsOption')
+                    ->orderBy('LibelleEns')
+                    ->orderBy('NiveauEns')
+                    ->get()
+                    ->toArray();
+    }
+
     function getSubject(string $id) : array{
         $subject = DB::table('Enseignements')
                     ->where('IdEns', $id)
@@ -287,6 +295,28 @@ class Repository {
         DB::table('Enseignements')
             ->where('IdEns', $subject['IdEns'])
             ->update($subject);
+    }
+
+    function getStudentOptions(string $id) : array{
+        return DB::table('Options')
+                    ->where('IdEleve', $id)
+                    ->get()
+                    ->toArray();
+    }
+
+    function removeStudentOption(string $idEleve) : void{
+            DB::table('Options')
+                ->where('IdEleve', $idEleve)
+                ->delete();
+    }
+
+    function addStudentOption(string $idEleve, array $options) : void{
+        $this->removeStudentOption($idEleve);
+        foreach($options as $idEns){
+            DB::table('Options')
+                ->insert(['IdEleve' => $idEleve,
+                         'IdEns' => $idEns]);
+        }
     }
 
     #############DIVISIONS##############
