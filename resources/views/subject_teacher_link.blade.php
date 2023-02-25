@@ -58,7 +58,7 @@
         <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <input type="hidden" value="{{ $row['IdEns'] }}" name="subject">
         @foreach($divisions as $div)
-            @if($div['NiveauDiv'] == $row['NiveauEns'])
+            @if($div['NiveauDiv'] == $row['NiveauEns'] && !$row['OptionEns'])
                 <div class="my_input" style="display: inline-block">
                 @if(in_array(['IdEns' => $row['IdEns'], 'IdDiv' => $div['IdDiv'], 'IdGrp' => null], $teacher_lessons))
                     <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>

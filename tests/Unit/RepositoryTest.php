@@ -333,8 +333,71 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getGroupLessonsLib($group['IdGrp']), [$link]);
     }
 
+    function testStudentsAndInsertStudent(): void{
+        $students = $this->data->students();
+        $this->repository->insertStudent($students[0]);
+        $student = [ "IdEleve" => "ELV1002",
+        "PrenomEleve" => "Lani",
+        "NomEleve" => "Kim",
+        "MdpEleve" => null,
+        "AnneeNaisEleve" => "2009",
+        "NiveauEleve" => "4EME",
+        "IdDiv" => null];
+        $this->assertEquals($this->repository->students(), [$student]);
+    }
+
+    function testGetStudent(): void{
+        $students = $this->data->students();
+        $this->repository->insertStudent($students[0]);
+        $student = [ "IdEleve" => "ELV1002",
+        "PrenomEleve" => "Lani",
+        "NomEleve" => "Kim",
+        "MdpEleve" => null,
+        "AnneeNaisEleve" => "2009",
+        "NiveauEleve" => "4EME",
+        "IdDiv" => null,
+        "LibelleDiv" => null];
+        $this->assertEquals($this->repository->getStudent($student['IdEleve']), $student);
+    }
+
     function testGetGroupStudent(): void{
         
     }
+
+    function testOptionsAndAddStudentOption(): void{
+        $students = $this->data->students();
+        $student = $students[0];
+        $this->repository->insertStudent($student);
+        $subjects = $this->data->subjects();
+        $subject = $subjects[13];
+        $this->repository->insertSubject($subject);
+        $this->repository->addStudentOption($student['IdEleve'], [$subject['IdEns']]);
+        $this->assertEquals($this->repository->options(), [['IdEleve' => $student['IdEleve'], 'IdEns' => $subject['IdEns']]]);
+    }
+
+    function testGetStudentOptions(): void{
+        $students = $this->data->students();
+        $student = $students[0];
+        $this->repository->insertStudent($student);
+        $subjects = $this->data->subjects();
+        $subject = $subjects[13];
+        $this->repository->insertSubject($subject);
+        $this->repository->addStudentOption($student['IdEleve'], [$subject['IdEns']]);
+        $this->assertEquals($this->repository->getStudentOptions($student['IdEleve']), [['IdEleve' => $student['IdEleve'], 'IdEns' => $subject['IdEns']]]);
+    }
+
+    function testGetStudentOptionsLib(): void{$students = $this->data->students();
+        $student = $students[0];
+        $this->repository->insertStudent($student);
+        $subjects = $this->data->subjects();
+        $subject = $subjects[13];
+        $this->repository->insertSubject($subject);
+        $this->repository->addStudentOption($student['IdEleve'], [$subject['IdEns']]);
+        $this->assertEquals($this->repository->getStudentOptionsLib($student['IdEleve']), [['IdEleve' => $student['IdEleve'], 
+                                                                                        'IdEns' => $subject['IdEns'],
+                                                                                        'LibelleEns' => $subject['LibelleEns']]]);    
+    }
+
+
 
 }

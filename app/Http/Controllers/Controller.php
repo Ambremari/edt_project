@@ -710,10 +710,12 @@ class Controller extends BaseController{
         $student = $this->repository->getStudent($idEleve);
         $lessons = $this->repository->getLessonsLib();
         $groups = $this->repository->getStudentGroup($idEleve);
+        $options = $this->repository->getStudentOptionsLib($idEleve);
         return view('student_show', ['students'=> $students, 
                                     'student' => $student,
                                     'lessons' => $lessons,
-                                    'groups' => $groups]);
+                                    'groups' => $groups,
+                                    'options' => $options]);
     }
 
     public function fillDivisionForm(Request $request){

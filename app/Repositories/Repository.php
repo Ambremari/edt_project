@@ -297,10 +297,36 @@ class Repository {
             ->update($subject);
     }
 
+    function options(): array{
+        return DB::table('Options')
+            ->get()
+            ->toArray(); 
+    }
+
+    function lv1(): array{
+        return DB::table('LV1')
+            ->get()
+            ->toArray(); 
+    }
+
+    function lv2(): array{
+        return DB::table('LV2')
+            ->get()
+            ->toArray(); 
+    }
+
     function getStudentOptions(string $id) : array{
         return DB::table('Options')
                     ->where('IdEleve', $id)
                     ->get()
+                    ->toArray();
+    }
+
+    function getStudentOptionsLib(string $id) : array{
+        return DB::table('Options as O')
+                    ->join('Enseignements as E', 'O.IdEns', '=', 'E.IdEns')
+                    ->where('IdEleve', $id)
+                    ->get(['O.*', 'E.LibelleEns'])
                     ->toArray();
     }
 
