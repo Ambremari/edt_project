@@ -57,7 +57,7 @@
                         <a href="#">Affectation</a>
                         <div class="dropdown-subcontent">
                             <a href="{{route('division.fill.form')}}">Divisions</a>
-                            <a href="#">Groupes</a>
+                            <a href="{{route('group.fill.form')}}">Groupes</a>
                         </div>
                     </div>
                 </div>    

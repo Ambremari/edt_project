@@ -162,4 +162,10 @@ Route::get('/grp/modif/{idGrp}', [Controller::class, 'updateGroupForm'])
 Route::post('/grp/modif', [Controller::class, 'updateGroup'])
     ->name('group.update');
 
+Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
+    ->name('group.fill.form');
+
+Route::post('/grp/fill', [Controller::class, 'fillGroup'])
+    ->name('group.fill');
+
 

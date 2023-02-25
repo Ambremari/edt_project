@@ -794,4 +794,40 @@ class Controller extends BaseController{
         }
         return redirect()->route('student.option.form', ['idEleve' => $validatedData['id']])->with('status', 'Affectation réalisée avec succès');
     }
+
+    public function fillGroupForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $students = $this->repository->studentsNoDivision();
+        $groups = $this->repository->groups();
+        $options = $this->repository->optionalSubjects();
+        $optionChoices = $this->repository->options();
+        return view('group_fill', ['students'=> $students,
+                                      'groups' => $groups,
+                                      'options' => $options,
+                                      'option_choices' => $optionChoices]);
+    }
+
+    public function fillGroup(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required', 'exists:Divisions,IdDiv'],
+            'students' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez sélectionner une division.',
+            'id.exists' => 'Cette division n\'existe pas',
+            'students.required' => 'Vous devez choisir au moins un étudiant.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->addGroupStudents($validatedData['id'], $validatedData['students']);
+        } catch (Exception $exception) {
+            return redirect()->route('group.fill.form')->withInput()->withErrors("L'affectation n'a pas été prise en compte");
+        }
+        return redirect()->route('group.fill.form')->with('status', 'Affectation réalisée avec succès');
+    }
 }
