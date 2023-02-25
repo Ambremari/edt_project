@@ -11,7 +11,7 @@ Scolarité de l'élève {{ $student['PrenomEleve']}} {{ $student['NomEleve']}}
 <div class="colright">
 <div class="info">
 <span>Niveau {{ $student['NiveauEleve'] }}</span>
-<span>Division {{ $student['IdDiv'] }}</span>
+<span>Division {{ $student['LibelleDiv'] }}</span>
 </div>
 <div class="myList">
 <ul>

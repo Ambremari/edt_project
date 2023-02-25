@@ -799,7 +799,7 @@ class Controller extends BaseController{
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
-        $students = $this->repository->studentsNoDivision();
+        $students = $this->repository->students();
         $groups = $this->repository->groups();
         $options = $this->repository->optionalSubjects();
         $optionChoices = $this->repository->options();
@@ -814,12 +814,12 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $rules = [
-            'id' => ['required', 'exists:Divisions,IdDiv'],
+            'id' => ['required', 'exists:Groupes,IdGrp'],
             'students' => ['required']
         ];
         $messages = [
-            'id.required' => 'Vous devez sélectionner une division.',
-            'id.exists' => 'Cette division n\'existe pas',
+            'id.required' => 'Vous devez sélectionner un groupe.',
+            'id.exists' => 'Ce groupe n\'existe pas',
             'students.required' => 'Vous devez choisir au moins un étudiant.',
         ];
         $validatedData = $request->validate($rules, $messages);

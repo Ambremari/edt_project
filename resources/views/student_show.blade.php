@@ -14,7 +14,7 @@ Elève {{ $student['PrenomEleve'] }} {{ $student['NomEleve'] }}
         <span>Division : {{ $student['LibelleDiv'] }}</span>
     </div>
     <span style="font-weight: bold;">Options</span>
-    <div id="divisionList">
+    <div class="divisionList">
             @foreach ($options as $row)
                 <span>{{ $row['LibelleEns'] }}</span>
             @endforeach
@@ -23,9 +23,9 @@ Elève {{ $student['PrenomEleve'] }} {{ $student['NomEleve'] }}
     <ul id="subjectList">
         <li>
                 {{ $student['LibelleDiv'] }} 
-            <div id="divisionList">
+            <div class="divisionList">
                 @foreach ($lessons as $row)
-                    @if ($row['IdDiv'] == $student['IdDiv'])
+                    @if ($student['IdDiv'] != null && $row['IdDiv'] == $student['IdDiv'])
                     <span>{{ $row['LibelleEns'] }}</span>
                     @endif
                 @endforeach
@@ -34,9 +34,9 @@ Elève {{ $student['PrenomEleve'] }} {{ $student['NomEleve'] }}
         @foreach ($groups as $group)
         <li>
             {{ $group['LibelleGrp'] }} 
-        <div id="divisionList">
+        <div class="divisionList">
             @foreach ($lessons as $row)
-                @if ($row['IdGrp'] == $group['IdGrp'])
+                @if ($row['IdGrp'] != null && $row['IdGrp'] == $group['IdGrp'])
                 <span>{{ $row['LibelleEns'] }}</span>
                 @endif
             @endforeach

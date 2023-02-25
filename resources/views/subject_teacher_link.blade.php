@@ -54,7 +54,7 @@
 </form>
 <form method="POST" action="{{ route('link.division', ['idProf' => $teacher['IdProf']]) }}">
     @csrf
-    <div>
+    <div class="class_list">
         <input type="hidden" value="{{ $teacher['IdProf'] }}" name="id">
         <input type="hidden" value="{{ $row['IdEns'] }}" name="subject">
         @foreach($divisions as $div)

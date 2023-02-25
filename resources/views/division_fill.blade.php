@@ -20,7 +20,16 @@ Affectation des divisions
 @include('student_div_list')
 </div>
 <div class="colright">
-
+@if ($errors->any())
+        <div class="alert alert-warning">
+            L'affectation n'a pas été prise en compte &#9785;
+        </div>  
+    @endif
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 <div class="class_check" id="divOptions">
     @foreach ($divisions as $row)
     <span class="{{ $row['NiveauDiv'] }}">

@@ -13,7 +13,7 @@ Groupe {{ $group['LibelleGrp'] }}
 <span style="font-weight: bold;">Elèves</span>
 <ul id="studentList">
     @foreach ($students as $row)
-    <li>{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</li>
+    <li><span>{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</span></li>
     @endforeach
 </ul>
 </div>

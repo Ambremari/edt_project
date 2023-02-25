@@ -407,6 +407,14 @@ class Repository {
         }
     }
 
+    function addGroupStudents(string $idGrp, array $students): void{
+        foreach($students as $id){
+            DB::table('CompoGroupes')
+                ->insert(['IdGrp' => $idGrp,
+                          'IdEleve' => $id]);
+        }
+    }
+
     #############GROUPS##############
 
     function insertGroup(array $group): string {
@@ -461,9 +469,10 @@ class Repository {
     }
 
     function getGroupStudents(string $id) : array{
-        return DB::table('CompoGroupes')
+        return DB::table('CompoGroupes as C')
+                    ->join('Eleves as E', "C.IdEleve", "=", "E.IdEleve")
                     ->where('IdGrp', $id)
-                    ->get()
+                    ->get(["C.*", "NomEleve", "PrenomEleve"])
                     ->toArray();
     }
 
