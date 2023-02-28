@@ -12,7 +12,7 @@
                 Bienvenue <br>
                 @if (session()->has('user'))
                 {{ session()->get('user')['firstname'] }} {{ session()->get('user')['name'] }}<br>
-                Identifiant : {{ session()->get('user')['id'] }}
+                Identifiant : {{ session()->get('user')['id'] }}<br>
                     <form method="POST" action="{{route('logout.post')}}">
                         @csrf 
                             <button class="header_button" type="submit">Déconnexion</a>
@@ -29,24 +29,20 @@
                 <span><a href="#">Base Elèves et Enseignants</a></span>
                 <div class="dropdown-content">
                     <div class="dropdown-sub">
-                        <a href="#">Saisie</a>
+                        <a href="#">Elèves</a>
                         <div class="dropdown-subcontent">
-                            <a href="{{route('teacher.form')}}">Enseignants</a>
-                            <a href="#">Elèves</a>
+                            <a href="#">Saisie</a>
+                            <a href="#">Modification</a>
+                            <a href="{{route('student.option')}}">Scolarité</a>
+                            <a href="{{route('students.show')}}">Fiches</a>
                         </div>
                     </div>
                     <div class="dropdown-sub">
-                        <a href="#">Modification</a>
+                        <a href="#">Enseignants</a>
                         <div class="dropdown-subcontent">
-                            <a href="#">Enseignants</a>
-                            <a href="#">Elèves</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-sub">
-                        <a href="#">Fiches</a>
-                        <div class="dropdown-subcontent">
-                            <a href="#">Enseignants</a>
-                            <a href="#">Elèves</a>
+                            <a href="{{route('teacher.form')}}">Saisie</a>
+                            <a href="{{route('teacher.update.list')}}">Modification</a>
+                            <a href="{{route('teachers.show')}}">Fiches</a>
                         </div>
                     </div>
                 </div>    
@@ -55,24 +51,30 @@
             <div class="dropdown">
                 <span><a href="#">Structure</a></span>
                 <div class="dropdown-content">
-                    <a href="#">Divisions</a>
-                    <a href="#">Groupes</a>
-                    <a href="#">Affectation</a>
+                    <a href="{{route('division.form')}}">Divisions</a>
+                    <a href="{{route('group.form')}}">Groupes</a>
+                    <div class="dropdown-sub">
+                        <a href="#">Affectation</a>
+                        <div class="dropdown-subcontent">
+                            <a href="{{route('division.fill.form')}}">Divisions</a>
+                            <a href="{{route('group.fill.form')}}">Groupes</a>
+                        </div>
+                    </div>
                 </div>    
             </div>
 
             <div class="dropdown">
-                <span><a href="#">Enseignements</a></span>
+                <span><a href="{{route('subjects.show')}}">Enseignements</a></span>
                 <div class="dropdown-content">
-                    <a href="#">Création</a>
-                    <a href="#">Affectation</a>
+                    <a href="{{route('subjects.form')}}">Création</a>
+                    <a href="{{route('link.subject')}}">Affectation</a>
                 </div>    
             </div>
 
             <div class="dropdown">
                 <span><a href="#">Etablissement</a></span>
                 <div class="dropdown-content">
-                    <a href="#">Infrastructures</a>
+                    <a href="{{route('classroom.form')}}">Infrastructures</a>
                     <a href="#">Horaires</a>
                     <a href="#">Fiche établissement</a>
                 </div>    
@@ -90,6 +92,17 @@
                 </div>    
             </div>
         </div>
+        @endif
+
+        @if (session()->has('user') && session()->get('user')['role'] == 'prof')
+        <div class="topnav">
+            <div class="dropdown">
+                <span><a href="#">Mon Emploi du Temps</a></span>
+            </div>
+            <div class="dropdown">
+                <span><a href="#">Mes Contraintes</a></span>
+            </div>
+            </div>
         @endif
             <h2>@yield('title')</h2>
         <div>

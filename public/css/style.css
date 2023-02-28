@@ -27,12 +27,12 @@ h4 {
     float: left;
 }
 
-.header a{
+a{
     text-decoration: none;
     color: black;
 }
 
-.header a:hover{
+a:hover{
     text-decoration: none;
     color: #F53C3C;
 }
@@ -128,11 +128,27 @@ h2 {
     margin-left: 20px;
 }
 
+.class_list{
+    width: 500px;
+}
+
 input{
     padding: 10px;
     background-color: #F7D5D5;
     border: none;
     border-radius: 8px;
+}
+
+select {
+    padding: 10px;
+    background-color: #F7D5D5;
+    border: none;
+    border-radius: 8px;
+}
+
+.form-check-input{
+    width: 20px;
+    height: 20px;
 }
 
 label{
@@ -158,6 +174,7 @@ button {
     padding-right: 15px;
     padding-top: 12px;
     padding-bottom: 12px;
+    margin-bottom: 15px;
     font-size: 15px;
     border: none;
     border-radius: 8px;
@@ -196,8 +213,239 @@ button {
     float: left;
 }
 
+.colup{
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+
 .tabcontent{
     display: none;
 }
 
+#teacherInput{
+    background-image: url('/css/searchicon.png'); 
+    background-position: 10px 12px; 
+    background-repeat: no-repeat; 
+    width: 40%; 
+    font-size: 16px; 
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 12px;
+    margin-right: 6%;
+}
 
+#teacherList {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: 30%;
+    text-align: left;
+    padding: 0;
+    width: 45%;
+    height: 500px;
+    overflow: auto;
+  }
+
+#teacherList li a {
+    border: 1px solid #ddd; 
+    margin-top: -1px; 
+    background-color: #f6f6f6; 
+    padding: 12px; 
+    text-decoration: none; 
+    font-size: 18px; 
+    color: black; 
+    display: block; 
+}
+  
+  #teacherList li a:hover:not(.header) {
+    background-color: #eee;
+  }
+
+th, td {
+    padding : 10px;
+    width : 200px;
+    text-align: center;
+    background-color: #DEEAEA;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.myTable{
+    height: 500px;
+    overflow: auto;
+}
+
+.myTable th {
+    position: sticky;
+    top: 0;
+}
+
+.filter {
+    text-align: right;
+    margin-right: 5%;
+    margin-bottom: 10px;
+}
+
+.myList {
+    text-align: left;
+}
+
+.myList li{
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.myList button{
+    margin-top: 10px;
+
+}
+
+.suppr{
+    background-color: #DEEAEA;
+    color: black;
+    margin-left: 20px;
+    display: inline;
+}
+
+.info {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+
+.info span {
+    margin: 40px;
+    background-color: #F7D5D5;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+#divisionList {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+    text-align: left;
+    padding: 0;
+    overflow: auto;
+  }
+
+  #divisionList span {
+    background-color: #f9f9f9; 
+    padding: 12px; 
+    margin: 5px;
+    text-decoration: none; 
+    font-size: 14px; 
+    color: black; 
+    display: inline-block; 
+    border-radius: 8px;
+}
+
+#subjectList li {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+    text-align: left;
+    padding-top: 20px;
+    padding-left: 20px;
+    background-color: #DEEAEA;
+    border-radius: 8px;
+    overflow: auto;
+  }
+
+  #studentList {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: 30%;
+    text-align: left;
+    padding: 0;
+    width: 45%;
+    height: 500px;
+    overflow: auto;
+  }
+
+#studentList li a {
+    border: 1px solid #ddd; 
+    margin-top: -1px; 
+    background-color: #f6f6f6; 
+    padding: 12px; 
+    text-decoration: none; 
+    font-size: 18px; 
+    color: black; 
+    display: block; 
+}
+  
+#studentList li a:hover:not(.header) {
+    background-color: #eee;
+  }
+
+#studentInput{
+    background-image: url('/css/searchicon.png'); 
+    background-position: 10px 12px; 
+    background-repeat: no-repeat; 
+    width: 40%; 
+    font-size: 16px; 
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 12px;
+    margin-right: 6%;
+}
+
+.class_check{
+    margin-top: 70px;
+    margin-left: 20px;
+    margin-bottom: 50px;
+}
+
+.class_check span{
+    display: block;
+    margin-bottom: 15px;
+}
+
+.filterbox {
+    text-align: left;
+    margin-bottom: 20px;
+    margin-left: 20%;
+}
+
+#studentList span {
+    border: 1px solid #ddd; 
+    margin-top: -1px; 
+    background-color: #f6f6f6; 
+    padding: 12px; 
+    text-decoration: none; 
+    font-size: 18px; 
+    color: black; 
+    display: block; 
+}
+
+.divisionList {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+    text-align: left;
+    padding: 0;
+    overflow: auto;
+  }
+
+.divisionList span {
+    background-color: #f9f9f9; 
+    padding: 12px; 
+    margin: 5px;
+    text-decoration: none; 
+    font-size: 14px; 
+    color: black; 
+    display: inline-block; 
+    border-radius: 8px;
+}

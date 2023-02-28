@@ -14,15 +14,23 @@ use App\Http\Controllers\Controller;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [Controller::class, 'welcomePage'])
+    ->name('welcome.page');
 
 Route::get('/login', [Controller::class, 'loginChoice'])
     ->name('login');
 
 Route::post('/login/dir', [Controller::class, 'loginDir'])
     ->name('login.dir');
+
+Route::get('/firstlogin', [Controller::class, 'createPasswordForm'])
+    ->name('first.login');
+
+Route::post('/firstlogin/teacher', [Controller::class, 'createPasswordTeacher'])
+    ->name('first.teacher');
+
+Route::post('/login/teacher', [Controller::class, 'loginTeacher'])
+    ->name('login.teacher');
 
 Route::post('/logout', [Controller::class, 'logout'])
     ->name('logout.post');
@@ -32,3 +40,135 @@ Route::get('/bee/saisie/enseignant', [Controller::class, 'addTeacherForm'])
 
 Route::post('/bee/saisie/enseignant', [Controller::class, 'addTeacher'])
     ->name('teacher.add');
+
+Route::get('/bee/modif/enseignant', [Controller::class, 'updateTeacherList'])
+    ->name('teacher.update.list');
+
+Route::post('/bee/modif/enseignant', [Controller::class, 'updateTeacher'])
+    ->name('teacher.update');
+
+Route::get('/bee/modif/enseignant/{idProf}', [Controller::class, 'updateTeacherForm'])
+    ->where('idProf', '[PRF].*')
+    ->name('teacher.update.form');
+
+Route::get('/bee/info/enseignant', [Controller::class, 'showTeachers'])
+    ->name('teachers.show');
+
+Route::get('/bee/info/enseignant/{idProf}', [Controller::class, 'showTeacher'])
+    ->where('idProf', '[PRF].*')
+    ->name('teacher.show');
+
+Route::get('/bee/info/eleve', [Controller::class, 'showStudents'])
+    ->name('students.show');
+
+Route::get('/bee/info/eleve/{idEleve}', [Controller::class, 'showStudent'])
+    ->where('idEleve', '[ELV].*')
+    ->name('student.show');
+
+Route::get('/bee/scol/eleve', [Controller::class, 'studentOption'])
+    ->name('student.option');
+
+Route::get('/bee/scol/eleve/{idEleve}', [Controller::class, 'studentOptionForm'])
+    ->where('idEleve', '[ELV].*')
+    ->name('student.option.form');
+
+Route::post('/bee/scol/eleve/{idEleve}', [Controller::class, 'addStudentOption'])
+    ->where('idEleve', '[ELV].*')
+    ->name('student.option.add');
+
+Route::get('/ens/creation', [Controller::class, 'addSubjectForm'])
+    ->name('subjects.form');
+
+Route::post('/ens/creation', [Controller::class, 'addSubject'])
+    ->name('subject.add');
+
+Route::post('/ens', [Controller::class, 'updateSubject'])
+    ->name('subject.update');
+
+Route::get('/ens', [Controller::class, 'showSubjects'])
+    ->name('subjects.show');
+
+Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.update.form');
+
+Route::get('/div', [Controller::class, 'addDivisionForm'])
+    ->name('division.form');
+
+Route::post('/div', [Controller::class, 'addDivision'])
+    ->name('division.add');
+
+Route::get('/div/info/{idDiv}', [Controller::class, 'showDivision'])
+    ->where('idDiv', '[DIV].*')
+    ->name('division.show');
+
+Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
+    ->where('idDiv', '[DIV].*')
+    ->name('division.update.form');
+
+Route::post('/div/modif', [Controller::class, 'updateDivision'])
+    ->name('division.update');
+
+Route::get('/div/fill', [Controller::class, 'fillDivisionForm'])
+    ->name('division.fill.form');
+
+Route::post('/div/fill', [Controller::class, 'fillDivision'])
+    ->name('division.fill');
+
+Route::get('/ens/link', [Controller::class, 'showLinkSubject'])
+    ->name('link.subject');
+
+Route::get('/ens/link/{idProf}', [Controller::class, 'linkTeacherSubjectForm'])
+    ->where('idProf', '[PRF].*')
+    ->name('link.subject.form');
+
+Route::post('/ens/link', [Controller::class, 'linkTeacherSubject'])
+    ->name('link.subject');
+
+Route::post('/ens/link/{idProf}', [Controller::class, 'linkTeacherDivision'])
+    ->where('idProf', '[PRF].*')
+    ->name('link.division');
+
+Route::post('/ens/link/remove', [Controller::class, 'removeTeacherSubject'])
+    ->name('link.subject.remove');
+
+Route::get('/college/salle', [Controller::class, 'addClassroomForm'])
+    ->name('classroom.form');
+
+Route::post('/college/salles', [Controller::class, 'addClassroom'])
+    ->name('classroom.add');
+
+Route::get('/college/salles/{idSalle}', [Controller::class, 'updateClassroomForm'])
+    ->where('idSalle', '[SAL].*')
+    ->name('classroom.update.form');
+
+Route::post('/college/salles/modif', [Controller::class, 'updateClassroom'])
+    ->name('classroom.update');
+
+Route::get('/grp', [Controller::class, 'addGroupForm'])
+    ->name('group.form');
+
+Route::post('/grp', [Controller::class, 'addGroup'])
+    ->name('group.add');
+
+Route::get('/grp/info/{idGrp}', [Controller::class, 'showGroup'])
+    ->where('idGrp', '[GRP].*')
+    ->name('group.show');
+
+Route::get('/grp/modif/{idGrp}', [Controller::class, 'updateGroupForm'])
+    ->where('idGrp', '[GRP].*')
+    ->name('group.update.form');
+
+Route::post('/grp/modif', [Controller::class, 'updateGroup'])
+    ->name('group.update');
+
+Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
+    ->name('group.fill.form');
+
+Route::post('/grp/fill', [Controller::class, 'fillGroup'])
+    ->name('group.fill');
+
+Route::post('/scheduel/modif', [Controller::class, 'updateScheduels'])
+    ->name('scheduels.update');
+
+

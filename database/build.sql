@@ -4,12 +4,17 @@ DROP TABLE IF EXISTS Parentes;
 DROP TABLE IF EXISTS ContraintesProf;
 DROP TABLE IF EXISTS ContraintesEns;
 DROP TABLE IF EXISTS Cours;
+DROP TABLE IF EXISTS Options;
+DROP TABLE IF EXISTS CompoGroupes;
+DROP TABLE IF EXISTS Enseigne;
+DROP TABLE IF EXISTS LiensGroupes;
 DROP TABLE IF EXISTS Eleves;
 DROP TABLE IF EXISTS Salles;
-DROP TABLE IF EXISTS TypeSalles;
+DROP TABLE IF EXISTS TypesSalles;
 DROP TABLE IF EXISTS Horaires;
 DROP TABLE IF EXISTS Enseignants;
 DROP TABLE IF EXISTS Enseignements;
+DROP TABLE IF EXISTS Groupes;
 DROP TABLE IF EXISTS Divisions;
 DROP TABLE IF EXISTS Parents;
 DROP TABLE IF EXISTS Directeurs;
@@ -40,12 +45,20 @@ CREATE TABLE Divisions(
    PRIMARY KEY(IdDiv)
 );
 
+CREATE TABLE Groupes(
+   IdGrp VARCHAR(10) CHECK (IdGrp LIKE 'GRP%'),
+   LibelleGrp VARCHAR(40)  NOT NULL,
+   NiveauGrp VARCHAR(4)  NOT NULL CHECK (NiveauGrp IN ('6EME', '5EME', '4EME', '3EME')),
+   EffectifPrevGrp INT NOT NULL DEFAULT 35,
+   PRIMARY KEY(IdGrp)
+);
+
+
 CREATE TABLE Enseignements(
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
-   LibelleEns VARCHAR(15) NOT NULL,
+   LibelleEns VARCHAR(40) NOT NULL,
    NiveauEns CHAR(4) CHECK(NiveauEns IN ('6EME', '5EME', '4EME', '3EME')),
    VolHEns DECIMAL(3,1) NOT NULL,
-   DureeMinEns INT NOT NULL DEFAULT 1,
    OptionEns BOOLEAN NOT NULL DEFAULT 0,
    PRIMARY KEY(IdEns)
 );
@@ -68,18 +81,18 @@ CREATE TABLE Horaires(
    PRIMARY KEY(Horaire)
 );
 
-CREATE TABLE TypeSalles(
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+CREATE TABLE TypesSalles(
+   TypeSalle VARCHAR(15),
    PRIMARY KEY(TypeSalle)
 );
 
 CREATE TABLE Salles(
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   LibelleSalle VARCHAR(15) CHECK (LibelleSalle LIKE 'Salle %'),
+   LibelleSalle VARCHAR(40) CHECK (LibelleSalle LIKE 'Salle %'),
    CapSalle INT NOT NULL,
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+   TypeSalle VARCHAR(15),
    PRIMARY KEY(IdSalle),
-   FOREIGN KEY(TypeSalle) REFERENCES TypeSalles(TypeSalle)
+   FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle)
 );
 
 CREATE TABLE Eleves(
@@ -87,22 +100,57 @@ CREATE TABLE Eleves(
    NomEleve VARCHAR(15)  NOT NULL,
    PrenomEleve VARCHAR(15)  NOT NULL,
    MdpEleve TEXT,
-   AnneeNaisEleve DATE CHECK (AnneeNaisEleve>2000 AND AnneeNaisEleve<2100),
+   AnneeNaisEleve DECIMAL(4) CHECK (AnneeNaisEleve>2000 AND AnneeNaisEleve<2100),
    NiveauEleve VARCHAR(4)  CHECK (NiveauEleve LIKE '%EME'),
    IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV%'),
    PRIMARY KEY(IdEleve),
    FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
 );
 
+CREATE TABLE LiensGroupes(
+   IdDiv VARCHAR(10) ,
+   IdGrp VARCHAR(10) ,
+   PRIMARY KEY(IdDiv, IdGrp),
+   FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv),
+   FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
+);
+
+CREATE TABLE Enseigne(
+   IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
+   IdEns VARCHAR(10)  CHECK (IdEns LIKE 'ENS%'),
+   PRIMARY KEY(IdProf, IdEns),
+   FOREIGN KEY(IdProf) REFERENCES Enseignants(IdProf),
+   FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
+);
+
+CREATE TABLE CompoGroupes(
+   IdEleve VARCHAR(10) ,
+   IdGrp VARCHAR(10) ,
+   PRIMARY KEY(IdEleve, IdGrp),
+   FOREIGN KEY(IdEleve) REFERENCES Eleves(IdEleve),
+   FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
+);
+
+CREATE TABLE Options(
+   IdEleve VARCHAR(10) ,
+   IdEns VARCHAR(10) ,
+   PRIMARY KEY(IdEleve, IdEns),
+   FOREIGN KEY(IdEleve) REFERENCES Eleves(IdEleve),
+   FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
+);
+
+
+
 CREATE TABLE Cours(
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
    IdDiv VARCHAR(10) CHECK (IdDiv LIKE 'DIV%'),
+   IdGrp VARCHAR(10) CHECK (IdGrp LIKE 'GRP%'),
    PRIMARY KEY(IdCours),
-   FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns),
-   FOREIGN KEY(IdProf) REFERENCES Enseignants(IdProf),
-   FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv)
+   FOREIGN KEY(IdProf, IdEns) REFERENCES Enseigne(IdProf, IdEns),
+   FOREIGN KEY(IdDiv) REFERENCES Divisions(IdDiv),
+   FOREIGN KEY(IdGrp) REFERENCES Groupes(IdGrp)
 );
 
 CREATE TABLE ContraintesEns(
@@ -132,11 +180,12 @@ CREATE TABLE Parentes(
 );
 
 CREATE TABLE ContraintesSalles(
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+   TypeSalle VARCHAR(15),
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    VolHSalle DECIMAL(3,2) NOT NULL,
+   DureeMinSalle INT NOT NULL DEFAULT 1,
    PRIMARY KEY(TypeSalle, IdCours),
-   FOREIGN KEY(TypeSalle) REFERENCES TypeSalles(TypeSalle),
+   FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
 );
 
@@ -145,12 +194,51 @@ CREATE TABLE Unites(
    Semaine CHAR(1) CHECK (Semaine IN ('A', 'B')),
    Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   TypeSalle VARCHAR(10) CHECK (TypeSalle IN('Cours','TP','Sport')),
+   TypeSalle VARCHAR(15),
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
    FOREIGN KEY(TypeSalle, IdCours) REFERENCES ContraintesSalles(TypeSalle, IdCours),
    FOREIGN KEY(IdSalle) REFERENCES Salles(IdSalle)
 );
+
+CREATE OR REPLACE VIEW DivisionCount
+AS
+   SELECT D.IdDiv, COUNT(IdEleve) EffectifReelDiv
+   FROM Divisions D LEFT JOIN Eleves E ON D.IdDiv = E.IdDiv
+   GROUP BY D.IdDiv;
+
+CREATE OR REPLACE VIEW GroupCount
+AS
+   SELECT G.IdGrp, COUNT(IdEleve) EffectifReelGrp
+   FROM Groupes G LEFT JOIN CompoGroupes C ON G.IdGrp = C.IdGrp
+   GROUP BY G.IdGrp;
+
+CREATE OR REPLACE VIEW GroupDivCount
+AS
+   SELECT G.IdGrp, COUNT(IdDiv) NbDivAssociees
+   FROM Groupes G LEFT JOIN LiensGroupes L ON G.IdGrp = L.IdGrp
+   GROUP BY G.IdGrp;
+
+CREATE OR REPLACE VIEW LibellesCours
+AS
+   SELECT C.IdDiv, C.IdGrp, C.IdProf, C.IdEns, LibelleEns, NomProf, PrenomProf, LibelleDiv, LibelleGrp
+   FROM (((Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
+         JOIN Enseignants P ON C.IdProf = P.IdProf)
+         LEFT JOIN Divisions D ON C.IdDiv = D.IdDiv)
+         LEFT JOIN Groupes G ON C.IdGrp = G.IdGrp;
+
+CREATE OR REPLACE VIEW LibellesDiv
+AS
+   SELECT IdGrp, G.IdDiv, LibelleDiv
+   FROM LiensGroupes G JOIN Divisions D ON G.IdDiv = D.IdDiv;
+
+CREATE OR REPLACE VIEW EnsOption
+AS
+   SELECT *
+   FROM Enseignements
+   WHERE OptionEns IS true;
+
+
 
 
