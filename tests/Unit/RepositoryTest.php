@@ -118,7 +118,7 @@ class RepositoryTest extends TestCase{
 
     function testDivisionsAndInsertDivision(): void{
         $divisions = $this->data->divisions();
-        $this->repository->insertDivision($divisions[0]);
+        $this->assertEquals($this->repository->insertDivision($divisions[0]), $divisions[0]['IdDiv']);
         $divisions[0]['EffectifReelDiv'] = 0;
         $this->assertEquals($this->repository->divisions(), [$divisions[0]]);
     }
@@ -386,7 +386,8 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getStudentOptions($student['IdEleve']), [['IdEleve' => $student['IdEleve'], 'IdEns' => $subject['IdEns']]]);
     }
 
-    function testGetStudentOptionsLib(): void{$students = $this->data->students();
+    function testGetStudentOptionsLib(): void{
+        $students = $this->data->students();
         $student = $students[0];
         $this->repository->insertStudent($student);
         $subjects = $this->data->subjects();
@@ -396,6 +397,15 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getStudentOptionsLib($student['IdEleve']), [['IdEleve' => $student['IdEleve'], 
                                                                                         'IdEns' => $subject['IdEns'],
                                                                                         'LibelleEns' => $subject['LibelleEns']]]);    
+    }
+
+    function testCreate2Groups(): void{
+        $divisions = $this->data->divisions();
+        $division = $divisions[0];
+        $idDiv = $this->repository->insertDivision($division);
+        $this->repository->create2Groups($idDiv);
+        $groups = $this->repository->groups();
+        $this->assertEquals(count($groups), 2);
     }
 
 
