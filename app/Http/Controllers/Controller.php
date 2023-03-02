@@ -242,14 +242,25 @@ class Controller extends BaseController{
             'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.'
         ];
         $validatedData = $request->validate($rules, $messages);
+        if($request->has('group'))
+            $group = true;
+        else
+            $group = false;
         $division = [
                 'LibelleDiv' => $validatedData['lib'], 
                 'NiveauDiv' => $validatedData['grade'], 
                 'EffectifPrevDiv' => $validatedData['headcount']];
         try{
-            $this->repository->insertDivision($division);
+            $idDiv = $this->repository->insertDivision($division);
         } catch (Exception $exception) {
             return redirect()->route('division.form')->withInput()->withErrors("Impossible d'ajouter la division.");
+        }
+        if($group){
+            try{
+                $this->repository->create2Groups($idDiv);
+            } catch (Exception $exception) {
+                return redirect()->route('division.form')->withInput()->withErrors("Impossible de créer les groupes.");
+            }
         }
         return redirect()->route('division.form')->with('status', 'Division ajoutée avec succès !');
     }

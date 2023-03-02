@@ -343,7 +343,7 @@ class Repository {
 
     #############DIVISIONS##############
 
-    function insertDivision(array $division): void {
+    function insertDivision(array $division): string {
         if(!array_key_exists('IdDiv', $division)){
             $id = dechex(time());
             $id = substr($id, 3, 10);
@@ -351,6 +351,7 @@ class Repository {
         }
         DB::table('Divisions')
             ->insert($division);
+        return $division['IdDiv'];
     }
 
     function divisions() : array{
@@ -413,6 +414,38 @@ class Repository {
                 ->insert(['IdGrp' => $idGrp,
                           'IdEleve' => $id]);
         }
+    }
+
+    function create2Groups(string $idDiv): void {
+        $divisions = DB::table("Divisions")
+                        ->where('IdDiv', $idDiv)
+                        ->get()
+                        ->toArray();
+        $division = $divisions[0];
+        $id = dechex(time());
+        $id = substr($id, 3, 10);
+        $groupA = "GRP".$id."A";
+        $groupB = "GRP".$id."B";
+        DB::table('Groupes')
+             ->insert(['IdGrp' => $groupA,
+                       'LibelleGrp' => $division['LibelleDiv']." GP A",
+                       'NiveauGrp' => $division['NiveauDiv'],
+                       'EffectifPrevGrp' => $division['EffectifPrevDiv']/2]
+            );
+        DB::table('LiensGroupes')
+            ->insert(['IdGrp' => $groupA,
+                      'IdDiv' => $idDiv]
+           );
+        DB::table('Groupes')
+             ->insert(['IdGrp' => $groupB,
+                       'LibelleGrp' => $division['LibelleDiv']." GP B",
+                       'NiveauGrp' => $division['NiveauDiv'],
+                       'EffectifPrevGrp' => $division['EffectifPrevDiv']/2]
+            );
+        DB::table('LiensGroupes')
+            ->insert(['IdGrp' => $groupB,
+                      'IdDiv' => $idDiv]
+           );
     }
 
     #############GROUPS##############
