@@ -23,7 +23,6 @@ class Repository {
         $types = $data->types();
         $classrooms = $data->classrooms();
         $students = $data->students();
-        $scheduel = $data->scheduels();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -40,8 +39,6 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
-        foreach($scheduel as $row)
-            $this->insertScheduels($row);
     }
 
     ##########TEACHERS#############
@@ -74,7 +71,7 @@ class Repository {
                     ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
         if(empty($teacher))
-            throw new Exception('Enseignant inconnu');
+            throw new Exception('Enseignant inconnu'); 
         return $teacher[0];
     }
 
@@ -102,13 +99,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpProf']))
+        if(!Hash::check($password, $user['MdpProf']))    
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdProf'],
-            'name'=> $user['NomProf'],
+            'id' => $user['IdProf'], 
+            'name'=> $user['NomProf'], 
             'firstname'=> $user['PrenomProf'],
-            'role'=> 'prof'];
+            'role'=> 'prof'];  
     }
 
     function updateTeacher(array $teacher): void{
@@ -163,7 +160,7 @@ class Repository {
                     ->get(['E.*', 'LibelleDiv'])
                     ->toArray();
         if(empty($student))
-            throw new Exception('Elève inconnu');
+            throw new Exception('Elève inconnu'); 
         return $student[0];
     }
 
@@ -190,13 +187,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpEleve']))
+        if(!Hash::check($password, $user['MdpEleve']))    
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdEleve'],
-            'name'=> $user['NomEleve'],
+            'id' => $user['IdEleve'], 
+            'name'=> $user['NomEleve'], 
             'firstname'=> $user['PrenomEleve'],
-            'role'=> 'eleve'];
+            'role'=> 'eleve'];  
     }
 
     function updateStudent(array $student): void{
@@ -241,13 +238,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpDir']))
+        if(!Hash::check($password, $user['MdpDir']))    
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdDir'],
-            'name'=> $user['NomDir'],
+            'id' => $user['IdDir'], 
+            'name'=> $user['NomDir'], 
             'firstname'=> $user['PrenomDir'],
-            'role'=> 'dir'];
+            'role'=> 'dir'];  
     }
 
     #########SUBJECTS#############
@@ -284,7 +281,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($subject))
-            throw new Exception('Enseignement inconnu');
+            throw new Exception('Enseignement inconnu'); 
         return $subject[0];
     }
 
@@ -303,7 +300,7 @@ class Repository {
     function options(): array{
         return DB::table('Options')
             ->get()
-            ->toArray();
+            ->toArray(); 
     }
 
     function getStudentOptions(string $id) : array{
@@ -372,7 +369,7 @@ class Repository {
                     ->get(['D.*', 'EffectifReelDiv'])
                     ->toArray();
         if(empty($division))
-            throw new Exception('Division inconnue');
+            throw new Exception('Division inconnue'); 
         return $division[0];
     }
 
@@ -448,7 +445,7 @@ class Repository {
                     ->get(['G.*', 'EffectifReelGrp'])
                     ->toArray();
         if(empty($group))
-            throw new Exception('Group inconnu');
+            throw new Exception('Group inconnu'); 
         return $group[0];
     }
 
@@ -642,7 +639,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($classroom))
-            throw new Exception('Salle inconnue');
+            throw new Exception('Salle inconnue'); 
         return $classroom[0];
     }
 
@@ -658,38 +655,4 @@ class Repository {
             ->update($classroom);
     }
 
-    #############Scheduels###############
-    function insertScheduels(array $scheduel): void{
-        DB::table('Horaires')
-            ->insert($scheduel);
-     }
-
-    function scheduels() : array {
-        return DB :: table('Horaires')
-                     ->orderBy('Jour')
-                     ->get(['Horaire','Jour','HeureDebut','HeureFin'])
-                     -> toArray();
-    }
-
-    function getScheduels(array $horaire): array {
-        $scheduel = DB :: table('Horaires')
-                        ->where('Horaire', $horaire)
-                        ->get()
-                        ->toArray();
-        if(empty($scheduel))
-            throw new Exception('Créneau vide');
-        return $horaire[0];
-    }
-
-    function updateScheduels(array $horaire): void {
-        $scheduel = DB :: table('Horaires')
-                            ->where('Horaire', $horaire)
-                            ->get()
-                            ->toArray();
-        if(empty($scheduel))
-            throw new Exception('Créneau vide');
-        DB::table('Horaires')
-            ->where('Horaire', $horaire['Horaire'])
-            ->update($horaire);
-    }
 }

@@ -36,8 +36,8 @@ class RepositoryTest extends TestCase{
         $teacher = $teachers[0];
         $this->repository->insertTeacher($teacher);
         $this->assertEquals($this->repository->getUserTeacher($teacher['IdProf'], $teacher['MdpProf']), [
-                                                            'id' => $teacher['IdProf'],
-                                                            'name'=> $teacher['NomProf'],
+                                                            'id' => $teacher['IdProf'], 
+                                                            'name'=> $teacher['NomProf'], 
                                                             'firstname'=> $teacher['PrenomProf'],
                                                             'role' => 'prof']);
     }
@@ -48,8 +48,8 @@ class RepositoryTest extends TestCase{
         $this->repository->insertTeacher($teacher);
         $this->repository->createPasswordTeacher($teacher['IdProf'], $teacher['MailProf'], 'mdptest001');
         $this->assertEquals($this->repository->getUserTeacher($teacher['IdProf'], 'mdptest001'), [
-                                                            'id' => $teacher['IdProf'],
-                                                            'name'=> $teacher['NomProf'],
+                                                            'id' => $teacher['IdProf'], 
+                                                            'name'=> $teacher['NomProf'], 
                                                             'firstname'=> $teacher['PrenomProf'],
                                                             'role' => 'prof']);
     }
@@ -79,8 +79,8 @@ class RepositoryTest extends TestCase{
         $director = $directors[0];
         $this->repository->insertDirector($director);
         $this->assertEquals($this->repository->getUserDirector($director['IdDir'], $director['MdpDir']), [
-                                                            'id' => $director['IdDir'],
-                                                            'name'=> $director['NomDir'],
+                                                            'id' => $director['IdDir'], 
+                                                            'name'=> $director['NomDir'], 
                                                             'firstname'=> $director['PrenomDir'],
                                                             'role' => 'dir']);
     }
@@ -192,10 +192,10 @@ class RepositoryTest extends TestCase{
         $this->repository->insertDivision($division);
         $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
         $this->repository->linkTeacherClass($teacher['IdProf'], $subject['IdEns'], [$division['IdDiv']], []);
-        $link = ['IdProf' => $teacher['IdProf'],
-                 'IdEns' =>$subject['IdEns'],
-                 'IdDiv' =>$division['IdDiv'],
-                 'IdGrp' => null,
+        $link = ['IdProf' => $teacher['IdProf'], 
+                 'IdEns' =>$subject['IdEns'], 
+                 'IdDiv' =>$division['IdDiv'], 
+                 'IdGrp' => null, 
                  'LibelleEns' => $subject['LibelleEns'],
                  'NomProf' => $teacher['NomProf'],
                  'PrenomProf' => $teacher['PrenomProf'],
@@ -267,10 +267,10 @@ class RepositoryTest extends TestCase{
         $this->repository->insertDivision($division);
         $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
         $this->repository->linkTeacherClass($teacher['IdProf'], $subject['IdEns'], [$division['IdDiv']], []);
-        $link = ['IdProf' => $teacher['IdProf'],
-                 'IdEns' =>$subject['IdEns'],
-                 'IdDiv' =>$division['IdDiv'],
-                 'IdGrp' => null,
+        $link = ['IdProf' => $teacher['IdProf'], 
+                 'IdEns' =>$subject['IdEns'], 
+                 'IdDiv' =>$division['IdDiv'], 
+                 'IdGrp' => null, 
                  'LibelleEns' => $subject['LibelleEns'],
                  'NomProf' => $teacher['NomProf'],
                  'PrenomProf' => $teacher['PrenomProf'],
@@ -280,7 +280,7 @@ class RepositoryTest extends TestCase{
     }
 
     function testGetDivisionStudent(): void{
-
+        
     }
 
     function testGroupsAndInsertGroup(): void{
@@ -321,10 +321,10 @@ class RepositoryTest extends TestCase{
         $this->repository->insertGroup($group);
         $this->repository->linkTeacherSubject($teacher['IdProf'], $subject['IdEns']);
         $this->repository->linkTeacherClass($teacher['IdProf'], $subject['IdEns'], [], [$group['IdGrp']]);
-        $link = ['IdProf' => $teacher['IdProf'],
-                 'IdEns' =>$subject['IdEns'],
-                 'IdDiv' => null,
-                 'IdGrp' => $group['IdGrp'],
+        $link = ['IdProf' => $teacher['IdProf'], 
+                 'IdEns' =>$subject['IdEns'], 
+                 'IdDiv' => null, 
+                 'IdGrp' => $group['IdGrp'], 
                  'LibelleEns' => $subject['LibelleEns'],
                  'NomProf' => $teacher['NomProf'],
                  'PrenomProf' => $teacher['PrenomProf'],
@@ -361,7 +361,7 @@ class RepositoryTest extends TestCase{
     }
 
     function testGetGroupStudent(): void{
-
+        
     }
 
     function testOptionsAndAddStudentOption(): void{
@@ -393,23 +393,11 @@ class RepositoryTest extends TestCase{
         $subject = $subjects[13];
         $this->repository->insertSubject($subject);
         $this->repository->addStudentOption($student['IdEleve'], [$subject['IdEns']]);
-        $this->assertEquals($this->repository->getStudentOptionsLib($student['IdEleve']), [['IdEleve' => $student['IdEleve'],
+        $this->assertEquals($this->repository->getStudentOptionsLib($student['IdEleve']), [['IdEleve' => $student['IdEleve'], 
                                                                                         'IdEns' => $subject['IdEns'],
-                                                                                        'LibelleEns' => $subject['LibelleEns']]]);
+                                                                                        'LibelleEns' => $subject['LibelleEns']]]);    
     }
 
-    function testScheduelsAndInsertScheduels(): void {
-        $scheduel = $this->data->scheduels();
-        $this->repository->insertScheduels($scheduel[1]);
-        $this->assertEquals($this->repository->scheduels(), [$scheduel[1]]);
-    }
-    function testGetScheduels():void{
-        $scheduel = $this->data->scheduels();
-        $scheduel = $scheduel[1];
-        $this->repository->insertScheduels($scheduel);
-        $this->assertEquals($this->repository->getScheduels($scheduel['Horaire'],$scheduel));
-    }
-    function testUpdateScheduels():void{
 
-    }
+
 }
