@@ -677,7 +677,7 @@ class Repository {
                         ->get()
                         ->toArray();
         if(empty($scheduel))
-            throw new Exception('Créneau vide');
+            throw new Exception('Créneau inconnu');
         return $horaire[0];
     }
 
@@ -687,7 +687,7 @@ class Repository {
                             ->get()
                             ->toArray();
         if(empty($scheduel))
-            throw new Exception('Créneau vide');
+            throw new Exception('Créneau inconnu');
         DB::table('Horaires')
             ->where('Horaire', $horaire['Horaire'])
             ->update($horaire);
