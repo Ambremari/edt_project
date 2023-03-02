@@ -545,6 +545,13 @@ class Repository {
                     ->toArray();
     }
 
+    function removeStudentGroup(string $idStud, string $idGrp) : void{
+        DB::table('CompoGroupes')
+                ->where('IdEleve', $idStud)
+                ->where('IdGrp', $idGrp)
+                ->delete();
+    }
+
     ###########LINK-TEACHER-SUBJECT-CLASS################
 
 

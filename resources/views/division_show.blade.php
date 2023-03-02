@@ -13,7 +13,9 @@ Division {{ $division['LibelleDiv'] }}
 <span style="font-weight: bold;">Elèves</span>
 <ul id="studentList">
     @foreach ($students as $row)
-    <li><span>{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</span></li>
+    <li>
+        <span>{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</span>
+    </li>
     @endforeach
 </ul>
 </div>

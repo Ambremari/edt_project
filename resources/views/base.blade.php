@@ -15,8 +15,7 @@
                 Identifiant : {{ session()->get('user')['id'] }}<br>
                     <form method="POST" action="{{route('logout.post')}}">
                         @csrf 
-                            <button class="header_button" type="submit">Déconnexion</a>
-                        </div>
+                            <button class="header_button" type="submit">Déconnexion</button>
                     </form>
                 @else
                         <a href="/login">Se connecter</a>
