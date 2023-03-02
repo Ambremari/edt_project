@@ -801,10 +801,14 @@ class Controller extends BaseController{
             return redirect()->route('login');
         $students = $this->repository->students();
         $groups = $this->repository->groups();
+        $divisions = $this->repository->divisions();
+        $groupLinks = $this->repository->groupLinks();
         $options = $this->repository->optionalSubjects();
         $optionChoices = $this->repository->options();
         return view('group_fill', ['students'=> $students,
                                       'groups' => $groups,
+                                      'divisions' => $divisions,
+                                      'group_links' => $groupLinks,
                                       'options' => $options,
                                       'option_choices' => $optionChoices]);
     }

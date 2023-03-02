@@ -476,6 +476,12 @@ class Repository {
                     ->toArray();
     }
 
+    function groupLinks(): array{
+        return DB::table('LiensGroupes')
+            ->get()
+            ->toArray();
+    }
+
     function removeGroupDivision(string $idGrp): void{
         DB::table('LiensGroupes')
             ->where('IdGrp', $idGrp)
