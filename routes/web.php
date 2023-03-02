@@ -168,4 +168,7 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+Route::post('/scheduel/modif', [Controller::class, 'updateScheduels'])
+    ->name('scheduels.update');
+
 
