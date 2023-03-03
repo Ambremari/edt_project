@@ -21,7 +21,7 @@
         <input type="hidden" value="{{ $group['IdGrp'] }}" name="id">
         <div class="my_input" style="display: inline-block">
             <label for="lib">Libellé</label>
-            <input type="text" id="lib" name="lib" minlength="2" maxlength="15"
+            <input type="text" id="lib" name="lib" minlength="2" maxlength="40"
                 aria-describedby="lib_feedback"
                 value="{{ $group['LibelleGrp'] }}" required>
         </div>

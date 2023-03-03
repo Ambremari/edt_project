@@ -19,7 +19,7 @@
     <div>
         <div class="my_input" style="display: inline-block">
             <label for="lib">Libellé</label>
-            <input type="text" id="lib" name="lib" minlength="2" maxlength="15"
+            <input type="text" id="lib" name="lib" minlength="2" maxlength="40"
                 aria-describedby="lib_feedback"
                 value="{{ old('lib') }}" required>
         </div>
@@ -34,7 +34,7 @@
                 aria-describedby="type_feedback"
                 value="{{ old('type') }}" required>
                 @foreach($types as $type)
-                <option value="{{ $type['TypeSalle'] }}">{{ $type['TypeSalle'] }}</option>
+                <option value="{{ $type['TypeSalle'] }}" {{ old('type') == $type['TypeSalle'] ? "selected" : "" }}>{{ $type['TypeSalle'] }}</option>
                 @endforeach
             </select>
         </div>
