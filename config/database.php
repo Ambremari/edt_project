@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Str;
 
 return [
@@ -49,8 +48,8 @@ return [
             'host' => env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'college_databse'),
-            'username' => env('DB_USERNAME', 'riadh'),
-            'password' => env('DB_PASSWORD', ''),
+            'username' => env('DB_USERNAME', 'test'),
+            'password' => env('DB_PASSWORD', 'test'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',

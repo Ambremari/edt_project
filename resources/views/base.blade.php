@@ -14,7 +14,7 @@
                 {{ session()->get('user')['firstname'] }} {{ session()->get('user')['name'] }}<br>
                 Identifiant : {{ session()->get('user')['id'] }}<br>
                     <form method="POST" action="{{route('logout.post')}}">
-                        @csrf 
+                        @csrf
                             <button class="header_button" type="submit">Déconnexion</a>
                         </div>
                     </form>
@@ -45,7 +45,7 @@
                             <a href="{{route('teachers.show')}}">Fiches</a>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
 
             <div class="dropdown">
@@ -60,7 +60,7 @@
                             <a href="{{route('group.fill.form')}}">Groupes</a>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
 
             <div class="dropdown">
@@ -68,16 +68,16 @@
                 <div class="dropdown-content">
                     <a href="{{route('subjects.form')}}">Création</a>
                     <a href="{{route('link.subject')}}">Affectation</a>
-                </div>    
+                </div>
             </div>
 
             <div class="dropdown">
                 <span><a href="#">Etablissement</a></span>
                 <div class="dropdown-content">
                     <a href="{{route('classroom.form')}}">Infrastructures</a>
-                    <a href="#">Horaires</a>
+                    <a href="{{ route('schedule.form')}}">Horaires</a>
                     <a href="#">Fiche établissement</a>
-                </div>    
+                </div>
             </div>
 
             <div class="dropdown">
@@ -89,7 +89,7 @@
                     <a href="#">Génération automatique</a>
                     <a href="#">Modification manuelle</a>
                     <a href="#">Optimisation</a>
-                </div>    
+                </div>
             </div>
         </div>
         @endif
@@ -127,5 +127,5 @@ function openPage(pageName,elmnt) {
 }
 </script>
     </body>
-    
+
 </html>

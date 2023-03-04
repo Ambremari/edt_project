@@ -41,7 +41,7 @@ class Repository {
         foreach($students as $row)
             $this->insertStudent($row);
         foreach($scheduel as $row)
-            $this->insertScheduels($row);
+            $this->insertSchedule($row);
     }
 
     ##########TEACHERS#############
@@ -659,37 +659,52 @@ class Repository {
     }
 
     #############Scheduels###############
-    function insertScheduels(array $scheduel): void{
-        DB::table('Horaires')
-            ->insert($scheduel);
-     }
-
-    function scheduels() : array {
-        return DB :: table('Horaires')
-                     ->orderBy('Jour')
-                     ->get(['Horaire','Jour','HeureDebut','HeureFin'])
-                     -> toArray();
+    function insertSchedule(array $schedules): void {
+        foreach ($schedules as $schedule) {
+            if (is_array($schedule)) {
+                DB::table('Horaires')->insert([
+                    'Horaire' => $schedule['Horaire'],
+                    'Jour' => $schedule['Jour'],
+                    'HeureDebut' => $schedule['HeureDebut'],
+                    'HeureFin' => $schedule['HeureFin']
+                ]);
+            }
+        }
     }
 
-    function getScheduels(array $horaire): array {
-        $scheduel = DB :: table('Horaires')
-                        ->where('Horaire', $horaire)
-                        ->get()
-                        ->toArray();
-        if(empty($scheduel))
-            throw new Exception('Créneau inconnu');
+    function schedules() : array{
+        return DB::table('Horaires')
+                    ->orderBy('Jour')
+                    ->orderBy('HeureDebut')
+                    ->get()
+                    ->toArray();
+    }
+
+    function getSchedules(string $horaire) : array{
+        $horaire = DB::table('Horaires')
+                    ->where('Horaire', $horaire)
+                    ->get()
+                    ->toArray();
+        if(empty($horaire))
+            throw new Exception('Horaire inconnu');
         return $horaire[0];
     }
 
-    function updateScheduels(array $horaire): void {
-        $scheduel = DB :: table('Horaires')
-                            ->where('Horaire', $horaire)
-                            ->get()
-                            ->toArray();
-        if(empty($scheduel))
-            throw new Exception('Créneau inconnu');
+    function updateSchedules(array $horaire): void{
+        $horaires = DB::table('Horaires')
+                        ->where('Horaire', $horaire['Horaire'])
+                        ->get()
+                        ->toArray();
+        if(empty($horaires))
+            throw new Exception('Horaire inconnu');
         DB::table('Horaires')
             ->where('Horaire', $horaire['Horaire'])
             ->update($horaire);
     }
-}
+
+    function deleteSchedules(string $horaire): void{
+        DB::table('Horaires')
+            ->where('Horaire', $horaire)
+            ->delete();
+    }
+};
