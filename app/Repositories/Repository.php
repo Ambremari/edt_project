@@ -23,6 +23,7 @@ class Repository {
         $types = $data->types();
         $classrooms = $data->classrooms();
         $students = $data->students();
+        $schedules = $data->schedules();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -39,6 +40,8 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
+        foreach($schedules as $row)
+            $this->insertSchedule($row);
     }
 
     ##########TEACHERS#############
@@ -706,6 +709,23 @@ class Repository {
         DB::table('Salles')
             ->where('IdSalle', $classroom['IdSalle'])
             ->update($classroom);
+    }
+
+    ######################## SCHEDULE ###################
+
+    function insertSchedule(array $schedule): void{
+        $mySchedule = ['Horaire' => $schedule[0],
+                       'Jour' => $schedule[1],
+                       'HeureDebut' => $schedule[2],
+                       'HeureFin' => $schedule[3]];
+        DB::table('Horaires')
+            ->insert($mySchedule);
+    }
+
+    function schedules():array{
+        return DB::table('Horaires')
+                   ->get()
+                   ->toArray();
     }
 
 }

@@ -74,7 +74,7 @@ CREATE TABLE Enseignants(
 );
 
 CREATE TABLE Horaires(
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
+   Horaire CHAR(4) CHECK (Horaire REGEXP '[A-Z]{3}[1-9]'),
    Jour VARCHAR(10) CHECK (Jour IN ('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi')),
    HeureDebut TIME NOT NULL,
    HeureFin TIME NOT NULL,

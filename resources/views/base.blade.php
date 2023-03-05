@@ -99,7 +99,7 @@
                 <span><a href="#">Mon Emploi du Temps</a></span>
             </div>
             <div class="dropdown">
-                <span><a href="#">Mes Contraintes</a></span>
+                <span><a href="{{route('prof.constraints')}}">Mes Contraintes</a></span>
             </div>
             </div>
         @endif
