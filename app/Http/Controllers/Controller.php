@@ -872,4 +872,31 @@ class Controller extends BaseController{
         }
         return redirect()->route('group.fill.form')->with('status', 'Affectation réalisée avec succès');
     }
+
+    public function profConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
+            return redirect()->route('login');
+        $times = $this->repository->schedules();
+        return view('teacher_constraints', ['times' => $times]);
+    }
+
+    public function updateProfConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
+            return redirect()->route('login');
+        $rules = [
+            
+        ];
+        $messages = [
+            
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            
+        } catch (Exception $exception) {
+            return redirect()->route('update.prof.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+        }
+        return redirect()->route('update.prof.constraints')->with('status', 'Contraintes actualisées avec succès !');
+    }
 }

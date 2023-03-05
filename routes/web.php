@@ -171,4 +171,11 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
+    ->name('prof.constraints');
+
+Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
+    ->name('update.prof.constraints');
+
+
 
