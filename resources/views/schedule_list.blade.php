@@ -19,7 +19,7 @@
             <th>Heure de fin</th>
             <th></th>
         </tr>
-        @foreach($scheduel as $row)
+        @foreach($schedule as $row)
             <tr>
                 <td>{{ $row['Horaire'] }}</td>
                 <td>{{ $row['Jour'] }}</td>

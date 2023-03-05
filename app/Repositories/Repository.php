@@ -5,7 +5,6 @@ namespace App\Repositories;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-
 use App\Repositories\Data;
 
 class Repository {
@@ -708,3 +707,80 @@ class Repository {
             ->delete();
     }
 };
+##### TRIGGER CHECK DIV AND GRP #####
+    function checkGrpAndDivLevel(string $idGrp): void {
+        $group = DB::table('Groupes')
+                    ->where('IdGrp', $idGrp)
+                    ->first();
+        $division = DB::table('Divisions')
+                    ->join('LiensGroupes', 'Divisions.IdDiv', '=', 'LiensGroupes.IdDiv')
+                    ->where('LiensGroupes.IdGrp', $idGrp)
+                    ->first();
+    if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
+        throw new Exception('Niveau de groupe incompatible avec la division correspondante');
+    }
+};
+##### lien entre groupe et divisions ####
+    function checkGrpAndDivLevell(string $idGrp): void {
+        $group = getGroup($idGrp);
+        $division = getDivision($group['IdDiv']);
+        if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
+        throw new Exception('Niveau de groupe incompatible avec la division correspondante');
+     }
+            $liensGroupes = DB::table('LiensGroupes')
+                                ->where('IdGrp', $idGrp)
+                                ->get()
+                                ->toArray();
+            foreach ($liensGroupes as $lien) {
+                $division =getDivision($lien->IdDiv);
+                if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
+                    throw new Exception('Niveau de groupe incompatible avec la division correspondante');
+                }
+            }
+};
+    function checkStudentLevel(string $idEleve): void {
+        $eleve = getStudent($idEleve);
+        $division = getDivision($eleve['IdDiv']);
+        $groupes = DB::table('LiensGroupes')
+                    ->where('IdDiv', $eleve['IdDiv'])
+                    ->get(['IdGrp'])
+                    ->toArray();
+        foreach ($groupes as $groupe) {
+            $grp = getGroup($groupe->IdGrp);
+            if ($eleve['NiveauEleve'] !== $grp['NiveauGrp'] || $eleve['NiveauEleve'] !== $division['NiveauDiv']) {
+                throw new Exception('Niveau de l\'élève incompatible avec la division ou le groupe correspondant');
+            }
+        }
+};
+    function checkStudentEligibility(string $idEleve, string $idEns): void {
+        $enseignement = DB::table('Enseignements')
+                        ->where('IdEns', $idEns)
+                        ->first();
+        if (empty($enseignement)) {
+            throw new Exception('Enseignement inconnu');
+        }
+
+        $eleve = DB::table('Eleves')
+                ->where('IdEleve', $idEleve)
+                ->get();
+        if (empty($eleve)) {
+            throw new Exception('Elève inconnu');
+        }
+
+        if ($eleve->NiveauEleve !== $enseignement->NiveauEns) {
+            throw new Exception('Niveau de l\'élève incompatible avec l\'enseignement');
+        }
+
+        $optionEns = $enseignement->OptionEns;
+        if (!$optionEns) {
+            $options = DB::table('Options')
+                        ->where('IdEleve', $idEleve)
+                        ->where('IdEns', $idEns)
+                        ->first();
+        if (empty($options)) {
+                throw new Exception('Enseignement optionnel non choisi');
+            }
+        }
+};
+
+
