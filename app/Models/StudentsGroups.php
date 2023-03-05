@@ -18,6 +18,7 @@ class StudentsGroups extends Model
     protected $primaryKey = ['IdEleve', 'IdGrp'];
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $dispatchesEvents = [
         'creating' => CompoGroupesCreatingEvent::class,

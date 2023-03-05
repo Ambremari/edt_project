@@ -13,4 +13,5 @@ class Students extends Model
     protected $primaryKey = ['IdEleve'];
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 }

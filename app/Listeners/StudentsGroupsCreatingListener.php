@@ -3,8 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\StudentsGroupsCreatingEvent;
+use App\Models\Groups;
+use App\Models\LinksGroups;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Models\Students;
 
 class StudentsGroupsCreatingListener
 {
@@ -26,6 +29,14 @@ class StudentsGroupsCreatingListener
      */
     public function handle(StudentsGroupsCreatingEvent $event)
     {
-        //
+        echo '<script>console.log("Welcome to GeeksforGeeks!"); </script>';
+        $student = Students::where('IdEleve', $event->compoGroupes->IdEleve)
+                             ->get();
+        $group = Groups::where('IdGrp', $event->compoGroupes['IdGrp'])
+                         ->get();
+        $divisions = LinksGroups::where('IdGrp', $event->compoGroupes['IdGrp'])
+                                  ->get();
+        if($divisions->contains([$student['IdDiv'], $group['IdGrp']]))
+            $event->compoGroupes->save();
     }
 }
