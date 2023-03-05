@@ -109,6 +109,9 @@ Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
 Route::post('/div/modif', [Controller::class, 'updateDivision'])
     ->name('division.update');
 
+Route::post('/grp/remove', [Controller::class, 'removeStudentGroup'])
+    ->name('remove.student.grp');
+
 Route::get('/div/fill', [Controller::class, 'fillDivisionForm'])
     ->name('division.fill.form');
 

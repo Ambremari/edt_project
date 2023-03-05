@@ -409,7 +409,14 @@ class Repository {
     }
 
     function addGroupStudents(string $idGrp, array $students): void{
+        $divisions = DB::table('LiensGroupes')
+                         ->where('IdGrp', $idGrp)
+                         ->get(['IdDiv'])
+                         ->toArray();
         foreach($students as $id){
+            $student = $this->getStudent($id);
+            if(!in_array(['IdDiv' => $student['IdDiv']], $divisions))
+                throw new Exception('Division incompatible'); 
             DB::table('CompoGroupes')
                 ->insert(['IdGrp' => $idGrp,
                           'IdEleve' => $id]);
@@ -543,6 +550,13 @@ class Repository {
                     ->where('C.IdEleve', $id)
                     ->get()
                     ->toArray();
+    }
+
+    function removeStudentGroup(string $idStud, string $idGrp) : void{
+        DB::table('CompoGroupes')
+                ->where('IdEleve', $idStud)
+                ->where('IdGrp', $idGrp)
+                ->delete();
     }
 
     ###########LINK-TEACHER-SUBJECT-CLASS################

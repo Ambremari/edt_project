@@ -183,6 +183,9 @@ class Controller extends BaseController{
     }
 
     public function updateSubject(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
         $rules = [
             'id' => ['required'],
             'lib' => ['required', 'min:2', 'max:40'],
@@ -275,6 +278,9 @@ class Controller extends BaseController{
     }
 
     public function updateDivision(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
         $rules = [
             'id' => ['required'],
             'lib' => ['required', 'min:2', 'max:40'],
@@ -301,6 +307,27 @@ class Controller extends BaseController{
             return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->withInput()->withErrors("Impossible de modifier la division.");
         }
         return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->with('status', 'Division modifiée avec succès !');
+    }
+
+    public function removeStudentGroup(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'idStud' => ['required'],
+            'idGrp' => ['required']
+        ];
+        $messages = [
+            'idStud.required' => 'Aucun étudiant n\'est sélectionné.',
+            'idGrp.required' => 'Aucun groupe n\'est sélectionné.'
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->removeStudentGroup($validatedData['idStud'], $validatedData['idGrp']);
+        } catch (Exception $exception) {
+            return redirect()->route('group.show', ['idGrp' => $validatedData['idGrp']])->withInput()->withErrors("Impossible de modifier le groupe.");
+        }
+        return redirect()->route('group.show', ['idGrp' => $validatedData['idGrp']])->with('status', 'Groupe modifié avec succès !');
     }
 
     public function showLinkSubject(Request $request){

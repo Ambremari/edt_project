@@ -360,7 +360,7 @@ class RepositoryTest extends TestCase{
         $this->assertEquals($this->repository->getStudent($student['IdEleve']), $student);
     }
 
-    function testGetGroupStudent(): void{
+    function testAddGroupStudentsAndGetGroupStudent(): void{
         
     }
 
@@ -407,6 +407,20 @@ class RepositoryTest extends TestCase{
         $groups = $this->repository->groups();
         $this->assertEquals(count($groups), 2);
     }
+
+    function testRemoveStudentGroup(): void{
+        $groups = $this->data->groups();
+        $group = $groups[0];
+        $idGrp = $this->repository->insertGroup($group);
+        $students = $this->data->students();
+        $this->repository->insertStudent($students[0]);
+        $this->repository->addGroupStudents($idGrp,[$students[0]['IdEleve']]);
+        $this->repository->removeStudentGroup($students[0]['IdEleve'], $idGrp);
+        $studList = $this->repository->getGroupStudents($idGrp);
+        $this->assertEquals(count($studList), 0);
+    }
+
+    
 
 
 

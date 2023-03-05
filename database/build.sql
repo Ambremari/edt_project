@@ -88,7 +88,7 @@ CREATE TABLE TypesSalles(
 
 CREATE TABLE Salles(
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   LibelleSalle VARCHAR(40) CHECK (LibelleSalle LIKE 'Salle %'),
+   LibelleSalle VARCHAR(40),
    CapSalle INT NOT NULL,
    TypeSalle VARCHAR(15),
    PRIMARY KEY(IdSalle),
