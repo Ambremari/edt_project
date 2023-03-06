@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use DateInterval;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +23,8 @@ class Repository {
         $types = $data->types();
         $classrooms = $data->classrooms();
         $students = $data->students();
-        $schedules = $data->schedules();
+        $schedule = $data->schedule();
+        $this->generateSchedule($schedule[0], $schedule[1], $schedule[2], $schedule[3]);
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -39,8 +41,6 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
-        foreach($schedules as $row)
-            $this->insertSchedule($row);
     }
 
     ##########TEACHERS#############
@@ -748,12 +748,8 @@ class Repository {
     ######################## SCHEDULES ###################
 
     function insertSchedule(array $schedule): void{
-        $mySchedule = ['Horaire' => $schedule[0],
-                       'Jour' => $schedule[1],
-                       'HeureDebut' => $schedule[2],
-                       'HeureFin' => $schedule[3]];
         DB::table('Horaires')
-            ->insert($mySchedule);
+            ->insert($schedule);
     }
 
 
@@ -793,7 +789,45 @@ class Repository {
             ->where('Horaire', $horaire)
             ->delete();
     }
-};
+
+    function getStartTimes(): array{
+        return DB::table("HoraireDebut")
+                    ->get()
+                    ->toArray();
+    }
+
+    function generateSchedule(array $day, array $break, array $mornings, array $afternoons): void{
+        $hour = DateInterval::createFromDateString('1 hour');
+        foreach($mornings as $morning){
+            $start = date_create_immutable_from_format('H:i:s', $day['start']);
+            for($i = 1; $i <= 5; $i++){
+                $end = $start->add($hour);
+                $newSchedule = [
+                    'Horaire' => substr($morning, 0, 2).'M'.$i,
+                    'Jour' => $morning,
+                    'HeureDebut' => $start,
+                    'HeureFin' => $end, 
+                ];
+                $this->insertSchedule($newSchedule);
+                $start = $end;
+            }
+        }
+        foreach($afternoons as $afternoon){
+            $start = date_create_from_format('H:i:s', $break['end']);
+            for($i = 1; $i <= 4; $i++){
+                $end = $start->add($hour);
+                $newSchedule = [
+                    'Horaire' => substr($afternoon, 0, 2).'S'.$i,
+                    'Jour' => $afternoon,
+                    'HeureDebut' => $start,
+                    'HeureFin' => $end, 
+                ];
+                $this->insertSchedule($newSchedule);
+                $start = $end;
+            }
+        }
+    }
+
 ##### TRIGGER CHECK DIV AND GRP #####
     function checkGrpAndDivLevel(string $idGrp): void {
         $group = DB::table('Groupes')
@@ -806,7 +840,7 @@ class Repository {
     if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
         throw new Exception('Niveau de groupe incompatible avec la division correspondante');
     }
-};
+    }
 ##### lien entre groupe et divisions ####
     function checkGrpAndDivLevell(string $idGrp): void {
         $group = getGroup($idGrp);
@@ -824,7 +858,7 @@ class Repository {
                     throw new Exception('Niveau de groupe incompatible avec la division correspondante');
                 }
             }
-};
+    }   
     function checkStudentLevel(string $idEleve): void {
         $eleve = getStudent($idEleve);
         $division = getDivision($eleve['IdDiv']);
@@ -838,7 +872,7 @@ class Repository {
                 throw new Exception('Niveau de l\'élève incompatible avec la division ou le groupe correspondant');
             }
         }
-};
+    }
     function checkStudentEligibility(string $idEleve, string $idEns): void {
         $enseignement = DB::table('Enseignements')
                         ->where('IdEns', $idEns)
@@ -868,8 +902,9 @@ class Repository {
                 throw new Exception('Enseignement optionnel non choisi');
             }
         }
-};
-
-
-
+    }
 }
+
+
+
+

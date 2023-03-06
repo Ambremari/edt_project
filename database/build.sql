@@ -238,3 +238,9 @@ AS
    SELECT *
    FROM Enseignements
    WHERE OptionEns IS true;
+
+CREATE OR REPLACE VIEW HoraireDebut
+AS
+   SELECT UNIQUE TIME_FORMAT(HeureDebut, '%H:%i') HeureDebut
+   FROM Horaires;
+

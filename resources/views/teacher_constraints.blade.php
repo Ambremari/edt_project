@@ -28,41 +28,41 @@
         </div>
         <div class="col-edt">
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[0]['HeureDebut'] }}</div>
                 <p>M1</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[1]['HeureDebut'] }}</div>
                 <p>M2</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[2]['HeureDebut'] }}</div>
                 <p>M3</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[3]['HeureDebut'] }}</div>
                 <p>M4</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[4]['HeureDebut'] }}</div>
                 <p>M5</p>
             </div>
             <div style="height: 40px;">
             </div>      
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[5]['HeureDebut'] }}</div>
                 <p>S1</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[6]['HeureDebut'] }}</div>
                 <p>S2</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[7]['HeureDebut'] }}</div>
                 <p>S3</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">8h</div>
+                <div class="start-time">{{ $start_times[8]['HeureDebut'] }}</div>
                 <p>S4</p>
             </div>
         </div>
