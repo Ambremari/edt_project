@@ -881,7 +881,8 @@ class Controller extends BaseController{
         $id = $request->session()->get('user')['id'];
         $constraints = $this->repository->getTeacherConstraints($id);
         return view('teacher_constraints', ['times' => $times,
-                                            'constrints' => $constraints]);
+                                            'constraints' => $constraints,
+                                            'id_prof' => $id]);
     }
 
     public function updateProfConstraints(Request $request){
