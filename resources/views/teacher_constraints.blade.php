@@ -70,12 +70,23 @@
         @foreach($times as $time)
             <div class="{{ $time['Horaire'] }}">
                 <span>
-                    <input class="checkbox" type="checkbox" name="first[]" 
-                    value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
+                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 1], $constraints))
+                        <input class="checkbox" type="checkbox" name="first[]" 
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()" checked> 
+                    @else
+                        <input class="checkbox" type="checkbox" name="first[]" 
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
+                    @endif
                     <lablel for="mybox">Priorité 1</label>
                 </span>
                 <span>
-                    <input class="checkbox" type="checkbox" name="second[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
+                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 2], $constraints))
+                        <input class="checkbox" type="checkbox" name="second[]" 
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()" checked> 
+                    @else
+                        <input class="checkbox" type="checkbox" name="second[]" 
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
+                    @endif
                     <lablel for="mybox">Priorité 2</label>
                 </span>
             </div>
@@ -126,5 +137,7 @@
     }
 
 position();
+color1();
+color2();
 </script>
 @endsection
