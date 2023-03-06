@@ -10,10 +10,30 @@ Groupe {{ $group['LibelleGrp'] }}
 <span>Effectif Réel : {{ $group['EffectifReelGrp'] }}</span>
 </div>
 <div class="colleft">
+@if ($errors->any())
+        <div class="alert alert-warning">
+            Le groupe n'a pas pu être modifié &#9785;
+        </div>  
+    @endif
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 <span style="font-weight: bold;">Elèves</span>
 <ul id="studentList">
     @foreach ($students as $row)
-    <li><span>{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</span></li>
+    <li>
+        <span>
+            <form method="POST" action="{{route('remove.student.grp')}}">
+                @csrf 
+                <input type="hidden" value="{{ $row['IdEleve'] }}" name="idStud">
+                <input type="hidden" value="{{ $group['IdGrp'] }}" name="idGrp">  
+                {{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}
+                <button class="list_button" type="submit">Retirer</button>
+            </form>
+        </span>
+    </li>
     @endforeach
 </ul>
 </div>

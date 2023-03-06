@@ -183,6 +183,9 @@ class Controller extends BaseController{
     }
 
     public function updateSubject(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
         $rules = [
             'id' => ['required'],
             'lib' => ['required', 'min:2', 'max:40'],
@@ -242,14 +245,25 @@ class Controller extends BaseController{
             'headcount.between' => 'Vous devez saisir un effectif  entre 1 et 35.'
         ];
         $validatedData = $request->validate($rules, $messages);
+        if($request->has('group'))
+            $group = true;
+        else
+            $group = false;
         $division = [
                 'LibelleDiv' => $validatedData['lib'],
                 'NiveauDiv' => $validatedData['grade'],
                 'EffectifPrevDiv' => $validatedData['headcount']];
         try{
-            $this->repository->insertDivision($division);
+            $idDiv = $this->repository->insertDivision($division);
         } catch (Exception $exception) {
             return redirect()->route('division.form')->withInput()->withErrors("Impossible d'ajouter la division.");
+        }
+        if($group){
+            try{
+                $this->repository->create2Groups($idDiv);
+            } catch (Exception $exception) {
+                return redirect()->route('division.form')->withInput()->withErrors("Impossible de créer les groupes.");
+            }
         }
         return redirect()->route('division.form')->with('status', 'Division ajoutée avec succès !');
     }
@@ -264,6 +278,9 @@ class Controller extends BaseController{
     }
 
     public function updateDivision(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
         $rules = [
             'id' => ['required'],
             'lib' => ['required', 'min:2', 'max:40'],
@@ -290,6 +307,27 @@ class Controller extends BaseController{
             return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->withInput()->withErrors("Impossible de modifier la division.");
         }
         return redirect()->route('division.update.form', ['idDiv' => $division['IdDiv']])->with('status', 'Division modifiée avec succès !');
+    }
+
+    public function removeStudentGroup(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'idStud' => ['required'],
+            'idGrp' => ['required']
+        ];
+        $messages = [
+            'idStud.required' => 'Aucun étudiant n\'est sélectionné.',
+            'idGrp.required' => 'Aucun groupe n\'est sélectionné.'
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->removeStudentGroup($validatedData['idStud'], $validatedData['idGrp']);
+        } catch (Exception $exception) {
+            return redirect()->route('group.show', ['idGrp' => $validatedData['idGrp']])->withInput()->withErrors("Impossible de modifier le groupe.");
+        }
+        return redirect()->route('group.show', ['idGrp' => $validatedData['idGrp']])->with('status', 'Groupe modifié avec succès !');
     }
 
     public function showLinkSubject(Request $request){
@@ -801,10 +839,14 @@ class Controller extends BaseController{
             return redirect()->route('login');
         $students = $this->repository->students();
         $groups = $this->repository->groups();
+        $divisions = $this->repository->divisions();
+        $groupLinks = $this->repository->groupLinks();
         $options = $this->repository->optionalSubjects();
         $optionChoices = $this->repository->options();
         return view('group_fill', ['students'=> $students,
                                       'groups' => $groups,
+                                      'divisions' => $divisions,
+                                      'group_links' => $groupLinks,
                                       'options' => $options,
                                       'option_choices' => $optionChoices]);
     }
@@ -830,6 +872,7 @@ class Controller extends BaseController{
         }
         return redirect()->route('group.fill.form')->with('status', 'Affectation réalisée avec succès');
     }
+
     public function addScheduleForm(Request $request)
 {
     $hasKey = $request->session()->has('user');
@@ -839,6 +882,41 @@ class Controller extends BaseController{
 
     return view('scheduel_add');
 }
+
+    public function profConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
+            return redirect()->route('login');
+        $times = $this->repository->schedules();
+        $id = $request->session()->get('user')['id'];
+        $constraints = $this->repository->getTeacherConstraints($id);
+        return view('teacher_constraints', ['times' => $times,
+                                            'constraints' => $constraints,
+                                            'id_prof' => $id]);
+    }
+
+    public function updateProfConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
+            return redirect()->route('login');
+        $rules = ['first' => ['required', 'array', 'max:5'],
+                  'second' => ['required', 'array', 'max:5']            
+        ];
+        $messages = [
+            'first.required' => 'Vous devez sélectionner au moins un créneau horaire.',
+            'second.required' => 'Vous devez sélectionner au moins un créneau horaire.',
+            'first.max' => 'Vous devez sélectionner au plus 5 créneaux horaires.',
+            'second.max' => 'Vous devez sélectionner au plus 5 créneaux horaires.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        $id = $request->session()->get('user')['id'];
+        try{
+            $this->repository->addTeacherConstraints($id, $validatedData['first'], $validatedData['second']);
+        } catch (Exception $exception) {
+            return redirect()->route('update.prof.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+        }
+        return redirect()->route('update.prof.constraints')->with('status', 'Contraintes actualisées avec succès !');
+    }
 
     public function addSchedule(Request $request)
 {

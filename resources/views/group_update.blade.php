@@ -21,7 +21,7 @@
         <input type="hidden" value="{{ $group['IdGrp'] }}" name="id">
         <div class="my_input" style="display: inline-block">
             <label for="lib">Libellé</label>
-            <input type="text" id="lib" name="lib" minlength="2" maxlength="15"
+            <input type="text" id="lib" name="lib" minlength="2" maxlength="40"
                 aria-describedby="lib_feedback"
                 value="{{ $group['LibelleGrp'] }}" required>
         </div>
@@ -34,7 +34,7 @@
             <label for="grade">Niveau</label>
             <select class="form-control" id="grade" name="grade" minlength="2" maxlength="15"
                 aria-describedby="grade_feedback"
-                onchange="filterGroupDivision()"
+                onchange="filterGroupDivision(); uncheck();"
                 value="{{ $group['NiveauGrp'] }}" required>
                 <option value="6EME" {{ $group['NiveauGrp'] == "6EME" ? "selected" : "" }}>6ème</option>
                 <option value="5EME" {{ $group['NiveauGrp'] == "5EME" ? "selected" : "" }}>5ème</option>
@@ -65,9 +65,9 @@
             <div class="my_input" style="display: inline-block">
                 <span class="{{ $div['NiveauDiv'] }}">
                 @if(in_array(['IdGrp' => $group['IdGrp'], 'IdDiv' => $div['IdDiv'], 'LibelleDiv' => $div['LibelleDiv']], $group_div))
-                    <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
+                    <input class="checkbox" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option" checked>
                 @else
-                    <input class="form-check-input" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">
+                    <input class="checkbox" type="checkbox" name="divisions[]" value="{{ $div['IdDiv'] }}" id="option">
                 @endif    
                     <label class="form-check-label" for="option">
                     {{ $div['LibelleDiv'] }}
@@ -89,14 +89,13 @@
 </div>
 <script>
 function filterGroupDivision() {
-  var select, filter, div, span, td, i, txtValue;
-  select = document.getElementById("grade");
-  filter = select.value;
-  div = document.getElementById("divOptions");
-  span = div.getElementsByTagName("span");
+  var select = document.getElementById("grade");
+  var filter = select.value;
+  var div = document.getElementById("divOptions");
+  var span = div.getElementsByTagName("span");
 
-  for (i = 0; i < span.length; i++) {
-    td = span[i].getAttribute("class");
+  for (var i = 0; i < span.length; i++) {
+    var td = span[i].getAttribute("class");
     if (td) {
       if (td == filter) {
         span[i].style.display = "";
@@ -105,6 +104,15 @@ function filterGroupDivision() {
       }
     }
   }
+}
+
+function uncheck() {
+  var div = document.getElementById("divOptions");
+  var checkboxes = div.getElementsByTagName("input");
+
+  for (var i = 0; i < checkboxes.length; i++) { 
+		checkboxes[i].checked = false;
+	}
 }
 
 filterGroupDivision();

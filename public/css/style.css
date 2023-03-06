@@ -163,6 +163,15 @@ label{
     padding: 0px;
 }
 
+.list_button{
+    display: inline-block;
+    background-color: #f6f5f5;
+    color: black;
+    padding: 0px;
+    margin-left: 300px;
+    font-size: 16px;
+}
+
 .header_button:hover{
     color: #F53C3C;
 }
@@ -448,4 +457,65 @@ table {
     color: black; 
     display: inline-block; 
     border-radius: 8px;
+}
+
+.edt {
+    position: relative;
+    background-color: #d6e4e4;
+    padding: 0px;
+    height: 890px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+.day-edt {
+    margin: 0px;
+    position: absolute;
+    padding: 0px;
+}
+
+.day-edt div{
+    display: inline-block;
+    width: 180px;
+    height: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 0px;
+    font-weight: bold;
+}
+
+#bodyEdt span {
+    display: block;
+}
+
+#bodyEdt div{
+    position: absolute;
+    display: block;
+    width: 160px;
+    height: 70px;
+    border: 2px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 10px;
+}
+
+.col-edt {
+    position: absolute;
+    margin-top: 40px;
+    left: -100px;
+    width: 100px;
+}
+
+.times-edt {
+    height: 90px;
+    display: block;
+}
+
+.times-edt p{
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.start-time {
+    font-size: 13px;
+    text-align: right;
+    margin-right: 10px;
 }

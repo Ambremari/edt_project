@@ -109,6 +109,9 @@ Route::get('/div/modif/{idDiv}', [Controller::class, 'updateDivisionForm'])
 Route::post('/div/modif', [Controller::class, 'updateDivision'])
     ->name('division.update');
 
+Route::post('/grp/remove', [Controller::class, 'removeStudentGroup'])
+    ->name('remove.student.grp');
+
 Route::get('/div/fill', [Controller::class, 'fillDivisionForm'])
     ->name('division.fill.form');
 
@@ -168,6 +171,7 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+
 Route::get('/schedule/add', [Controller::class, 'addScheduleForm'])
     ->name('schedule.form');
 
@@ -180,6 +184,11 @@ Route::get('/schedule/update/{horaire}', [Controller::class, 'updateScheduleForm
 Route::post('/schedule/update', [Controller::class, 'updateSchedule'])
     ->name('schedule.update');
 
+Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
+    ->name('prof.constraints');
+
+Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
+    ->name('update.prof.constraints');
 
 
 
