@@ -74,7 +74,7 @@ CREATE TABLE Enseignants(
 );
 
 CREATE TABLE Horaires(
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
+   Horaire CHAR(4) CHECK (Horaire REGEXP '[A-Z]{3}[1-9]'),
    Jour VARCHAR(10) CHECK (Jour IN ('lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi')),
    HeureDebut TIME NOT NULL,
    HeureFin TIME NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE TypesSalles(
 
 CREATE TABLE Salles(
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   LibelleSalle VARCHAR(40) CHECK (LibelleSalle LIKE 'Salle %'),
+   LibelleSalle VARCHAR(40),
    CapSalle INT NOT NULL,
    TypeSalle VARCHAR(15),
    PRIMARY KEY(IdSalle),
@@ -155,7 +155,7 @@ CREATE TABLE Cours(
 
 CREATE TABLE ContraintesEns(
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
+   Horaire CHAR(4) CHECK (Horaire REGEXP '[A-Z]{3}[1-9]'),
    Prio INT CHECK (Prio IN('1','2','3')),
    PRIMARY KEY(IdEns, Horaire),
    FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns),
@@ -164,8 +164,8 @@ CREATE TABLE ContraintesEns(
 
 CREATE TABLE ContraintesProf(
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
-   Prio INT CHECK (Prio IN('1','2','3')),
+   Horaire CHAR(4) CHECK (Horaire REGEXP '[A-Z]{3}[1-9]'),
+   Prio INT,
    PRIMARY KEY(IdProf, Horaire),
    FOREIGN KEY(IdProf) REFERENCES Enseignants(IdProf),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire)

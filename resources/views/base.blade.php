@@ -14,9 +14,8 @@
                 {{ session()->get('user')['firstname'] }} {{ session()->get('user')['name'] }}<br>
                 Identifiant : {{ session()->get('user')['id'] }}<br>
                     <form method="POST" action="{{route('logout.post')}}">
-                        @csrf
-                            <button class="header_button" type="submit">Déconnexion</a>
-                        </div>
+                        @csrf 
+                            <button class="header_button" type="submit">Déconnexion</button>
                     </form>
                 @else
                         <a href="/login">Se connecter</a>
@@ -100,7 +99,7 @@
                 <span><a href="#">Mon Emploi du Temps</a></span>
             </div>
             <div class="dropdown">
-                <span><a href="#">Mes Contraintes</a></span>
+                <span><a href="{{route('prof.constraints')}}">Mes Contraintes</a></span>
             </div>
             </div>
         @endif

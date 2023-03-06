@@ -57,6 +57,15 @@
             {{ $message }}
         </div>
         @enderror
+        <div class="my_input" style="display: inline-block">
+            <label class="form-check-label" for="group">Créer 2 groupes</label>
+            <input class="form-check-input" type="checkbox" value="group" id="group" name="group">
+        </div>
+        @error('group')
+        <div id="group_feedback" class="invalid-feedback">
+            {{ $message }}
+        </div>
+        @enderror
     </div>
     <button type="submit">Ajouter</button>
 </form>

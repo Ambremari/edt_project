@@ -22,7 +22,7 @@ class Repository {
         $types = $data->types();
         $classrooms = $data->classrooms();
         $students = $data->students();
-        $scheduel = $data->scheduels();
+        $schedules = $data->schedules();
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -39,7 +39,7 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
-        foreach($scheduel as $row)
+        foreach($schedules as $row)
             $this->insertSchedule($row);
     }
 
@@ -73,7 +73,7 @@ class Repository {
                     ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
         if(empty($teacher))
-            throw new Exception('Enseignant inconnu');
+            throw new Exception('Enseignant inconnu'); 
         return $teacher[0];
     }
 
@@ -101,13 +101,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpProf']))
+        if(!Hash::check($password, $user['MdpProf']))    
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdProf'],
-            'name'=> $user['NomProf'],
+            'id' => $user['IdProf'], 
+            'name'=> $user['NomProf'], 
             'firstname'=> $user['PrenomProf'],
-            'role'=> 'prof'];
+            'role'=> 'prof'];  
     }
 
     function updateTeacher(array $teacher): void{
@@ -120,6 +120,39 @@ class Repository {
         DB::table('Enseignants')
             ->where('IdProf', $teacher['IdProf'])
             ->update($teacher);
+    }
+
+    function removeTeacherConstraints(string $idProf): void {
+        DB::table("ContraintesProf")
+            ->where('IdProf', $idProf)
+            ->delete();
+    }
+
+    function addTeacherConstraints(string $idProf, array $first, array $second): void{
+        $this->removeTeacherConstraints($idProf);
+        foreach($first as $time){
+            DB::table("ContraintesProf")
+                ->insert([
+                    'IdProf' => $idProf,
+                    'Horaire' => $time,
+                    'Prio' => 1
+                ]);
+        }
+        foreach($second as $time){
+            DB::table("ContraintesProf")
+                ->insert([
+                    'IdProf' => $idProf,
+                    'Horaire' => $time,
+                    'Prio' => 2
+                ]);
+        }
+    }
+
+    function getTeacherConstraints(string $idProf) : array{
+        return DB::table("ContraintesProf")
+                    ->where('IdProf', $idProf)
+                    ->get()
+                    ->toArray();
     }
 
     ###############STUDENTS################
@@ -162,7 +195,7 @@ class Repository {
                     ->get(['E.*', 'LibelleDiv'])
                     ->toArray();
         if(empty($student))
-            throw new Exception('Elève inconnu');
+            throw new Exception('Elève inconnu'); 
         return $student[0];
     }
 
@@ -189,13 +222,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpEleve']))
+        if(!Hash::check($password, $user['MdpEleve']))    
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdEleve'],
-            'name'=> $user['NomEleve'],
+            'id' => $user['IdEleve'], 
+            'name'=> $user['NomEleve'], 
             'firstname'=> $user['PrenomEleve'],
-            'role'=> 'eleve'];
+            'role'=> 'eleve'];  
     }
 
     function updateStudent(array $student): void{
@@ -240,13 +273,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpDir']))
+        if(!Hash::check($password, $user['MdpDir']))    
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdDir'],
-            'name'=> $user['NomDir'],
+            'id' => $user['IdDir'], 
+            'name'=> $user['NomDir'], 
             'firstname'=> $user['PrenomDir'],
-            'role'=> 'dir'];
+            'role'=> 'dir'];  
     }
 
     #########SUBJECTS#############
@@ -283,7 +316,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($subject))
-            throw new Exception('Enseignement inconnu');
+            throw new Exception('Enseignement inconnu'); 
         return $subject[0];
     }
 
@@ -302,7 +335,7 @@ class Repository {
     function options(): array{
         return DB::table('Options')
             ->get()
-            ->toArray();
+            ->toArray(); 
     }
 
     function getStudentOptions(string $id) : array{
@@ -345,7 +378,7 @@ class Repository {
 
     #############DIVISIONS##############
 
-    function insertDivision(array $division): void {
+    function insertDivision(array $division): string {
         if(!array_key_exists('IdDiv', $division)){
             $id = dechex(time());
             $id = substr($id, 3, 10);
@@ -353,6 +386,7 @@ class Repository {
         }
         DB::table('Divisions')
             ->insert($division);
+        return $division['IdDiv'];
     }
 
     function divisions() : array{
@@ -371,7 +405,7 @@ class Repository {
                     ->get(['D.*', 'EffectifReelDiv'])
                     ->toArray();
         if(empty($division))
-            throw new Exception('Division inconnue');
+            throw new Exception('Division inconnue'); 
         return $division[0];
     }
 
@@ -410,11 +444,50 @@ class Repository {
     }
 
     function addGroupStudents(string $idGrp, array $students): void{
+        $divisions = DB::table('LiensGroupes')
+                         ->where('IdGrp', $idGrp)
+                         ->get(['IdDiv'])
+                         ->toArray();
         foreach($students as $id){
+            $student = $this->getStudent($id);
+            if(!in_array(['IdDiv' => $student['IdDiv']], $divisions))
+                throw new Exception('Division incompatible'); 
             DB::table('CompoGroupes')
                 ->insert(['IdGrp' => $idGrp,
                           'IdEleve' => $id]);
         }
+    }
+
+    function create2Groups(string $idDiv): void {
+        $divisions = DB::table("Divisions")
+                        ->where('IdDiv', $idDiv)
+                        ->get()
+                        ->toArray();
+        $division = $divisions[0];
+        $id = dechex(time());
+        $id = substr($id, 3, 10);
+        $groupA = "GRP".$id."A";
+        $groupB = "GRP".$id."B";
+        DB::table('Groupes')
+             ->insert(['IdGrp' => $groupA,
+                       'LibelleGrp' => $division['LibelleDiv']." GP A",
+                       'NiveauGrp' => $division['NiveauDiv'],
+                       'EffectifPrevGrp' => $division['EffectifPrevDiv']/2]
+            );
+        DB::table('LiensGroupes')
+            ->insert(['IdGrp' => $groupA,
+                      'IdDiv' => $idDiv]
+           );
+        DB::table('Groupes')
+             ->insert(['IdGrp' => $groupB,
+                       'LibelleGrp' => $division['LibelleDiv']." GP B",
+                       'NiveauGrp' => $division['NiveauDiv'],
+                       'EffectifPrevGrp' => $division['EffectifPrevDiv']/2]
+            );
+        DB::table('LiensGroupes')
+            ->insert(['IdGrp' => $groupB,
+                      'IdDiv' => $idDiv]
+           );
     }
 
     #############GROUPS##############
@@ -447,7 +520,7 @@ class Repository {
                     ->get(['G.*', 'EffectifReelGrp'])
                     ->toArray();
         if(empty($group))
-            throw new Exception('Group inconnu');
+            throw new Exception('Group inconnu'); 
         return $group[0];
     }
 
@@ -478,6 +551,12 @@ class Repository {
                     ->toArray();
     }
 
+    function groupLinks(): array{
+        return DB::table('LiensGroupes')
+            ->get()
+            ->toArray();
+    }
+
     function removeGroupDivision(string $idGrp): void{
         DB::table('LiensGroupes')
             ->where('IdGrp', $idGrp)
@@ -506,6 +585,13 @@ class Repository {
                     ->where('C.IdEleve', $id)
                     ->get()
                     ->toArray();
+    }
+
+    function removeStudentGroup(string $idStud, string $idGrp) : void{
+        DB::table('CompoGroupes')
+                ->where('IdEleve', $idStud)
+                ->where('IdGrp', $idGrp)
+                ->delete();
     }
 
     ###########LINK-TEACHER-SUBJECT-CLASS################
@@ -641,7 +727,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($classroom))
-            throw new Exception('Salle inconnue');
+            throw new Exception('Salle inconnue'); 
         return $classroom[0];
     }
 
@@ -657,19 +743,20 @@ class Repository {
             ->update($classroom);
     }
 
-    #############Scheduels###############
-    function insertSchedule(array $schedules): void {
-        foreach ($schedules as $schedule) {
-            if (is_array($schedule)) {
-                DB::table('Horaires')->insert([
-                    'Horaire' => $schedule['Horaire'],
-                    'Jour' => $schedule['Jour'],
-                    'HeureDebut' => $schedule['HeureDebut'],
-                    'HeureFin' => $schedule['HeureFin']
-                ]);
-            }
-        }
+
+
+    ######################## SCHEDULES ###################
+
+    function insertSchedule(array $schedule): void{
+        $mySchedule = ['Horaire' => $schedule[0],
+                       'Jour' => $schedule[1],
+                       'HeureDebut' => $schedule[2],
+                       'HeureFin' => $schedule[3]];
+        DB::table('Horaires')
+            ->insert($mySchedule);
     }
+
+
 
     function schedules() : array{
         return DB::table('Horaires')
@@ -784,3 +871,5 @@ class Repository {
 };
 
 
+
+}
