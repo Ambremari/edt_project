@@ -44,25 +44,25 @@
                 <p>M4</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[4]['HeureDebut'] }}</div>
+                <div class="start-time"></div>
                 <p>M5</p>
             </div>
             <div style="height: 40px;">
             </div>      
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[5]['HeureDebut'] }}</div>
+                <div class="start-time">{{ $start_times[4]['HeureDebut'] }}</div>
                 <p>S1</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[6]['HeureDebut'] }}</div>
+                <div class="start-time">{{ $start_times[5]['HeureDebut'] }}</div>
                 <p>S2</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[7]['HeureDebut'] }}</div>
+                <div class="start-time">{{ $start_times[6]['HeureDebut'] }}</div>
                 <p>S3</p>
             </div>
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[8]['HeureDebut'] }}</div>
+                <div class="start-time">{{ $start_times[7]['HeureDebut'] }}</div>
                 <p>S4</p>
             </div>
         </div>

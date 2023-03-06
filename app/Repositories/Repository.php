@@ -800,7 +800,9 @@ class Repository {
         $hour = DateInterval::createFromDateString('1 hour');
         foreach($mornings as $morning){
             $start = date_create_immutable_from_format('H:i:s', $day['start']);
-            for($i = 1; $i <= 5; $i++){
+            $startBreak = date_create_immutable_from_format('H:i:s', $break['start']);
+            $i = 1;
+            while($start < $startBreak){
                 $end = $start->add($hour);
                 $newSchedule = [
                     'Horaire' => substr($morning, 0, 2).'M'.$i,
@@ -810,11 +812,14 @@ class Repository {
                 ];
                 $this->insertSchedule($newSchedule);
                 $start = $end;
+                $i++;
             }
         }
         foreach($afternoons as $afternoon){
-            $start = date_create_from_format('H:i:s', $break['end']);
-            for($i = 1; $i <= 4; $i++){
+            $start = date_create_immutable_from_format('H:i:s', $break['end']);
+            $endDay = date_create_immutable_from_format('H:i:s', $day['end']);
+            $i = 1;
+            while($start < $endDay){
                 $end = $start->add($hour);
                 $newSchedule = [
                     'Horaire' => substr($afternoon, 0, 2).'S'.$i,
@@ -824,6 +829,7 @@ class Repository {
                 ];
                 $this->insertSchedule($newSchedule);
                 $start = $end;
+                $i++;
             }
         }
     }
