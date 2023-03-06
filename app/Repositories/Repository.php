@@ -720,24 +720,6 @@ class Repository {
         throw new Exception('Niveau de groupe incompatible avec la division correspondante');
     }
 };
-##### lien entre groupe et divisions ####
-    function checkGrpAndDivLevell(string $idGrp): void {
-        $group = getGroup($idGrp);
-        $division = getDivision($group['IdDiv']);
-        if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
-        throw new Exception('Niveau de groupe incompatible avec la division correspondante');
-     }
-            $liensGroupes = DB::table('LiensGroupes')
-                                ->where('IdGrp', $idGrp)
-                                ->get()
-                                ->toArray();
-            foreach ($liensGroupes as $lien) {
-                $division =getDivision($lien->IdDiv);
-                if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
-                    throw new Exception('Niveau de groupe incompatible avec la division correspondante');
-                }
-            }
-};
     function checkStudentLevel(string $idEleve): void {
         $eleve = getStudent($idEleve);
         $division = getDivision($eleve['IdDiv']);
