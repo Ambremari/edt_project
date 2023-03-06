@@ -17,130 +17,80 @@
         </div>
     @endif
     
-    <table class="edt" id="myEdt">
-        <tr>
-            <th style="background-color: #f6f5f5"></th>
-            <th>Lundi</th>
-            <th>Mardi</th>
-            <th>Mercredi</th>
-            <th>Jeudi</th>
-            <th>Vendredi</th>
-            <th>Samedi</th>
-        </tr>
-        <tr>
-        <td>
-            <table class="cell-edt">
-            @foreach($times as $time)
-            @if($time['Jour'] == 'Lundi')
-                <tr><div class= "time-edt">
-                    <p>{{ $time['HeureDebut'] }}</p>
-                    <p>{{ $time['HeureFin'] }}</p>
-                </div>
-                </tr>
-            @endif
-            @endforeach
-                </table>
-            </td>
-            <td>
-                <table class="cell-edt">
-            @foreach($times as $time)
-            @if($time['Jour'] == 'Mardi')
-                <tr><div class="box-edt">
-                    <span>
-                    <input class="checkbox" type="checkbox" name="first[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
+    <div class="edt" id="myEdt">
+        <div class="day-edt">
+            <div>Lundi</div>
+            <div>Mardi</div>
+            <div>Mercredi</div>
+            <div>Jeudi</div>
+            <div>Vendredi</div>
+            <div>Samedi</div>
+        </div>
+        <div class="col-edt">
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>M1</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>M2</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>M3</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>M4</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>M5</p>
+            </div>
+            <div style="height: 40px;">
+            </div>      
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>S1</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>S2</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>S3</p>
+            </div>
+            <div class= "times-edt">
+                <div class="start-time">8h</div>
+                <p>S4</p>
+            </div>
+        </div>
+        <div id="bodyEdt">
+        @foreach($times as $time)
+            <div class="{{ $time['Horaire'] }}">
+                <span>
+                    <input class="checkbox" type="checkbox" name="first[]" 
+                    value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
                     <lablel for="mybox">Priorité 1</label>
-                    </span>
-                    <span>
+                </span>
+                <span>
                     <input class="checkbox" type="checkbox" name="second[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
                     <lablel for="mybox">Priorité 2</label>
-                    </span>
-                </div></tr>
-            @endif
-            @endforeach
-                </table>
-            </td>
-            <td>
-                <table class="cell-edt">
-            @foreach($times as $time)
-            @if($time['Jour'] == 'Mercredi')
-                <tr><div class= "box-edt">
-                    <span>
-                    <input class="checkbox" type="checkbox" name="first[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
-                    <lablel for="mybox">Priorité 1</label>
-                    </span>
-                    <span>
-                    <input class="checkbox" type="checkbox" name="second[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
-                    <lablel for="mybox">Priorité 2</label>
-                    </span>
-                </div></tr>
-            @endif
-            @endforeach
-                </table>
-            </td>
-            <td>
-                <table class="cell-edt">
-            @foreach($times as $time)
-            @if($time['Jour'] == 'Jeudi')
-                <tr><div class= "box-edt">
-                    <span>
-                    <input class="checkbox" type="checkbox" name="first[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
-                    <lablel for="mybox">Priorité 1</label>
-                    </span>
-                    <span>
-                    <input class="checkbox" type="checkbox" name="second[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
-                    <lablel for="mybox">Priorité 2</label>
-                    </span>
-                </div></tr>
-            @endif
-            @endforeach
-                </table>
-            </td>
-            <td>
-                <table class="cell-edt">
-            @foreach($times as $time)
-            @if($time['Jour'] == 'Vendredi')
-                <tr><div class= "box-edt">
-                    <span>
-                    <input class="checkbox" type="checkbox" name="first[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
-                    <lablel for="mybox">Priorité 1</label>
-                    </span>
-                    <span>
-                    <input class="checkbox" type="checkbox" name="second[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
-                    <lablel for="mybox">Priorité 2</label>
-                    </span>
-                </div></tr>
-            @endif
-            @endforeach
-                </table>
-            </td>
-            <td>
-                <table class="cell-edt">
-            @foreach($times as $time)
-            @if($time['Jour'] == 'Samedi')
-                <tr><div class= "box-edt">
-                    <span>
-                    <input class="checkbox" type="checkbox" name="first[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
-                    <lablel for="mybox">Priorité 1</label>
-                    </span>
-                    <span>
-                    <input class="checkbox" type="checkbox" name="second[]" value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
-                    <lablel for="mybox">Priorité 2</label>
-                    </span>
-                </div></tr>
-            @endif
-            @endforeach
-                </table>
-            </td>
-        </tr>
-    </table>
+                </span>
+            </div>
+        @endforeach
+        </div>
+    </div>
 
     <button type="submit">Valider</button>
 </form>
 </div>
 
+@include("edt_position")
 <script>
     function color1(){
-        var table = document.getElementById("myEdt");
+        var table = document.getElementById("bodyEdt");
         var div = table.getElementsByTagName("div");
 
         for(var i = 0; i < div.length ; i++){
@@ -158,7 +108,7 @@
     }
 
     function color2(){
-        var table = document.getElementById("myEdt");
+        var table = document.getElementById("bodyEdt");
         var div = table.getElementsByTagName("div");
 
         for(var i = 0; i < div.length ; i++){
@@ -174,5 +124,7 @@
             }
         }
     }
+
+position();
 </script>
 @endsection

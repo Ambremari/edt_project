@@ -459,41 +459,63 @@ table {
     border-radius: 8px;
 }
 
-.edt td {
-    background-color: #f6f5f5;
+.edt {
+    position: relative;
+    background-color: #d6e4e4;
     padding: 0px;
-    width: 160px;
+    height: 890px;
+    margin-bottom: 20px;
+    margin-top: 10px;
 }
-
-.edt th {
-    width: 160px;
+.day-edt {
     margin: 0px;
+    position: absolute;
+    padding: 0px;
 }
 
-.cell-edt {
-    background-color: #f6f5f5;
-    padding: 0;
+.day-edt div{
+    display: inline-block;
+    width: 180px;
+    height: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 0px;
+    font-weight: bold;
 }
 
-.box-edt {
+#bodyEdt span {
+    display: block;
+}
+
+#bodyEdt div{
+    position: absolute;
     display: block;
     width: 160px;
     height: 70px;
     border: 2px solid #ddd;
     background-color: #f9f9f9;
-    margin: 1%;
     padding: 10px;
 }
 
-.time-edt {
-    display: block;
-    width: 160px;;
-    height: 74px;
-    background-color: #DEEAEA;
-    margin: 1%;
-    padding: 10px;
+.col-edt {
+    position: absolute;
+    margin-top: 40px;
+    left: -100px;
+    width: 100px;
 }
 
-.box-edt span {
+.times-edt {
+    height: 90px;
     display: block;
+}
+
+.times-edt p{
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.start-time {
+    font-size: 13px;
+    text-align: right;
+    margin-right: 10px;
 }
