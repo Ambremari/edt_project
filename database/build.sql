@@ -155,7 +155,7 @@ CREATE TABLE Cours(
 
 CREATE TABLE ContraintesEns(
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
+   Horaire CHAR(4) CHECK (Horaire REGEXP '[A-Z]{3}[1-9]'),
    Prio INT CHECK (Prio IN('1','2','3')),
    PRIMARY KEY(IdEns, Horaire),
    FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns),
@@ -164,8 +164,8 @@ CREATE TABLE ContraintesEns(
 
 CREATE TABLE ContraintesProf(
    IdProf VARCHAR(10) CHECK (IdProf LIKE 'PRF%'),
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
-   Prio INT CHECK (Prio IN('1','2','3')),
+   Horaire CHAR(4) CHECK (Horaire REGEXP '[A-Z]{3}[1-9]'),
+   Prio INT,
    PRIMARY KEY(IdProf, Horaire),
    FOREIGN KEY(IdProf) REFERENCES Enseignants(IdProf),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire)

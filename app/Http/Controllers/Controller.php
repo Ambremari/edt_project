@@ -878,22 +878,29 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
             return redirect()->route('login');
         $times = $this->repository->schedules();
-        return view('teacher_constraints', ['times' => $times]);
+        $id = $request->session()->get('user')['id'];
+        $constraints = $this->repository->getTeacherConstraints($id);
+        return view('teacher_constraints', ['times' => $times,
+                                            'constrints' => $constraints]);
     }
 
     public function updateProfConstraints(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
             return redirect()->route('login');
-        $rules = [
-            
+        $rules = ['first' => ['required', 'array', 'max:5'],
+                  'second' => ['required', 'array', 'max:5']            
         ];
         $messages = [
-            
+            'first.required' => 'Vous devez sélectionner au moins un créneau horaire.',
+            'second.required' => 'Vous devez sélectionner au moins un créneau horaire.',
+            'first.max' => 'Vous devez sélectionner au plus 5 créneaux horaires.',
+            'second.max' => 'Vous devez sélectionner au plus 5 créneaux horaires.',
         ];
         $validatedData = $request->validate($rules, $messages);
+        $id = $request->session()->get('user')['id'];
         try{
-            
+            $this->repository->addTeacherConstraints($id, $validatedData['first'], $validatedData['second']);
         } catch (Exception $exception) {
             return redirect()->route('update.prof.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
         }

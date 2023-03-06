@@ -123,6 +123,39 @@ class Repository {
             ->update($teacher);
     }
 
+    function removeTeacherConstraints(string $idProf): void {
+        DB::table("ContraintesProf")
+            ->where('IdProf', $idProf)
+            ->delete();
+    }
+
+    function addTeacherConstraints(string $idProf, array $first, array $second): void{
+        $this->removeTeacherConstraints($idProf);
+        foreach($first as $time){
+            DB::table("ContraintesProf")
+                ->insert([
+                    'IdProf' => $idProf,
+                    'Horaire' => $time,
+                    'Prio' => 1
+                ]);
+        }
+        foreach($second as $time){
+            DB::table("ContraintesProf")
+                ->insert([
+                    'IdProf' => $idProf,
+                    'Horaire' => $time,
+                    'Prio' => 2
+                ]);
+        }
+    }
+
+    function getTeacherConstraints(string $idProf) : array{
+        return DB::table("ContraintesProf")
+                    ->where('IdProf', $idProf)
+                    ->get()
+                    ->toArray();
+    }
+
     ###############STUDENTS################
 
     function insertStudent(array $student): void {
