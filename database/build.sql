@@ -238,7 +238,3 @@ AS
    SELECT *
    FROM Enseignements
    WHERE OptionEns IS true;
-
-
-
-
