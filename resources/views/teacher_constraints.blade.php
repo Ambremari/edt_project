@@ -5,6 +5,10 @@
 @section('content')
 <div class="central">
 <form method="POST" action="{{route('update.prof.constraints')}}">
+<div class="info">
+        <span>Voeux 1 : {{ count($first_constraints) }} / 5</span>
+        <span>Voeux 2 :  {{ count($sec_constraints) }} / 5</span>
+    </div>
     @csrf
     @if ($errors->any())
         <div class="alert alert-warning">
@@ -27,50 +31,30 @@
             <div>Samedi</div>
         </div>
         <div class="col-edt">
+            @for($i = 1; $i <= count($start_morning) ; $i++)
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[0]['HeureDebut'] }}</div>
-                <p>M1</p>
+                <div class="start-time">{{ $start_morning[($i-1)]['HeureDebut'] }}</div>
+                <p>M{{ $i }}</p>
             </div>
-            <div class= "times-edt">
-                <div class="start-time">{{ $start_times[1]['HeureDebut'] }}</div>
-                <p>M2</p>
+            @endfor
+            @for($i = count($start_morning) ; $i < 5 ; $i++)
+            <div style="height: 90px;">
             </div>
-            <div class= "times-edt">
-                <div class="start-time">{{ $start_times[2]['HeureDebut'] }}</div>
-                <p>M3</p>
-            </div>
-            <div class= "times-edt">
-                <div class="start-time">{{ $start_times[3]['HeureDebut'] }}</div>
-                <p>M4</p>
-            </div>
-            <div class= "times-edt">
-                <div class="start-time"></div>
-                <p>M5</p>
-            </div>
+            @endfor
             <div style="height: 40px;">
             </div>      
+            @for($i = 1; $i <= count($start_afternoon) ; $i++)
             <div class= "times-edt">
-                <div class="start-time">{{ $start_times[4]['HeureDebut'] }}</div>
-                <p>S1</p>
+                <div class="start-time">{{ $start_afternoon[($i-1)]['HeureDebut'] }}</div>
+                <p>S{{ $i }}</p>
             </div>
-            <div class= "times-edt">
-                <div class="start-time">{{ $start_times[5]['HeureDebut'] }}</div>
-                <p>S2</p>
-            </div>
-            <div class= "times-edt">
-                <div class="start-time">{{ $start_times[6]['HeureDebut'] }}</div>
-                <p>S3</p>
-            </div>
-            <div class= "times-edt">
-                <div class="start-time">{{ $start_times[7]['HeureDebut'] }}</div>
-                <p>S4</p>
-            </div>
+            @endfor
         </div>
         <div id="bodyEdt">
         @foreach($times as $time)
             <div class="{{ $time['Horaire'] }}">
                 <span>
-                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 1], $constraints))
+                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 1], $first_constraints))
                         <input class="checkbox" type="checkbox" name="first[]" 
                         value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()" checked> 
                     @else
@@ -80,7 +64,7 @@
                     <lablel for="mybox">Priorité 1</label>
                 </span>
                 <span>
-                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 2], $constraints))
+                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 2], $sec_constraints))
                         <input class="checkbox" type="checkbox" name="second[]" 
                         value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()" checked> 
                     @else
@@ -100,41 +84,6 @@
 
 @include("edt_position")
 <script>
-    function color1(){
-        var table = document.getElementById("bodyEdt");
-        var div = table.getElementsByTagName("div");
-
-        for(var i = 0; i < div.length ; i++){
-            var check1 = div[i].getElementsByTagName("input")[0];
-            var check2 = div[i].getElementsByTagName("input")[1];
-            if(check1){
-                if(check1.checked){
-                    check2.checked = false;
-                    div[i].style.backgroundColor= "red";
-                }
-                else if(!check1.checked && !check2.checked)
-                    div[i].style.backgroundColor= "#f6f5f5";
-            }
-        }
-    }
-
-    function color2(){
-        var table = document.getElementById("bodyEdt");
-        var div = table.getElementsByTagName("div");
-
-        for(var i = 0; i < div.length ; i++){
-            var check1 = div[i].getElementsByTagName("input")[0];
-            var check2 = div[i].getElementsByTagName("input")[1];
-            if(check2){
-                if(check2.checked){
-                    check1.checked = false;
-                    div[i].style.backgroundColor= "yellow";
-                }
-                else if(!check1.checked && !check2.checked)
-                    div[i].style.backgroundColor= "#f6f5f5";
-            }
-        }
-    }
 
 position();
 color1();

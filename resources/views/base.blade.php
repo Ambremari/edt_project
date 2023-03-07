@@ -82,7 +82,7 @@
             <div class="dropdown">
                 <span><a href="#">Emploi du temps</a></span>
                 <div class="dropdown-content">
-                    <a href="#">Contraintes horaires</a>
+                    <a href="{{ route('subject.constraints')}}">Contraintes horaires</a>
                     <a href="#">Contraintes matérielles</a>
                     <a href="#">Pré-traitement</a>
                     <a href="#">Génération automatique</a>

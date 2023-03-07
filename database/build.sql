@@ -239,8 +239,15 @@ AS
    FROM Enseignements
    WHERE OptionEns IS true;
 
-CREATE OR REPLACE VIEW HoraireDebut
+CREATE OR REPLACE VIEW HoraireDebutMatin
 AS
    SELECT UNIQUE TIME_FORMAT(HeureDebut, '%H:%i') HeureDebut
-   FROM Horaires;
+   FROM Horaires
+   WHERE Horaire LIKE "__M_";
+
+CREATE OR REPLACE VIEW HoraireDebutAprem
+AS
+   SELECT UNIQUE TIME_FORMAT(HeureDebut, '%H:%i') HeureDebut
+   FROM Horaires
+   WHERE Horaire LIKE "__S_";
 

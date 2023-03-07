@@ -148,9 +148,10 @@ class Repository {
         }
     }
 
-    function getTeacherConstraints(string $idProf) : array{
+    function getTeacherConstraints(string $idProf, int $prio) : array{
         return DB::table("ContraintesProf")
                     ->where('IdProf', $idProf)
+                    ->where('Prio', $prio)
                     ->get()
                     ->toArray();
     }
@@ -374,6 +375,12 @@ class Repository {
                 ->insert(['IdEleve' => $idEleve,
                          'IdEns' => $idEns]);
         }
+    }
+
+    function subjectConstraints(): array{
+        return DB::table('ContraintesEns')
+            ->get()
+            ->toArray(); 
     }
 
     #############DIVISIONS##############
@@ -790,19 +797,29 @@ class Repository {
             ->delete();
     }
 
-    function getStartTimes(): array{
-        return DB::table("HoraireDebut")
+    function getStartTimesMorning(): array{
+        return DB::table("HoraireDebutMatin")
+                    ->get()
+                    ->toArray();
+    }
+
+    function getStartTimesAfternoon(): array{
+        return DB::table("HoraireDebutAprem")
                     ->get()
                     ->toArray();
     }
 
     function generateSchedule(array $day, array $break, array $mornings, array $afternoons): void{
         $hour = DateInterval::createFromDateString('1 hour');
+        $recess = DateInterval::createFromDateString('10 minutes');
+        $interval = DateInterval::createFromDateString('5 minutes');
         foreach($mornings as $morning){
             $start = date_create_immutable_from_format('H:i:s', $day['start']);
             $startBreak = date_create_immutable_from_format('H:i:s', $break['start']);
             $i = 1;
-            while($start < $startBreak){
+            do{
+                if($i % 3 == 0)
+                    $start = $start->add($recess);
                 $end = $start->add($hour);
                 $newSchedule = [
                     'Horaire' => substr($morning, 0, 2).'M'.$i,
@@ -811,15 +828,17 @@ class Repository {
                     'HeureFin' => $end, 
                 ];
                 $this->insertSchedule($newSchedule);
-                $start = $end;
+                $start = $end->add($interval);
                 $i++;
-            }
+            } while($start->add($hour) <= $startBreak);
         }
         foreach($afternoons as $afternoon){
             $start = date_create_immutable_from_format('H:i:s', $break['end']);
             $endDay = date_create_immutable_from_format('H:i:s', $day['end']);
             $i = 1;
-            while($start < $endDay){
+            do{
+                if($i % 3 == 0)
+                    $start = $start->add($recess);
                 $end = $start->add($hour);
                 $newSchedule = [
                     'Horaire' => substr($afternoon, 0, 2).'S'.$i,
@@ -828,9 +847,9 @@ class Repository {
                     'HeureFin' => $end, 
                 ];
                 $this->insertSchedule($newSchedule);
-                $start = $end;
+                $start = $end->add($interval);
                 $i++;
-            }
+            } while($start->add($hour) <= $endDay);
         }
     }
 
