@@ -12,14 +12,19 @@
                 L'horaire n'a pas pu être ajouté &#9785;
             </div>
         @endif
-        <div class="form-group">
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+        <div class="my_input">
             <label for="horaire">Horaire</label>
             <input type="text" name="horaire" id="horaire" class="form-control" required>
             @error('horaire')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-        <div class="form-group">
+        <div class="my_input">
             <label for="jour">Jour</label>
             <select name="jour" id="jour" class="form-control" required>
                 <option value="">-- Sélectionnez un jour --</option>
@@ -34,8 +39,7 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-
-        <div class="form-group">
+        <div class="my_input">
             <label for="heure_debut">Heure de début</label>
             <input type="time" name="heure_debut" id="heure_debut" class="form-control" required>
             @error('heure_debut')
@@ -43,7 +47,7 @@
             @enderror
         </div>
 
-        <div class="form-group">
+        <div class="my_input">
             <label for="heure_fin">Heure de fin</label>
             <input type="time" name="heure_fin" id="heure_fin" class="form-control" required>
             @error('heure_fin')
@@ -53,5 +57,8 @@
 
         <button type="submit" class="btn btn-primary">Ajouter</button>
     </form>
+    <div class="coldown">
+        @include('schedule_list')
+    </div>
 </div>
 @endsection

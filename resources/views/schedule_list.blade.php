@@ -25,29 +25,30 @@
                 <td>{{ $row['Jour'] }}</td>
                 <td>{{ $row['HeureDebut'] }}</td>
                 <td>{{ $row['HeureFin'] }}</td>
-                <td><a href="{{route('schedule.update.form', ['horaire' => $row['Horaire']])}}">Modifier</a></td>
+                <td><a href="{{route('schedule.update.form', ['Horaire' => $row['Horaire']])}}">Modifier</a></td>
             </tr>
         @endforeach
     </table>
 </div>
 <script>
-function filterSchedule() {
-    var select, filter, table, tr, td, i, txtValue;
-    select = document.getElementById("mySelect");
-    filter = select.value;
-    table = document.getElementById("horaireTable");
-    tr = table.getElementsByTagName("tr");
+    function filterSchedule() {
+        var select, filter, table, tr, td, i, txtValue;
+        select = document.getElementById("mySelect");
+        filter = select.value;
+        table = document.getElementById("horaireTable");
+        tr = table.getElementsByTagName("tr");
 
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[1];
-        if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue == filter || filter == "") {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue == filter || filter == "") {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
             }
         }
+        return false;
     }
-}
-</script>
+    </script>

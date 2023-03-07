@@ -73,7 +73,7 @@ class Repository {
                     ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
                     ->toArray();
         if(empty($teacher))
-            throw new Exception('Enseignant inconnu'); 
+            throw new Exception('Enseignant inconnu');
         return $teacher[0];
     }
 
@@ -101,13 +101,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpProf']))    
+        if(!Hash::check($password, $user['MdpProf']))
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdProf'], 
-            'name'=> $user['NomProf'], 
+            'id' => $user['IdProf'],
+            'name'=> $user['NomProf'],
             'firstname'=> $user['PrenomProf'],
-            'role'=> 'prof'];  
+            'role'=> 'prof'];
     }
 
     function updateTeacher(array $teacher): void{
@@ -195,7 +195,7 @@ class Repository {
                     ->get(['E.*', 'LibelleDiv'])
                     ->toArray();
         if(empty($student))
-            throw new Exception('Elève inconnu'); 
+            throw new Exception('Elève inconnu');
         return $student[0];
     }
 
@@ -222,13 +222,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpEleve']))    
+        if(!Hash::check($password, $user['MdpEleve']))
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdEleve'], 
-            'name'=> $user['NomEleve'], 
+            'id' => $user['IdEleve'],
+            'name'=> $user['NomEleve'],
             'firstname'=> $user['PrenomEleve'],
-            'role'=> 'eleve'];  
+            'role'=> 'eleve'];
     }
 
     function updateStudent(array $student): void{
@@ -273,13 +273,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpDir']))    
+        if(!Hash::check($password, $user['MdpDir']))
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdDir'], 
-            'name'=> $user['NomDir'], 
+            'id' => $user['IdDir'],
+            'name'=> $user['NomDir'],
             'firstname'=> $user['PrenomDir'],
-            'role'=> 'dir'];  
+            'role'=> 'dir'];
     }
 
     #########SUBJECTS#############
@@ -316,7 +316,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($subject))
-            throw new Exception('Enseignement inconnu'); 
+            throw new Exception('Enseignement inconnu');
         return $subject[0];
     }
 
@@ -335,7 +335,7 @@ class Repository {
     function options(): array{
         return DB::table('Options')
             ->get()
-            ->toArray(); 
+            ->toArray();
     }
 
     function getStudentOptions(string $id) : array{
@@ -405,7 +405,7 @@ class Repository {
                     ->get(['D.*', 'EffectifReelDiv'])
                     ->toArray();
         if(empty($division))
-            throw new Exception('Division inconnue'); 
+            throw new Exception('Division inconnue');
         return $division[0];
     }
 
@@ -451,7 +451,7 @@ class Repository {
         foreach($students as $id){
             $student = $this->getStudent($id);
             if(!in_array(['IdDiv' => $student['IdDiv']], $divisions))
-                throw new Exception('Division incompatible'); 
+                throw new Exception('Division incompatible');
             DB::table('CompoGroupes')
                 ->insert(['IdGrp' => $idGrp,
                           'IdEleve' => $id]);
@@ -520,7 +520,7 @@ class Repository {
                     ->get(['G.*', 'EffectifReelGrp'])
                     ->toArray();
         if(empty($group))
-            throw new Exception('Group inconnu'); 
+            throw new Exception('Group inconnu');
         return $group[0];
     }
 
@@ -727,7 +727,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($classroom))
-            throw new Exception('Salle inconnue'); 
+            throw new Exception('Salle inconnue');
         return $classroom[0];
     }
 
@@ -851,7 +851,3 @@ class Repository {
             }
         }
 };
-
-
-
-}
