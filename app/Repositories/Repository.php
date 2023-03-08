@@ -383,6 +383,75 @@ class Repository {
             ->toArray(); 
     }
 
+    function removeSubjectConstraints(string $id): void{
+        DB::table('ContraintesEns')
+            ->where('IdEns', $id)
+            ->delete(); 
+    }
+
+    function removeLevelConstraints(string $level): array {
+        $subjects = DB::table("Enseignements")
+                        ->where('NiveauEns', $level)
+                        ->get('IdEns')
+                        ->toArray();
+        DB::table('ContraintesEns')
+            ->whereIn('IdEns', $subjects)
+            ->delete(); 
+        return $subjects;
+    }
+
+    function addSubjectConstraints(string $id, array $first, array $second): void{
+        $this->removeSubjectConstraints($id);
+        foreach($first as $time){
+            DB::table("ContraintesEns")
+                ->insert([
+                    'IdEns' => $id,
+                    'Horaire' => $time,
+                    'Prio' => 1
+                ]);
+        }
+        foreach($second as $time){
+            DB::table("ContraintesEns")
+                ->insert([
+                    'IdEns' => $id,
+                    'Horaire' => $time,
+                    'Prio' => 2
+                ]);
+        }
+    }
+
+    function addLevelConstraints(string $level, array $first, array $second): void{
+        $subjects = $this->removeLevelConstraints($level);
+        foreach($first as $time){
+            foreach($subjects as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time,
+                        'Prio' => 1
+                    ]);
+            }
+        }
+        foreach($second as $time){
+            foreach($subjects as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time,
+                        'Prio' => 2
+                    ]);
+            }
+        }
+    }
+
+    function getSubjectConstraints(string $idEns, int $prio) : array{
+        return DB::table("ContraintesEns")
+                    ->where('IdEns', $idEns)
+                    ->where('Prio', $prio)
+                    ->get()
+                    ->toArray();
+    }
+
     #############DIVISIONS##############
 
     function insertDivision(array $division): string {

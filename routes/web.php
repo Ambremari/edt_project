@@ -190,7 +190,11 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
-Route::get('/edt/horaires', [Controller::class, 'subjectConstraintsForm'])
+Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
+    ->name('subjects.constraints');
+
+Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
+    ->where('idEns', '[ENS].*')
     ->name('subject.constraints');
 
 Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])

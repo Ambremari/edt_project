@@ -543,3 +543,8 @@ table {
     text-align: right;
     margin-right: 10px;
 }
+
+.radio-link {
+    display: inline-block;
+    width: 80%;
+}
