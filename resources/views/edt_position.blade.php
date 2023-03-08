@@ -41,4 +41,40 @@
                 div[i].style.top = "800px";
         }
     }
+
+    function color1(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+
+        for(var i = 0; i < div.length ; i++){
+            var check1 = div[i].getElementsByTagName("input")[0];
+            var check2 = div[i].getElementsByTagName("input")[1];
+            if(check1){
+                if(check1.checked){
+                    check2.checked = false;
+                    div[i].style.backgroundColor= "#DC5757";
+                }
+                else if(!check1.checked && !check2.checked)
+                    div[i].style.backgroundColor= "#f6f5f5";
+            }
+        }
+    }
+
+    function color2(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+
+        for(var i = 0; i < div.length ; i++){
+            var check1 = div[i].getElementsByTagName("input")[0];
+            var check2 = div[i].getElementsByTagName("input")[1];
+            if(check2){
+                if(check2.checked){
+                    check1.checked = false;
+                    div[i].style.backgroundColor= "#EAD76D";
+                }
+                else if(!check1.checked && !check2.checked)
+                    div[i].style.backgroundColor= "#f6f5f5";
+            }
+        }
+    }
 </script>

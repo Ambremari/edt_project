@@ -171,11 +171,35 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+
+Route::get('/schedule/add', [Controller::class, 'addScheduleForm'])
+    ->name('schedule.form');
+
+Route::post('/schedule/add', [Controller::class, 'addSchedule'])
+    ->name('schedule.add');
+
+Route::get('/schedule/update/{horaire}', [Controller::class, 'updateScheduleForm'])
+    ->name('schedule.update.form');
+
+Route::post('/schedule/update', [Controller::class, 'updateSchedule'])
+    ->name('schedule.update');
+
 Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
     ->name('prof.constraints');
 
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
+
+Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
+    ->name('subjects.constraints');
+
+Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.constraints');
+
+Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
+    ->name('subject.constraints.update');
+
 
 
 

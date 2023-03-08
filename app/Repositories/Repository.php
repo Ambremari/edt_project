@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
+use DateInterval;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-
 use App\Repositories\Data;
 
 class Repository {
@@ -23,7 +23,8 @@ class Repository {
         $types = $data->types();
         $classrooms = $data->classrooms();
         $students = $data->students();
-        $schedules = $data->schedules();
+        $schedule = $data->schedule();
+        $this->generateSchedule($schedule[0], $schedule[1], $schedule[2], $schedule[3]);
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -40,8 +41,6 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
-        foreach($schedules as $row)
-            $this->insertSchedule($row);
     }
 
     ##########TEACHERS#############
@@ -149,9 +148,10 @@ class Repository {
         }
     }
 
-    function getTeacherConstraints(string $idProf) : array{
+    function getTeacherConstraints(string $idProf, int $prio) : array{
         return DB::table("ContraintesProf")
                     ->where('IdProf', $idProf)
+                    ->where('Prio', $prio)
                     ->get()
                     ->toArray();
     }
@@ -375,6 +375,81 @@ class Repository {
                 ->insert(['IdEleve' => $idEleve,
                          'IdEns' => $idEns]);
         }
+    }
+
+    function subjectConstraints(): array{
+        return DB::table('ContraintesEns')
+            ->get()
+            ->toArray(); 
+    }
+
+    function removeSubjectConstraints(string $id): void{
+        DB::table('ContraintesEns')
+            ->where('IdEns', $id)
+            ->delete(); 
+    }
+
+    function removeLevelConstraints(string $level): array {
+        $subjects = DB::table("Enseignements")
+                        ->where('NiveauEns', $level)
+                        ->get('IdEns')
+                        ->toArray();
+        DB::table('ContraintesEns')
+            ->whereIn('IdEns', $subjects)
+            ->delete(); 
+        return $subjects;
+    }
+
+    function addSubjectConstraints(string $id, array $first, array $second): void{
+        $this->removeSubjectConstraints($id);
+        foreach($first as $time){
+            DB::table("ContraintesEns")
+                ->insert([
+                    'IdEns' => $id,
+                    'Horaire' => $time,
+                    'Prio' => 1
+                ]);
+        }
+        foreach($second as $time){
+            DB::table("ContraintesEns")
+                ->insert([
+                    'IdEns' => $id,
+                    'Horaire' => $time,
+                    'Prio' => 2
+                ]);
+        }
+    }
+
+    function addLevelConstraints(string $level, array $first, array $second): void{
+        $subjects = $this->removeLevelConstraints($level);
+        foreach($first as $time){
+            foreach($subjects as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time,
+                        'Prio' => 1
+                    ]);
+            }
+        }
+        foreach($second as $time){
+            foreach($subjects as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time,
+                        'Prio' => 2
+                    ]);
+            }
+        }
+    }
+
+    function getSubjectConstraints(string $idEns, int $prio) : array{
+        return DB::table("ContraintesEns")
+                    ->where('IdEns', $idEns)
+                    ->where('Prio', $prio)
+                    ->get()
+                    ->toArray();
     }
 
     #############DIVISIONS##############
@@ -744,21 +819,186 @@ class Repository {
             ->update($classroom);
     }
 
-    ######################## SCHEDULE ###################
+
+
+    ######################## SCHEDULES ###################
 
     function insertSchedule(array $schedule): void{
-        $mySchedule = ['Horaire' => $schedule[0],
-                       'Jour' => $schedule[1],
-                       'HeureDebut' => $schedule[2],
-                       'HeureFin' => $schedule[3]];
         DB::table('Horaires')
-            ->insert($mySchedule);
+            ->insert($schedule);
     }
 
-    function schedules():array{
+
+
+    function schedules() : array{
         return DB::table('Horaires')
-                   ->get()
-                   ->toArray();
+                    ->orderBy('Jour')
+                    ->orderBy('HeureDebut')
+                    ->get()
+                    ->toArray();
     }
 
+    function getSchedules(string $horaire) : array{
+        $horaire = DB::table('Horaires')
+                    ->where('Horaire', $horaire)
+                    ->get()
+                    ->toArray();
+        if(empty($horaire))
+            throw new Exception('Horaire inconnu');
+        return $horaire[0];
+    }
+
+    function updateSchedules(array $horaire): void{
+        $horaires = DB::table('Horaires')
+                        ->where('Horaire', $horaire['Horaire'])
+                        ->get()
+                        ->toArray();
+        if(empty($horaires))
+            throw new Exception('Horaire inconnu');
+        DB::table('Horaires')
+            ->where('Horaire', $horaire['Horaire'])
+            ->update($horaire);
+    }
+
+    function deleteSchedules(string $horaire): void{
+        DB::table('Horaires')
+            ->where('Horaire', $horaire)
+            ->delete();
+    }
+
+    function getStartTimesMorning(): array{
+        return DB::table("HoraireDebutMatin")
+                    ->get()
+                    ->toArray();
+    }
+
+    function getStartTimesAfternoon(): array{
+        return DB::table("HoraireDebutAprem")
+                    ->get()
+                    ->toArray();
+    }
+
+    function generateSchedule(array $day, array $break, array $mornings, array $afternoons): void{
+        $hour = DateInterval::createFromDateString('1 hour');
+        $recess = DateInterval::createFromDateString('10 minutes');
+        $interval = DateInterval::createFromDateString('5 minutes');
+        foreach($mornings as $morning){
+            $start = date_create_immutable_from_format('H:i:s', $day['start']);
+            $startBreak = date_create_immutable_from_format('H:i:s', $break['start']);
+            $i = 1;
+            do{
+                if($i % 3 == 0)
+                    $start = $start->add($recess);
+                $end = $start->add($hour);
+                $newSchedule = [
+                    'Horaire' => substr($morning, 0, 2).'M'.$i,
+                    'Jour' => $morning,
+                    'HeureDebut' => $start,
+                    'HeureFin' => $end, 
+                ];
+                $this->insertSchedule($newSchedule);
+                $start = $end->add($interval);
+                $i++;
+            } while($start->add($hour) <= $startBreak);
+        }
+        foreach($afternoons as $afternoon){
+            $start = date_create_immutable_from_format('H:i:s', $break['end']);
+            $endDay = date_create_immutable_from_format('H:i:s', $day['end']);
+            $i = 1;
+            do{
+                if($i % 3 == 0)
+                    $start = $start->add($recess);
+                $end = $start->add($hour);
+                $newSchedule = [
+                    'Horaire' => substr($afternoon, 0, 2).'S'.$i,
+                    'Jour' => $afternoon,
+                    'HeureDebut' => $start,
+                    'HeureFin' => $end, 
+                ];
+                $this->insertSchedule($newSchedule);
+                $start = $end->add($interval);
+                $i++;
+            } while($start->add($hour) <= $endDay);
+        }
+    }
+
+##### TRIGGER CHECK DIV AND GRP #####
+    function checkGrpAndDivLevel(string $idGrp): void {
+        $group = DB::table('Groupes')
+                    ->where('IdGrp', $idGrp)
+                    ->first();
+        $division = DB::table('Divisions')
+                    ->join('LiensGroupes', 'Divisions.IdDiv', '=', 'LiensGroupes.IdDiv')
+                    ->where('LiensGroupes.IdGrp', $idGrp)
+                    ->first();
+    if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
+        throw new Exception('Niveau de groupe incompatible avec la division correspondante');
+    }
+    }
+##### lien entre groupe et divisions ####
+    function checkGrpAndDivLevell(string $idGrp): void {
+        $group = getGroup($idGrp);
+        $division = getDivision($group['IdDiv']);
+        if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
+        throw new Exception('Niveau de groupe incompatible avec la division correspondante');
+     }
+            $liensGroupes = DB::table('LiensGroupes')
+                                ->where('IdGrp', $idGrp)
+                                ->get()
+                                ->toArray();
+            foreach ($liensGroupes as $lien) {
+                $division =getDivision($lien->IdDiv);
+                if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
+                    throw new Exception('Niveau de groupe incompatible avec la division correspondante');
+                }
+            }
+    }   
+    function checkStudentLevel(string $idEleve): void {
+        $eleve = getStudent($idEleve);
+        $division = getDivision($eleve['IdDiv']);
+        $groupes = DB::table('LiensGroupes')
+                    ->where('IdDiv', $eleve['IdDiv'])
+                    ->get(['IdGrp'])
+                    ->toArray();
+        foreach ($groupes as $groupe) {
+            $grp = getGroup($groupe->IdGrp);
+            if ($eleve['NiveauEleve'] !== $grp['NiveauGrp'] || $eleve['NiveauEleve'] !== $division['NiveauDiv']) {
+                throw new Exception('Niveau de l\'élève incompatible avec la division ou le groupe correspondant');
+            }
+        }
+    }
+    function checkStudentEligibility(string $idEleve, string $idEns): void {
+        $enseignement = DB::table('Enseignements')
+                        ->where('IdEns', $idEns)
+                        ->first();
+        if (empty($enseignement)) {
+            throw new Exception('Enseignement inconnu');
+        }
+
+        $eleve = DB::table('Eleves')
+                ->where('IdEleve', $idEleve)
+                ->get();
+        if (empty($eleve)) {
+            throw new Exception('Elève inconnu');
+        }
+
+        if ($eleve->NiveauEleve !== $enseignement->NiveauEns) {
+            throw new Exception('Niveau de l\'élève incompatible avec l\'enseignement');
+        }
+
+        $optionEns = $enseignement->OptionEns;
+        if (!$optionEns) {
+            $options = DB::table('Options')
+                        ->where('IdEleve', $idEleve)
+                        ->where('IdEns', $idEns)
+                        ->first();
+        if (empty($options)) {
+                throw new Exception('Enseignement optionnel non choisi');
+            }
+        }
+    }
 }
+
+
+
+

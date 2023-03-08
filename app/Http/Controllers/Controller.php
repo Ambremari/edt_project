@@ -55,8 +55,8 @@ class Controller extends BaseController{
         ];
         $validatedData = $request->validate($rules, $messages);
         $teacher = [
-                'NomProf' => $validatedData['name'], 
-                'PrenomProf' => $validatedData['firstname'], 
+                'NomProf' => $validatedData['name'],
+                'PrenomProf' => $validatedData['firstname'],
                 'MailProf' => $validatedData['email'],
                 'VolHProf' => $validatedData['timeamount']];
         try{
@@ -110,8 +110,8 @@ class Controller extends BaseController{
         $validatedData = $request->validate($rules, $messages);
         $teacher = [
                 'IdProf' => $validatedData['id'],
-                'NomProf' => $validatedData['name'], 
-                'PrenomProf' => $validatedData['firstname'], 
+                'NomProf' => $validatedData['name'],
+                'PrenomProf' => $validatedData['firstname'],
                 'MailProf' => $validatedData['email'],
                 'VolHProf' => $validatedData['timeamount']];
         try{
@@ -161,8 +161,8 @@ class Controller extends BaseController{
         else
             $option = false;
         $subject = [
-                'LibelleEns' => $validatedData['lib'], 
-                'NiveauEns' => $validatedData['grade'], 
+                'LibelleEns' => $validatedData['lib'],
+                'NiveauEns' => $validatedData['grade'],
                 'VolHEns' => $validatedData['timeamount'],
                 'OptionEns' => $option];
         try{
@@ -207,8 +207,8 @@ class Controller extends BaseController{
             $option = false;
         $subject = [
                 'IdEns' => $validatedData['id'],
-                'LibelleEns' => $validatedData['lib'], 
-                'NiveauEns' => $validatedData['grade'], 
+                'LibelleEns' => $validatedData['lib'],
+                'NiveauEns' => $validatedData['grade'],
                 'VolHEns' => $validatedData['timeamount'],
                 'OptionEns' => $option];
         try{
@@ -250,8 +250,8 @@ class Controller extends BaseController{
         else
             $group = false;
         $division = [
-                'LibelleDiv' => $validatedData['lib'], 
-                'NiveauDiv' => $validatedData['grade'], 
+                'LibelleDiv' => $validatedData['lib'],
+                'NiveauDiv' => $validatedData['grade'],
                 'EffectifPrevDiv' => $validatedData['headcount']];
         try{
             $idDiv = $this->repository->insertDivision($division);
@@ -298,8 +298,8 @@ class Controller extends BaseController{
         $validatedData = $request->validate($rules, $messages);
         $division = [
                 'IdDiv' => $validatedData['id'],
-                'LibelleDiv' => $validatedData['lib'], 
-                'NiveauDiv' => $validatedData['grade'], 
+                'LibelleDiv' => $validatedData['lib'],
+                'NiveauDiv' => $validatedData['grade'],
                 'EffectifPrevDiv' => $validatedData['headcount']];
         try{
             $this->repository->updateDivision($division);
@@ -349,8 +349,8 @@ class Controller extends BaseController{
         $teacher = $this->repository->getTeacher($idProf);
         $teacherSubjects = $this->repository->getTeacherSubjects($idProf);
         $teacherLessons = $this->repository->getTeacherLessons($idProf);
-        return view('subject_teacher_link', ['teacher'=> $teacher, 
-                                             'teachers' => $teachers, 
+        return view('subject_teacher_link', ['teacher'=> $teacher,
+                                             'teachers' => $teachers,
                                              'subjects' => $subjects,
                                              'divisions' => $divisions,
                                              'groups' => $groups,
@@ -457,8 +457,8 @@ class Controller extends BaseController{
         ];
         $validatedData = $request->validate($rules, $messages);
         $classroom = [
-                'LibelleSalle' => $validatedData['lib'], 
-                'TypeSalle' => $validatedData['type'], 
+                'LibelleSalle' => $validatedData['lib'],
+                'TypeSalle' => $validatedData['type'],
                 'CapSalle' => $validatedData['capacity']];
         try{
             $this->repository->insertClassroom($classroom);
@@ -496,8 +496,8 @@ class Controller extends BaseController{
         $validatedData = $request->validate($rules, $messages);
         $classroom = [
                 'IdSalle' => $validatedData['id'],
-                'LibelleSalle' => $validatedData['lib'], 
-                'TypeSalle' => $validatedData['type'], 
+                'LibelleSalle' => $validatedData['lib'],
+                'TypeSalle' => $validatedData['type'],
                 'CapSalle' => $validatedData['capacity']];
         try{
             $this->repository->updateClassroom($classroom);
@@ -592,7 +592,7 @@ class Controller extends BaseController{
         $division = $this->repository->getDivision($idDiv);
         $lessons = $this->repository->getDivisionLessonsLib($idDiv);
         $students = $this->repository->getDivisionStudents($idDiv);
-        return view('division_show', ['division'=> $division, 
+        return view('division_show', ['division'=> $division,
                                     'students' => $students,
                                     'lessons' => $lessons]);
     }
@@ -627,8 +627,8 @@ class Controller extends BaseController{
         ];
         $validatedData = $request->validate($rules, $messages);
         $group = [
-                'LibelleGrp' => $validatedData['lib'], 
-                'NiveauGrp' => $validatedData['grade'], 
+                'LibelleGrp' => $validatedData['lib'],
+                'NiveauGrp' => $validatedData['grade'],
                 'EffectifPrevGrp' => $validatedData['headcount']];
         try{
             $idGrp = $this->repository->insertGroup($group);
@@ -651,7 +651,7 @@ class Controller extends BaseController{
         $group = $this->repository->getGroup($idGrp);
         $divisions = $this->repository->divisions();
         $groupDiv = $this->repository->getGroupDivisions($idGrp);
-        return view('group_update', ['group'=> $group, 
+        return view('group_update', ['group'=> $group,
                                      'groups' => $groups,
                                      'divisions' => $divisions,
                                      'group_div' => $groupDiv]);
@@ -680,8 +680,8 @@ class Controller extends BaseController{
         $validatedData = $request->validate($rules, $messages);
         $group = [
                 'IdGrp' => $validatedData['id'],
-                'LibelleGrp' => $validatedData['lib'], 
-                'NiveauGrp' => $validatedData['grade'], 
+                'LibelleGrp' => $validatedData['lib'],
+                'NiveauGrp' => $validatedData['grade'],
                 'EffectifPrevGrp' => $validatedData['headcount']];
         try{
             $this->repository->updateGroup($group);
@@ -704,7 +704,7 @@ class Controller extends BaseController{
         $lessons = $this->repository->getGroupLessonsLib($idGrp);
         $students = $this->repository->getGroupStudents($idGrp);
         $groupDiv = $this->repository->getGroupDivisions($idGrp);
-        return view('group_show', ['group'=> $group, 
+        return view('group_show', ['group'=> $group,
                                     'students' => $students,
                                     'lessons' => $lessons,
                                     'group_div' => $groupDiv]);
@@ -726,7 +726,7 @@ class Controller extends BaseController{
         $teacher = $this->repository->getTeacher($idProf);
         $lessons = $this->repository->getTeacherLessonsLib($idProf);
         $subjects = $this->repository->getTeacherSubjects($idProf);
-        return view('teacher_show', ['teachers'=> $teachers, 
+        return view('teacher_show', ['teachers'=> $teachers,
                                     'teacher' => $teacher,
                                     'lessons' => $lessons,
                                     'subjects' => $subjects]);
@@ -749,7 +749,7 @@ class Controller extends BaseController{
         $lessons = $this->repository->getLessonsLib();
         $groups = $this->repository->getStudentGroup($idEleve);
         $options = $this->repository->getStudentOptionsLib($idEleve);
-        return view('student_show', ['students'=> $students, 
+        return view('student_show', ['students'=> $students,
                                     'student' => $student,
                                     'lessons' => $lessons,
                                     'groups' => $groups,
@@ -804,7 +804,7 @@ class Controller extends BaseController{
         $student = $this->repository->getStudent($idEleve);
         $subjects = $this->repository->optionalSubjects();
         $studentOptions = $this->repository->getStudentOptions($idEleve);
-        return view('student_option_form', ['students'=> $students, 
+        return view('student_option_form', ['students'=> $students,
                                     'student' => $student,
                                     'subjects' => $subjects,
                                     'student_options' => $studentOptions]);
@@ -873,16 +873,32 @@ class Controller extends BaseController{
         return redirect()->route('group.fill.form')->with('status', 'Affectation réalisée avec succès');
     }
 
+    public function addScheduleForm(Request $request)
+{
+    $hasKey = $request->session()->has('user');
+    if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
+        return redirect()->route('login');
+    }
+
+    return view('scheduel_add');
+}
+
     public function profConstraints(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
             return redirect()->route('login');
         $times = $this->repository->schedules();
         $id = $request->session()->get('user')['id'];
-        $constraints = $this->repository->getTeacherConstraints($id);
+        $constraints1 = $this->repository->getTeacherConstraints($id, 1);
+        $constraints2 = $this->repository->getTeacherConstraints($id, 2); 
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
         return view('teacher_constraints', ['times' => $times,
-                                            'constraints' => $constraints,
-                                            'id_prof' => $id]);
+                                            'first_constraints' => $constraints1,
+                                            'sec_constraints' => $constraints2,
+                                            'id_prof' => $id,
+                                            'start_morning' => $startMorning,
+                                            'start_afternoon' => $startAfternoon]);
     }
 
     public function updateProfConstraints(Request $request){
@@ -907,4 +923,160 @@ class Controller extends BaseController{
         }
         return redirect()->route('update.prof.constraints')->with('status', 'Contraintes actualisées avec succès !');
     }
+
+    public function addSchedule(Request $request)
+{
+    $hasKey = $request->session()->has('user');
+    if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
+        return redirect()->route('login');
+    }
+
+    $rules = [
+        'horaire' => ['required', 'unique:horaires,Horaire'],
+        'jour' => ['required'],
+        'heure_debut' => ['required'],
+        'heure_fin' => ['required'],
+    ];
+
+    $messages = [
+        'horaire.required' => 'Vous devez saisir un horaire.',
+        'horaire.unique' => 'Cet horaire existe déjà.',
+        'jour.required' => 'Vous devez sélectionner un jour.',
+        'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
+        'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
+    ];
+
+    $validatedData = $request->validate($rules, $messages);
+
+    $schedule = [
+        'Horaire' => $validatedData['horaire'],
+        'Jour' => $validatedData['jour'],
+        'HeureDebut' => $validatedData['heure_debut'],
+        'HeureFin' => $validatedData['heure_fin'],
+    ];
+
+    try {
+        $this->repository->insertSchedule($schedule);
+    } catch (Exception $exception) {
+        return redirect()->route('schedule.form')->withInput()->withErrors("Impossible d'ajouter l'horaire.");
+    }
+
+    return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} ajouté avec succès !");
 }
+
+    public function updateScheduleForm(Request $request, string $horaire)
+{
+    $hasKey = $request->session()->has('user');
+    if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
+        return redirect()->route('login');
+    }
+
+    $schedule = $this->repository->getSchedule($horaire);
+
+    return view('schedule_update', ['schedule' => $schedule]);
+}
+
+    public function updateSchedule(Request $request)
+{
+    $rules = [
+        'horaire' => ['required'],
+        'jour' => ['required'],
+        'heure_debut' => ['required'],
+        'heure_fin' => ['required'],
+    ];
+
+    $messages = [
+        'horaire.required' => 'Vous devez saisir un horaire.',
+        'jour.required' => 'Vous devez sélectionner un jour.',
+        'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
+        'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
+    ];
+
+    $validatedData = $request->validate($rules, $messages);
+
+    $schedule = [
+        'Horaire' => $validatedData['horaire'],
+        'Jour' => $validatedData['jour'],
+        'HeureDebut' => $validatedData['heure_debut'],
+        'HeureFin' => $validatedData['heure_fin'],
+    ];
+
+    try {
+        $this->repository->updateSchedule($schedule);
+    } catch (Exception $exception) {
+        return redirect()->route('schedule.update.form', ['Horaire' => $schedule['Horaire']])
+        ->withInput()->withErrors("Impossible de modifier l'horaire.");
+
+     }
+    }
+
+    public function subjectsConstraintsForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
+        $times = $this->repository->schedules();
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('subjects_constraints', ['subjects'=> $subjects,
+                                    'times' => $times,
+                                    'start_morning' => $startMorning,
+                                    'start_afternoon' => $startAfternoon]);
+    }
+
+    public function subjectConstraintsForm(Request $request, string $idEns){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subject = $this->repository->getSubject($idEns);
+        $subjects = $this->repository->subjects();
+        $times = $this->repository->schedules();
+        $constraints1 = $this->repository->getSubjectConstraints($idEns, 1);
+        $constraints2 = $this->repository->getSubjectConstraints($idEns, 2); 
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('subject_constraints', ['subject' => $subject,
+                                    'subjects'=> $subjects,
+                                    'times' => $times,
+                                    'first_cons' => $constraints1,
+                                    'sec_cons' => $constraints2,
+                                    'start_morning' => $startMorning,
+                                    'start_afternoon' => $startAfternoon]);
+    }
+
+    public function updateSubjectConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required_without:level'],
+            'level' => ['required_without:id'],
+            'first' => ['array'],
+            'second' => ['array'] 
+        ];
+        $messages = [
+            'id.required_withount' => 'Vous devez sélectionner un enseignement ou un niveau.',
+            'level.required_without' => 'Vous devez sélectionner un enseignement ou un niveau.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        if(!$request->has('first'))
+            $validatedData['first'] = [];
+        if(!$request->has('second'))
+            $validatedData['second'] = [];
+        if($request->has('id') && $validatedData['id'] != "all"){
+            try{
+                $this->repository->addSubjectConstraints($validatedData['id'], $validatedData['first'], $validatedData['second']);
+            } catch (Exception $exception) {
+                return redirect()->route('subjects.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+            }
+        }
+        else {
+            try{
+                $this->repository->addLevelConstraints($validatedData['level'], $validatedData['first'], $validatedData['second']);
+            } catch (Exception $exception) {
+                return redirect()->route('subjects.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+            }
+        }
+        return redirect()->route('subjects.constraints')->with('status', 'Contraintes actualisées avec succès');
+    }
+};
