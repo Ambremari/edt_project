@@ -581,3 +581,7 @@ table {
 }
 
 
+.infos span{
+    display: block;
+    margin: 10px;
+}

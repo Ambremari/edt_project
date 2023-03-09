@@ -270,3 +270,17 @@ AS
       LEFT JOIN Enseignements S ON E.IdEns = S.IdEns
    GROUP BY T.IdProf;
 
+
+CREATE OR REPLACE VIEW CoursDivisions
+AS
+   SELECT D.IdDiv, COUNT(IdEns) NbReel
+   FROM Divisions D LEFT JOIN Cours C ON D.IdDiv = C.IdDiv
+   GROUP BY D.IdDiv;
+
+CREATE OR REPLACE VIEW CoursNiveau
+AS 
+   SELECT NiveauEns, COUNT(IdEns) NbCible
+   FROM Enseignements 
+   WHERE OptionEns IS false
+   GROUP BY NiveauEns;
+

@@ -1089,10 +1089,12 @@ class Controller extends BaseController{
         $studentsNoDiv = $this->repository->studentsNoDivision();
         $studentsNoLV1 = $this->repository->studentsNoLV1();
         $studentsNoLV2 = $this->repository->studentsNoLV1();
+        $divisions = $this->repository->divisionSubjectsCount();
         return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
                                         'students_no_lv1' => $studentsNoLV1,
                                         'students_no_lv2' => $studentsNoLV2,
                                         'subjects' => $subjects,
-                                        'teachers' => $teachers]);
+                                        'teachers' => $teachers,
+                                        'divisions' => $divisions,]);
     }
 };

@@ -498,6 +498,7 @@ class Repository {
                     ->get()
                     ->toArray();
     }
+    
 
     #############DIVISIONS##############
 
@@ -611,6 +612,15 @@ class Repository {
             ->insert(['IdGrp' => $groupB,
                       'IdDiv' => $idDiv]
            );
+    }
+
+    function divisionSubjectsCount(): array{
+        return DB::table("Divisions as D")
+                ->join("CoursDivisions as C", "D.IdDiv", "=", "C.IdDiv")
+                ->join("CoursNiveau as N", "D.NiveauDiv", "=", "N.NiveauEns")
+                ->where("NbCible", ">", "NbReel")
+                ->get(['D.*'])
+                ->toArray();
     }
 
     #############GROUPS##############

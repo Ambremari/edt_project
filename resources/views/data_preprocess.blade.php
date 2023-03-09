@@ -10,12 +10,10 @@
     <button class="tablinks" onclick="openInfo(event, 'NoLV2')">Elèves sans Groupe LV2 : {{ count($students_no_lv2) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'NoTeacher')">Enseignements sans enseignants : {{ count($subjects) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'InfTime')">Enseignants avec volume horaire insuffisant : {{ count($teachers) }}</button>
-    <button class="tablinks" onclick="openInfo(event, 'NoSubject')">Divisions avec enseignements manquants : </button>
-    </div>
-
+    <button class="tablinks" onclick="openInfo(event, 'NoSubject')">Divisions avec enseignements manquants : {{ count($divisions) }}</button>
     <span>Dernier pré-traitement : </span>
-<span>Dernière moficiation de la base : </span>
-
+    <span>Dernière moficiation de la base : </span>    
+</div>
 <button>Lancer le pré-traitement</button>
 </div>
 <div class="colright">
@@ -51,6 +49,13 @@
         <ul id="studentList">
         @foreach( $teachers as $teacher)
         <li><a href="{{route('link.subject.form', ['idProf' => $teacher['IdProf']])}}">{{ $teacher['PrenomProf'] }} {{ $teacher['NomProf']}}</a></li>
+        @endforeach
+        </ul>
+    </div>
+    <div id="NoSubject" class="tabcontentinfo">
+        <ul id="studentList">
+        @foreach( $divisions as $division)
+        <li><a href="{{route('division.show', ['idDiv' => $division['IdDiv']])}}">{{ $division['LibelleDiv'] }}</a></li>
         @endforeach
         </ul>
     </div>
