@@ -747,7 +747,7 @@ class Repository {
 
     ######################## SCHEDULES ###################
 
-    function insertSchedule(array $schedule): void{
+    public function insertSchedule(array $schedule): void{
         $mySchedule = ['Horaire' => $schedule[0],
                        'Jour' => $schedule[1],
                        'HeureDebut' => $schedule[2],
@@ -755,10 +755,7 @@ class Repository {
         DB::table('Horaires')
             ->insert($mySchedule);
     }
-
-
-
-    function schedules() : array{
+    public function schedules() : array{
         return DB::table('Horaires')
                     ->orderBy('Jour')
                     ->orderBy('HeureDebut')
@@ -766,7 +763,7 @@ class Repository {
                     ->toArray();
     }
 
-    function getSchedules(string $horaire) : array{
+    public function getSchedules(string $horaire) : array{
         $horaire = DB::table('Horaires')
                     ->where('Horaire', $horaire)
                     ->get()
@@ -776,16 +773,16 @@ class Repository {
         return $horaire[0];
     }
 
-    function updateSchedules(array $horaire): void{
-        $horaires = DB::table('Horaires')
-                        ->where('Horaire', $horaire['Horaire'])
+    public function updateSchedules(array $schedule) : void {
+        $horaires = DB::table('horaires')
+                        ->where('Horaire', $schedule['Horaire'])
                         ->get()
                         ->toArray();
         if(empty($horaires))
             throw new Exception('Horaire inconnu');
-        DB::table('Horaires')
-            ->where('Horaire', $horaire['Horaire'])
-            ->update($horaire);
+        DB::table('horaires')
+            ->where('Horaire', $schedule['Horaire'])
+            ->update($schedule);
     }
 
     function deleteSchedules(string $horaire): void{
@@ -795,7 +792,7 @@ class Repository {
     }
 };
 ##### TRIGGER CHECK DIV AND GRP #####
-    function checkGrpAndDivLevel(string $idGrp): void {
+   /* function checkGrpAndDivLevel(string $idGrp): void {
         $group = DB::table('Groupes')
                     ->where('IdGrp', $idGrp)
                     ->first();
@@ -808,14 +805,14 @@ class Repository {
     }
 };
     function checkStudentLevel(string $idEleve): void {
-        $eleve = getStudent($idEleve);
-        $division = getDivision($eleve['IdDiv']);
+        $eleve = $this->getStudent($idEleve);
+        $division = $this->getDivision($eleve['IdDiv']);
         $groupes = DB::table('LiensGroupes')
                     ->where('IdDiv', $eleve['IdDiv'])
                     ->get(['IdGrp'])
                     ->toArray();
         foreach ($groupes as $groupe) {
-            $grp = getGroup($groupe->IdGrp);
+            $grp = $this->getGroup($groupe->IdGrp);
             if ($eleve['NiveauEleve'] !== $grp['NiveauGrp'] || $eleve['NiveauEleve'] !== $division['NiveauDiv']) {
                 throw new Exception('Niveau de l\'élève incompatible avec la division ou le groupe correspondant');
             }
@@ -850,4 +847,4 @@ class Repository {
                 throw new Exception('Enseignement optionnel non choisi');
             }
         }
-};
+};*/

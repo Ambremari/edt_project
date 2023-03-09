@@ -1,6 +1,6 @@
 <div class="filter">
-    <label for="jour">Jour</label>
-    <select class="form-control" id="mySelect" onchange="filterSchedule()" name="jour" required>
+    <label for="jour">Filtrer par Jour</label>
+    <select class="form-control" id="mySelect" onchange="filterSchedule()">
         <option value="" selected>Tous</option>
         <option value="lundi">Lundi</option>
         <option value="mardi">Mardi</option>
@@ -19,13 +19,13 @@
             <th>Heure de fin</th>
             <th></th>
         </tr>
-        @foreach($schedule as $row)
+        @foreach($schedules as $row)
             <tr>
                 <td>{{ $row['Horaire'] }}</td>
                 <td>{{ $row['Jour'] }}</td>
                 <td>{{ $row['HeureDebut'] }}</td>
                 <td>{{ $row['HeureFin'] }}</td>
-                <td><a href="{{route('schedule.update.form', ['Horaire' => $row['Horaire']])}}">Modifier</a></td>
+                <td><a href="{{route('schedule.update.form', ['horaire' => $row['Horaire']])}}">Modifier</a></td>
             </tr>
         @endforeach
     </table>
@@ -49,6 +49,5 @@
                 }
             }
         }
-        return false;
     }
     </script>

@@ -17,14 +17,14 @@
                 {{ session('status') }}
             </div>
         @endif
-        <div class="my_input">
+        <div class="my_input" style="display: inline-block">
             <label for="horaire">Horaire</label>
             <input type="text" name="horaire" id="horaire" class="form-control" required>
             @error('horaire')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-        <div class="my_input">
+        <div class="my_input" style="display: inline-block">
             <label for="jour">Jour</label>
             <select name="jour" id="jour" class="form-control" required>
                 <option value="">-- Sélectionnez un jour --</option>
@@ -39,7 +39,7 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-        <div class="my_input">
+        <div class="my_input" style="display: inline-block">
             <label for="heure_debut">Heure de début</label>
             <input type="time" name="heure_debut" id="heure_debut" class="form-control" required>
             @error('heure_debut')
@@ -47,18 +47,17 @@
             @enderror
         </div>
 
-        <div class="my_input">
+        <div class="my_input" style="display: inline-block">
             <label for="heure_fin">Heure de fin</label>
             <input type="time" name="heure_fin" id="heure_fin" class="form-control" required>
             @error('heure_fin')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-
-        <button type="submit" class="btn btn-primary">Ajouter</button>
     </form>
-    <div class="coldown">
-        @include('schedule_list')
-    </div>
+    <button type="submit">Ajouter</button>
+</div>
+<div class="coldown">
+    @include('schedule_list')
 </div>
 @endsection
