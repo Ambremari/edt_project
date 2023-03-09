@@ -68,9 +68,10 @@ class Repository {
     }
 
     function getTeacher(string $id) : array{
-        $teacher = DB::table('Enseignants')
-                    ->where('IdProf', $id)
-                    ->get(['IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf'])
+        $teacher = DB::table('Enseignants as E')
+                    ->join('VolumeHProf as V', 'E.IdProf', '=', 'V.IdProf')
+                    ->where('E.IdProf', $id)
+                    ->get(['E.IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf', 'VolHReelProf'])
                     ->toArray();
         if(empty($teacher))
             throw new Exception('Enseignant inconnu'); 
@@ -156,6 +157,16 @@ class Repository {
                     ->toArray();
     }
 
+    function teachersLackVolume() : array{
+        return DB::table('Enseignants as E')
+                    ->join('VolumeHProf as V', 'E.IdProf', '=', 'V.IdProf')
+                    ->where('VolHProf', '>', 'VolHReelProf')
+                    ->get(['E.IdProf', 'NomProf', 'PrenomProf'])
+                    ->toArray();
+    }
+
+
+
     ###############STUDENTS################
 
     function insertStudent(array $student): void {
@@ -183,6 +194,30 @@ class Repository {
     function studentsNoDivision() : array{
         return DB::table('Eleves')
                     ->where('IdDiv', null)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV1() : array{
+        $students = DB::table("GroupeLV1")
+                        ->get("IdEleve")
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV2() : array{
+        $students = DB::table("GroupeLV2")
+                        ->get("IdEleve")
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->whereNotIn('IdEleve', $students)
                     ->orderBy('NomEleve')
                     ->orderBy('PrenomEleve')
                     ->get()
@@ -305,6 +340,18 @@ class Repository {
 
     function optionalSubjects() : array{
         return DB::table('EnsOption')
+                    ->orderBy('LibelleEns')
+                    ->orderBy('NiveauEns')
+                    ->get()
+                    ->toArray();
+    }
+
+    function subjectsNoTeacher() : array{
+        $subjects = DB::table("Enseigne")
+                        ->get("IdEns")
+                        ->toArray();
+        return DB::table('Enseignements')
+                    ->whereNotIn('IdEns', $subjects)
                     ->orderBy('LibelleEns')
                     ->orderBy('NiveauEns')
                     ->get()

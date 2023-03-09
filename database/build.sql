@@ -251,3 +251,22 @@ AS
    FROM Horaires
    WHERE Horaire LIKE "__S_";
 
+CREATE OR REPLACE VIEW GroupeLV1
+AS
+   SELECT IdEleve, C.IdGrp
+   FROM CompoGroupes C JOIN GROUPES G on C.IdGrp = G.IdGrp
+   WHERE LibelleGrp LIKE "%LV1%";
+
+CREATE OR REPLACE VIEW GroupeLV2
+AS
+   SELECT IdEleve, C.IdGrp
+   FROM CompoGroupes C JOIN GROUPES G on C.IdGrp = G.IdGrp
+   WHERE LibelleGrp LIKE "%LV2%";
+
+CREATE OR REPLACE VIEW VolumeHProf
+AS
+   SELECT T.IdProf, SUM(VolHEns) VolHReelProf
+   FROM (Enseignants T LEFT JOIN Enseigne E ON T.IdProf = E.IdProf)
+      LEFT JOIN Enseignements S ON E.IdEns = S.IdEns
+   GROUP BY T.IdProf;
+

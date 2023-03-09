@@ -12,7 +12,7 @@ Enseignant {{ $teacher['PrenomProf'] }} {{ $teacher['NomProf'] }}
 <div class="info">
 Volume horaire hebdomadaire
 <span>Cible : {{ $teacher['VolHProf'] }}</span>
-<span>Réel : </span>
+<span>Réel : {{ $teacher['VolHReelProf'] }}</span>
 </div>
 <span style="font-weight: bold;">Enseignements</span>
 <ul id="subjectList">

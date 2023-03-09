@@ -200,6 +200,9 @@ Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'
 Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
     ->name('subject.constraints.update');
 
+Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
+    ->name('data.preprocess');
+
 
 
 
