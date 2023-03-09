@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Unites;
+DROP TABLE IF EXISTS IncompatibilitesChoix;
 DROP TABLE IF EXISTS ContraintesSalles;
 DROP TABLE IF EXISTS Parentes;
 DROP TABLE IF EXISTS ContraintesProf;
@@ -187,6 +188,14 @@ CREATE TABLE ContraintesSalles(
    PRIMARY KEY(TypeSalle, IdCours),
    FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
+);
+
+CREATE TABLE IncompatibilitesChoix(
+   IdEns1 VARCHAR(10),
+   IdEns2 VARCHAR(10),
+   PRIMARY KEY(IdEns1, IdEns2),
+   FOREIGN KEY(IdEns1) REFERENCES Enseignements(IdEns),
+   FOREIGN KEY(IdEns2) REFERENCES Enseignements(IdEns)
 );
 
 CREATE TABLE Unites(

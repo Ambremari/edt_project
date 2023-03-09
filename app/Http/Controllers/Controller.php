@@ -1088,7 +1088,7 @@ class Controller extends BaseController{
         $teachers = $this->repository->teachersLackVolume();
         $studentsNoDiv = $this->repository->studentsNoDivision();
         $studentsNoLV1 = $this->repository->studentsNoLV1();
-        $studentsNoLV2 = $this->repository->studentsNoLV1();
+        $studentsNoLV2 = $this->repository->studentsNoLV2();
         $divisions = $this->repository->divisionSubjectsCount();
         return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
                                         'students_no_lv1' => $studentsNoLV1,

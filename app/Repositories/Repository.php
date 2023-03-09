@@ -15,6 +15,7 @@ class Repository {
 
     function fillDatabase(): void{
         $data = new Data();
+        $studentData = new StudentData();
         $directors = $data->directors();
         $teachers = $data->teachers();
         $subjects = $data->subjects();
@@ -22,7 +23,7 @@ class Repository {
         $groups = $data->groups();
         $types = $data->types();
         $classrooms = $data->classrooms();
-        $students = $data->students();
+        $students = $studentData->students();
         $schedule = $data->schedule();
         $this->generateSchedule($schedule[0], $schedule[1], $schedule[2], $schedule[3]);
         foreach($teachers as $row)
@@ -41,6 +42,10 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
+        $this->addRandomDivision();
+        $this->setOptionIncompatibility();
+        $this->addRandomLV1();
+        $this->addRandomLV2();
     }
 
     ##########TEACHERS#############
@@ -200,6 +205,20 @@ class Repository {
                     ->toArray();
     }
 
+    function addRandomDivision(): void{
+        $students = $this->studentsNoDivision();
+        foreach($students as $student){
+            $divisions = DB::table("Divisions")
+                            ->where('NiveauDiv', $student['NiveauEleve'])
+                            ->get()
+                            ->toArray();
+            $random = rand(0, count($divisions) - 1);
+            DB::table("Eleves")
+                ->where('IdEleve', $student['IdEleve'])
+                ->update(['IdDiv' => $divisions[$random]['IdDiv']]);
+        }
+    }
+
     function studentsNoLV1() : array{
         $students = DB::table("GroupeLV1")
                         ->get("IdEleve")
@@ -212,16 +231,61 @@ class Repository {
                     ->toArray();
     }
 
+    function addRandomLV1(): void{
+        $students = $this->studentsNoLV1();
+        foreach($students as $student){
+            $options = DB::table("EnsOption")
+                            ->where('NiveauEns', $student['NiveauEleve'])
+                            ->where('LibelleEns', 'like', '%LV1%')
+                            ->get()
+                            ->toArray();
+            $random = rand(0, count($options) - 1);
+            DB::table("Options")
+                ->insert(['IdEleve' => $student['IdEleve'],
+                        'IdEns' => $options[$random]['IdEns']]);
+        }
+    }
+
     function studentsNoLV2() : array{
         $students = DB::table("GroupeLV2")
                         ->get("IdEleve")
                         ->toArray();
         return DB::table('Eleves')
+                    ->where("NiveauEleve", "!=", "6EME")
                     ->whereNotIn('IdEleve', $students)
                     ->orderBy('NomEleve')
                     ->orderBy('PrenomEleve')
                     ->get()
                     ->toArray();
+    }
+
+    function addRandomLV2(): void{
+        $incomp = $this->incompatibilities();
+        $students = $this->studentsNoLV2();
+        foreach($students as $student){
+            $options = DB::table("EnsOption")
+                            ->where('NiveauEns', $student['NiveauEleve'])
+                            ->where('LibelleEns', 'like', '%LV2%')
+                            ->get()
+                            ->toArray();
+            $lv1 = $this->getStudentLV1($student['IdEleve']);            
+            do{
+                $random = rand(0, count($options) - 1);
+            } while(in_array(["IdEns1" => $lv1['IdEns'], "IdEns2" => $options[$random]['IdEns']], $incomp));
+            DB::table("Options")
+                ->insert(['IdEleve' => $student['IdEleve'],
+                        'IdEns' => $options[$random]['IdEns']]);
+        }
+    }
+
+    function getStudentLV1(string $id): array{
+        $lv1 = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where("IdEleve", $id)
+                        ->where("LibelleEns", "like", "%LV1%")
+                        ->get("O.IdEns")
+                        ->toArray();  
+        return $lv1[0];
     }
 
     function getStudent(string $id) : array{
@@ -392,6 +456,65 @@ class Repository {
                     ->get()
                     ->toArray();
     }
+
+    function incompatibilities(): array{
+        return DB::table("IncompatibilitesChoix")
+                    ->get()
+                    ->toArray();
+    }
+    function insertIncompatibility(string $id1, string $id2) : void{
+        $incomp = $this->incompatibilities();
+        if(!in_array(["IdEns1" => $id1, "IdEns2" => $id2], $incomp))
+            DB::table("IncompatibilitesChoix")
+                ->insert(["IdEns1" => $id1,
+                        "IdEns2" => $id2]);
+    }
+
+    function setOptionIncompatibility(): void{
+        $options = $this->options();
+        $couples = DB::table("EnsOption as E1")
+                    ->join("EnsOption as E2", "E1.NiveauEns", "=", "E2.NiveauEns")
+                    ->where("E1.LibelleEns", "like", "%LV1%")
+                    ->where("E2.LibelleEns", "like", "%LV1%")
+                    ->get(["E1.IdEns as IdEns1", "E2.IdEns as IdEns2"])
+                    ->toArray();
+        foreach($couples as $couple)
+            $this->insertIncompatibility($couple['IdEns1'], $couple['IdEns2']);
+        $couples = DB::table("EnsOption as E1")
+                    ->join("EnsOption as E2", "E1.NiveauEns", "=", "E2.NiveauEns")
+                    ->where("E1.LibelleEns", "like", "%LV2%")
+                    ->where("E2.LibelleEns", "like", "%LV2%")
+                    ->get(["E1.IdEns as IdEns1", "E2.IdEns as IdEns2"])
+                    ->toArray();
+        foreach($couples as $couple)
+            $this->insertIncompatibility($couple['IdEns1'], $couple['IdEns2']);
+        $couples = DB::table("EnsOption as E1")
+                    ->join("EnsOption as E2", "E1.NiveauEns", "=", "E2.NiveauEns")
+                    ->where("E1.LibelleEns", "like", "%Anglais%")
+                    ->where("E2.LibelleEns", "like", "%Anglais%")
+                    ->get(["E1.IdEns as IdEns1", "E2.IdEns as IdEns2"])
+                    ->toArray();
+        foreach($couples as $couple)
+            $this->insertIncompatibility($couple['IdEns1'], $couple['IdEns2']);
+        $couples = DB::table("EnsOption as E1")
+                    ->join("EnsOption as E2", "E1.NiveauEns", "=", "E2.NiveauEns")
+                    ->where("E1.LibelleEns", "like", "%Espagnol%")
+                    ->where("E2.LibelleEns", "like", "%Espagnol%")
+                    ->get(["E1.IdEns as IdEns1", "E2.IdEns as IdEns2"])
+                    ->toArray();
+        foreach($couples as $couple)
+            $this->insertIncompatibility($couple['IdEns1'], $couple['IdEns2']);
+            $couples = DB::table("EnsOption as E1")
+                    ->join("EnsOption as E2", "E1.NiveauEns", "=", "E2.NiveauEns")
+                    ->where("E1.LibelleEns", "like", "%Allemand%")
+                    ->where("E2.LibelleEns", "like", "%Allemand%")
+                    ->get(["E1.IdEns as IdEns1", "E2.IdEns as IdEns2"])
+                    ->toArray();
+        foreach($couples as $couple)
+            $this->insertIncompatibility($couple['IdEns1'], $couple['IdEns2']);
+    }
+
+    
 
     function getOptionStudents(string $id) : array{
         return DB::table('Options')
