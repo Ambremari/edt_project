@@ -293,3 +293,8 @@ AS
    WHERE OptionEns IS false
    GROUP BY NiveauEns;
 
+CREATE OR REPLACE VIEW OptionCount
+AS
+   SELECT E.IdEns, LibelleEns, NiveauEns, COUNT(IdEleve) Inscrits
+   FROM Options O RIGHT JOIN EnsOption E ON O.IdEns = E.IdEns
+   GROUP BY E.IdEns, LibelleEns, NiveauEns;

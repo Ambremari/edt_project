@@ -20,7 +20,6 @@ class Repository {
         $teachers = $data->teachers();
         $subjects = $data->subjects();
         $divisions = $data->divisions();
-        $groups = $data->groups();
         $types = $data->types();
         $classrooms = $data->classrooms();
         $students = $studentData->students();
@@ -34,8 +33,6 @@ class Repository {
             $this->insertSubject($row);
         foreach($divisions as $row)
             $this->insertDivision($row);
-        foreach($groups as $row)
-            $this->insertGroup($row);
         foreach($types as $row)
             $this->insertType($row);
         foreach($classrooms as $row)
@@ -46,6 +43,8 @@ class Repository {
         $this->setOptionIncompatibility();
         $this->addRandomLV1();
         $this->addRandomLV2();
+        $this->addRandomOption();
+        $this->generateGroups();
     }
 
     ##########TEACHERS#############
@@ -286,6 +285,32 @@ class Repository {
                         ->get("O.IdEns")
                         ->toArray();  
         return $lv1[0];
+    }
+
+    function addRandomOption(): void{
+        $options = DB::table("EnsOption")
+                    ->where('LibelleEns', 'not like', '%LV2%')
+                    ->where('LibelleEns', 'not like', '%LV1%')
+                    ->get()
+                    ->toArray();
+        foreach($options as $option){
+            $students = DB::table("Eleves")
+                            ->where("NiveauEleve", $option["NiveauEns"])
+                            ->get()
+                            ->toArray();
+            $randomStudents = [];
+            for($i = 0 ; $i < 29 ; $i++){
+                do{
+                    $random = rand(0, count($students) - 1);
+                } while(in_array($students[$random], $randomStudents));
+                $randomStudents[$i] = $students[$random];
+            }
+            foreach($randomStudents as $student){       
+                DB::table("Options")
+                    ->insert(['IdEleve' => $student['IdEleve'],
+                            'IdEns' => $option['IdEns']]);                           
+            }
+        }
     }
 
     function getStudent(string $id) : array{
@@ -767,6 +792,41 @@ class Repository {
                     ->orderBy('LibelleGrp')
                     ->get(['G.*', 'EffectifReelGrp', 'NbDivAssociees'])
                     ->toArray();
+    }
+
+    function generateGroups(): void{
+        $options = DB::table("OptionCount")
+                    ->get()
+                    ->toArray();
+        foreach($options as $option){
+            $nGrp = (int) ($option['Inscrits'] / 30 + 1);
+            $divisions = DB::table("Divisions")
+                            ->where("NiveauDiv", $option["NiveauEns"])
+                            ->orderBy("LibelleDiv")
+                            ->get()
+                            ->toArray();
+            $nDiv = count($divisions)/$nGrp; 
+            $firstDiv = 0;
+            for($i = 1 ; $i <= $nGrp ; $i++){
+                $group = ["IdGrp" =>  "GRP".substr($option["IdEns"], 3, 10).$i,
+                        "LibelleGrp" => "Grp".$i." ".$option["LibelleEns"],
+                        "NiveauGrp" => $option["NiveauEns"],
+                        "EffectifPrevGrp" => 35];
+                $this->insertGroup($group);
+                for($j = 0 ; $j < $nDiv ; $j++){
+                    DB::table("LiensGroupes")
+                        ->insert(['IdDiv' => $divisions[$firstDiv + $j]['IdDiv'],
+                                  'IdGrp' => $group['IdGrp']]);
+                }
+                $firstDiv = $nDiv * $i;
+            }
+            
+        }
+        
+    }
+
+    function assignGroups(): void{
+        //TO-DO
     }
 
     function getGroup(string $id) : array{
