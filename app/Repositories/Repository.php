@@ -747,7 +747,7 @@ class Repository {
 
     ######################## SCHEDULES ###################
 
-    public function insertSchedule(array $schedule): void{
+     public function insertSchedule(array $schedule): void{
         $mySchedule = ['Horaire' => $schedule[0],
                        'Jour' => $schedule[1],
                        'HeureDebut' => $schedule[2],
@@ -755,7 +755,7 @@ class Repository {
         DB::table('Horaires')
             ->insert($mySchedule);
     }
-    public function schedules() : array{
+     public function schedules() : array{
         return DB::table('Horaires')
                     ->orderBy('Jour')
                     ->orderBy('HeureDebut')
@@ -763,7 +763,7 @@ class Repository {
                     ->toArray();
     }
 
-    public function getSchedules(string $horaire) : array{
+     public function getSchedules(string $horaire) : array{
         $horaire = DB::table('Horaires')
                     ->where('Horaire', $horaire)
                     ->get()
@@ -773,24 +773,69 @@ class Repository {
         return $horaire[0];
     }
 
-    public function updateSchedules(array $schedule) : void {
-        $horaires = DB::table('horaires')
+     public function updateSchedules(array $schedule) : void {
+        $schedules = DB::table('horaires')
                         ->where('Horaire', $schedule['Horaire'])
                         ->get()
                         ->toArray();
-        if(empty($horaires))
+        if(empty($schedules))
             throw new Exception('Horaire inconnu');
         DB::table('horaires')
             ->where('Horaire', $schedule['Horaire'])
             ->update($schedule);
     }
 
-    function deleteSchedules(string $horaire): void{
+    public function deleteSchedules(string $horaire): void{
         DB::table('Horaires')
             ->where('Horaire', $horaire)
             ->delete();
     }
 };
+##### Constraints classrooms #####
+    function constraintsClassrooms() : array{
+        return DB::table('ContraintesSalles')
+                    ->orderBy('TypeSalle')
+                    ->orderBy('IdCours')
+                    ->get()
+                    ->toArray();
+    };
+    function getConstraintsClassrooms(string $typeSalle, string $idCours) : array{
+        $constraints = DB::table('ContraintesSalles')
+                    ->where('TypeSalle', $typeSalle)
+                    ->where('IdCours', $idCours)
+                    ->get()
+                    ->toArray();
+        if(empty($constraints))
+            throw new Exception('Contraintes inconnues');
+        return $constraints[0];
+    }
+
+    function addConstraintsClassrooms(array $constraintsClassroom): void{
+        $existingConstraints = DB::table('ContraintesSalles')
+                                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+                                ->where('IdCours', $constraintsClassroom['IdCours'])
+                                ->get()
+                                ->toArray();
+        if(!empty($existingConstraints))
+            throw new Exception('Les contraintes pour cette salle et cet enseignement existent déjà');
+        DB::table('ContraintesSalles')
+        ->insert($constraintsClassroom);
+    };
+
+    function updateConstraintsClassrooms(array $constraintsClassroom): void{
+        $existingConstraints = DB::table('ContraintesSalles')
+                                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+                                ->where('IdCours', $constraintsClassroom['IdCours'])
+                                ->get()
+                                ->toArray();
+        if(empty($existingConstraints))
+            throw new Exception('Les contraintes pour cette salle et cet enseignement n\'existent pas');
+        DB::table('ContraintesSalles')
+            ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+            ->where('IdCours', $constraintsClassroom['IdCours'])
+            ->update($constraintsClassroom);
+    };
+
 ##### TRIGGER CHECK DIV AND GRP #####
    /* function checkGrpAndDivLevel(string $idGrp): void {
         $group = DB::table('Groupes')

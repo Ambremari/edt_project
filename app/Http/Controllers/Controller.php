@@ -12,7 +12,7 @@ use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController{
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
+    protected Repository $repository;
     public function __construct(Repository $repository){
         $this->repository = $repository;
     }
@@ -951,19 +951,19 @@ class Controller extends BaseController{
     } catch (Exception $exception) {
         return redirect()->route('schedule.form')->with('status','Horaire ajouté avec succés');
     }
-    }
+    };
 
-        function updateScheduleForm(Request $request, string $horaire)
+          function updateScheduleForm(Request $request, string $horaire)
     {
         $hasKey = $request->session()->has('user');
         if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
             return redirect()->route('login');
         }
-        $schedules = $this->repository->schedules();
-        $schedule = $this->repository->getSchedules($horaire);
+        $schedules =$this->repository->schedules();
+        $schedule =$this->repository->getSchedules($horaire);
 
         return view('schedule_update', ['schedule' => $schedule, 'schedules' => $schedules]);
-    }
+    };
 
        function updateSchedules(Request $request)
     {
@@ -993,3 +993,71 @@ class Controller extends BaseController{
             return redirect()->route('schedule.update.form', ['horaire' => $schedule['Horaire']])->withErrors("Impossible de modifier l'horaire.");
         }
     };
+    ### classrooms constraints ####
+     function classroomConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'admin')
+            return redirect()->route('login');
+        $courses = $this->repository->lessons();
+        $classrooms = $this->repository->classrooms();
+        return view('classroom_constraints', ['lessons' => $courses, 'classrooms' => $classrooms]);
+    };
+     function addConstraintsClassrooms(Request $request)
+{
+    $hasKey = $request->session()->has('user');
+    if (!$hasKey || $request->session()->get('user')['role'] != 'admin') {
+        return redirect()->route('login');
+    }
+
+    $validatedData = $request->validate([
+        'typeSalle' => 'required|exists:TypesSalles,TypeSalle',
+        'idCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
+        'volHSalle' => 'required|numeric',
+        'dureeMinSalle' => 'required|integer|min:1',
+    ], [
+        'typeSalle.required' => 'Le type de salle est obligatoire.',
+        'typeSalle.exists' => 'Le type de salle sélectionné est invalide.',
+        'idCours.required' => 'L\'identifiant du cours est obligatoire.',
+        'idCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
+        'idCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
+        'volHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
+        'volHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
+        'dureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
+        'dureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
+        'dureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
+    ]);
+
+    $this->repository->addConstraintsClassrooms($validatedData);
+
+    return redirect()->route('constraints.classrooms')->with('status', 'Contrainte ajoutée avec succès !');
+};
+     function updateConstraintsClassrooms(Request $request){
+    $hasKey = $request->session()->has('user');
+    if (!$hasKey || $request->session()->get('user')['role'] != 'admin') {
+        return redirect()->route('login');
+    }
+
+    $validatedData = $request->validate([
+        'typeSalle' => 'required|exists:TypesSalles,TypeSalle',
+        'idCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
+        'volHSalle' => 'required|numeric',
+        'dureeMinSalle' => 'required|integer|min:1',
+    ], [
+        'typeSalle.required' => 'Le type de salle est obligatoire.',
+        'typeSalle.exists' => 'Le type de salle sélectionné est invalide.',
+        'idCours.required' => 'L\'identifiant du cours est obligatoire.',
+        'idCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
+        'idCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
+        'volHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
+        'volHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
+        'dureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
+        'dureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
+        'dureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
+    ]);
+
+    $this->repository->updateConstraintsClassrooms($validatedData);
+
+    return redirect()->route('constraints.classrooms')->with('status', 'Contrainte modifiée avec succès !');
+};
+
+

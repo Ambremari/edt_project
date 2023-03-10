@@ -190,6 +190,15 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
+Route::get('/classrooms', [App\Http\Controllers\ConstraintsController::class, 'classroomConstraints'])
+    ->name('constraints.classrooms');
+
+Route::post('/constraints/classrooms/add', [ConstraintsController::class, 'addConstraintsClassrooms'])
+    ->name('constraints.classrooms.add');
+
+Route::post('/classrooms/update', [App\Http\Controllers\ConstraintsController::class, 'updateConstraintsClassrooms'])
+    ->name('constraints.classrooms.update');
+
 
 
 
