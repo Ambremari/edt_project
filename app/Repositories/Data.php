@@ -181,6 +181,20 @@ class Data
             'PrenomProf' => 'Françoise', 
             'MailProf' => 'françoise.martin@college-vh.com',
             'VolHProf' => 35.0],
+            [
+                "IdProf" => "PRFa1b1",
+                "NomProf" => "Parks",
+                "PrenomProf" => "Malcolm",
+                "MailProf" => "mparks@college-vh.com",
+                "VolHProf" => 20
+            ],
+            [
+                "IdProf" => "PRFa1b2",
+                "NomProf" => "Hoover",
+                "PrenomProf" => "Nichole",
+                "MailProf" => "n.hoover5989@college-vh.com",
+                "VolHProf" => 25
+            ]
         ];
     }
 

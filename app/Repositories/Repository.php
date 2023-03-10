@@ -45,6 +45,7 @@ class Repository {
         $this->addRandomLV2();
         $this->addRandomOption();
         $this->generateGroups();
+        $this->assignAllSubjectTeacher();
     }
 
     ##########TEACHERS#############
@@ -164,9 +165,94 @@ class Repository {
     function teachersLackVolume() : array{
         return DB::table('Enseignants as E')
                     ->join('VolumeHProf as V', 'E.IdProf', '=', 'V.IdProf')
-                    ->where('VolHProf', '>', 'VolHReelProf')
+                    ->whereColumn('VolHProf', '>', 'VolHReelProf')
                     ->get(['E.IdProf', 'NomProf', 'PrenomProf'])
                     ->toArray();
+    }
+
+    function teachersNoSubject() : array{
+        $teachers = DB::table("Enseigne")
+                    ->get('IdProf')
+                    ->toArray();
+        return DB::table("Enseignants")
+                    ->whereNotIn('IdProf', $teachers)
+                    ->get('IdProf')
+                    ->toArray();
+    }
+
+    function assignAllSubjectTeacher(): void{
+        $this->assignSubjectTeacher("Arts Plastiques", 1);
+        $this->assignSubjectTeacher("Éducation musicale", 1);
+        $this->assignSubjectTeacher("Physique-chimie", 1);
+        $this->assignSubjectTeacher("SVT", 1);
+        $this->assignSubjectTeacher("Technologie", 1);
+        $this->assignSubjectTeacher("SVT-physique-chimie", 1);
+        $this->assignSubjectTeacher("Éducation physique et sportive", 2);
+        $this->assignSubjectTeacher("Histoire-géographie", 2);
+        $this->assignSubjectTeacher("Français", 3);
+        $this->assignSubjectTeacher("Mathématiques", 3);
+        $this->assignOptionTeacher('%Anglais LV1', 1);
+        $this->assignOptionTeacher('%Anglais LV2', 1);
+        $this->assignOptionTeacher('%Allemand LV1', 1);
+        $this->assignOptionTeacher('%Allemand LV2', 1);
+        $this->assignOptionTeacher('%Espagnol LV1', 1);
+        $this->assignOptionTeacher('%Espagnol LV2', 1);
+        
+    }
+
+    function assignSubjectTeacher(string $lib, int $nbTeachers): void{
+        $subjects = $this->getSubjectsByLib($lib);
+        for($i = 1 ; $i <= $nbTeachers ; $i++){
+            $teachers = $this->teachersNoSubject();
+            $teacher = $teachers[rand(0, count($teachers) - 1)];
+            foreach($subjects as $subject){
+                DB::table("Enseigne")
+                    ->insert(['IdEns' => $subject['IdEns'],
+                            'IdProf' => $teacher['IdProf']]);
+                $divisions = DB::table("Divisions")
+                                ->where('NiveauDiv', $subject['NiveauEns'])
+                                ->get()
+                                ->toArray();
+                for($j = 0 ; $j < count($divisions) ; $j++){
+                    if($j % $nbTeachers == $nbTeachers - $i){
+                        $id = "CR".substr($subject['IdEns'], 4, 2).substr($teacher['IdProf'], 4, 2).substr($divisions[$j]['IdDiv'], 3, 3);
+                        DB::table("Cours")
+                            ->insert(['IdCours' => $id,
+                                    'IdEns' => $subject['IdEns'],
+                                    'IdProf' => $teacher['IdProf'],
+                                    'IdDiv' => $divisions[$j]['IdDiv']]);
+                    }
+                }
+            }
+        }
+    }
+
+    function assignOptionTeacher(string $option, int $nbTeachers): void{
+        $subjects = $this->getSubjectsByLib($option);
+        for($i = 1 ; $i <= $nbTeachers ; $i++){
+            $teachers = $this->teachersNoSubject();
+            $teacher = $teachers[rand(0, count($teachers) - 1)];
+            foreach($subjects as $subject){
+                DB::table("Enseigne")
+                    ->insert(['IdEns' => $subject['IdEns'],
+                            'IdProf' => $teacher['IdProf']]);
+                $groups = DB::table("Groupes")
+                                ->where('NiveauGrp', $subject['NiveauEns'])
+                                ->where('LibelleGrp', 'like', $option)
+                                ->get()
+                                ->toArray();
+                for($j = 0 ; $j < count($groups) ; $j++){
+                    if($j % $nbTeachers == $nbTeachers - $i){
+                        $id = "CR".substr($subject['IdEns'], 4, 2).substr($teacher['IdProf'], 4, 2).substr($groups[$j]['IdGrp'], 4, 3);
+                        DB::table("Cours")
+                            ->insert(['IdCours' => $id,
+                                    'IdEns' => $subject['IdEns'],
+                                    'IdProf' => $teacher['IdProf'],
+                                    'IdGrp' => $groups[$j]['IdGrp']]);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -456,6 +542,14 @@ class Repository {
             throw new Exception('Enseignement inconnu'); 
         return $subject[0];
     }
+
+    function getSubjectsByLib(string $lib) : array{
+        return DB::table('Enseignements')
+                    ->where('LibelleEns', "like", $lib)
+                    ->get()
+                    ->toArray();
+    }
+
 
     function updateSubject(array $subject): void{
         $subjects = DB::table('Enseignements')
@@ -766,7 +860,7 @@ class Repository {
         return DB::table("Divisions as D")
                 ->join("CoursDivisions as C", "D.IdDiv", "=", "C.IdDiv")
                 ->join("CoursNiveau as N", "D.NiveauDiv", "=", "N.NiveauEns")
-                ->where("NbCible", ">", "NbReel")
+                ->whereColumn('NbReel', '<', 'NbCible')
                 ->get(['D.*'])
                 ->toArray();
     }
@@ -825,9 +919,6 @@ class Repository {
         
     }
 
-    function assignGroups(): void{
-        //TO-DO
-    }
 
     function getGroup(string $id) : array{
         $group = DB::table('Groupes as G')

@@ -275,7 +275,7 @@ AS
 CREATE OR REPLACE VIEW VolumeHProf
 AS
    SELECT T.IdProf, SUM(VolHEns) VolHReelProf
-   FROM (Enseignants T LEFT JOIN Enseigne E ON T.IdProf = E.IdProf)
+   FROM (Enseignants T LEFT JOIN Cours E ON T.IdProf = E.IdProf)
       LEFT JOIN Enseignements S ON E.IdEns = S.IdEns
    GROUP BY T.IdProf;
 
