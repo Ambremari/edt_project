@@ -20,17 +20,6 @@
             <p>Horaire {{ $schedule['Horaire'] }}</p>
             <input type="hidden" value="{{ $schedule['Horaire'] }}" name="horaire">
             <div class="my_input" style="display: inline-block">
-                <label for="jour">Jour</label>
-                <select class="form-control" id="jour" name="jour" required>
-                    <option value="lundi" {{ $schedule['Jour'] === 'lundi' ? 'selected' : '' }}>Lundi</option>
-                    <option value="mardi" {{ $schedule['Jour'] === 'mardi' ? 'selected' : '' }}>Mardi</option>
-                    <option value="mercredi" {{ $schedule['Jour'] === 'mercredi' ? 'selected' : '' }}>Mercredi</option>
-                    <option value="jeudi" {{ $schedule['Jour'] === 'jeudi' ? 'selected' : '' }}>Jeudi</option>
-                    <option value="vendredi" {{ $schedule['Jour'] === 'vendredi' ? 'selected' : '' }}>Vendredi</option>
-                    <option value="samedi" {{ $schedule['Jour'] === 'samedi' ? 'selected' : '' }}>Samedi</option>
-                </select>
-            </div>
-            <div class="my_input" style="display: inline-block">
                 <label for="heure_debut">Heure de début</label>
                 <input type="time" id="heure_debut" name="heure_debut" value="{{ $schedule['HeureDebut'] }}" required>
             </div>

@@ -790,7 +790,7 @@ class Repository {
             ->where('Horaire', $horaire)
             ->delete();
     }
-};
+
 ##### Constraints classrooms #####
     function constraintsClassrooms() : array{
         return DB::table('ContraintesSalles')
@@ -798,8 +798,8 @@ class Repository {
                     ->orderBy('IdCours')
                     ->get()
                     ->toArray();
-    };
-    function getConstraintsClassrooms(string $typeSalle, string $idCours) : array{
+    }
+    function getConstraintsClassrooms(array $typeSalle, array $idCours) : array{
         $constraints = DB::table('ContraintesSalles')
                     ->where('TypeSalle', $typeSalle)
                     ->where('IdCours', $idCours)
@@ -820,7 +820,7 @@ class Repository {
             throw new Exception('Les contraintes pour cette salle et cet enseignement existent déjà');
         DB::table('ContraintesSalles')
         ->insert($constraintsClassroom);
-    };
+    }
 
     function updateConstraintsClassrooms(array $constraintsClassroom): void{
         $existingConstraints = DB::table('ContraintesSalles')
@@ -834,7 +834,8 @@ class Repository {
             ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
             ->where('IdCours', $constraintsClassroom['IdCours'])
             ->update($constraintsClassroom);
-    };
+    }
+};
 
 ##### TRIGGER CHECK DIV AND GRP #####
    /* function checkGrpAndDivLevel(string $idGrp): void {

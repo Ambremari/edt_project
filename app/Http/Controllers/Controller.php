@@ -917,7 +917,7 @@ class Controller extends BaseController{
         }
         return redirect()->route('update.prof.constraints')->with('status', 'Contraintes actualisées avec succès !');
     }
-};
+
       function addSchedule(Request $request)
     {
     $hasKey = $request->session()->has('user');
@@ -951,7 +951,7 @@ class Controller extends BaseController{
     } catch (Exception $exception) {
         return redirect()->route('schedule.form')->with('status','Horaire ajouté avec succés');
     }
-    };
+    }
 
           function updateScheduleForm(Request $request, string $horaire)
     {
@@ -963,7 +963,7 @@ class Controller extends BaseController{
         $schedule =$this->repository->getSchedules($horaire);
 
         return view('schedule_update', ['schedule' => $schedule, 'schedules' => $schedules]);
-    };
+    }
 
        function updateSchedules(Request $request)
     {
@@ -988,20 +988,26 @@ class Controller extends BaseController{
 
         try {
             $this->repository->updateSchedules($schedule);
-            return redirect()->route('schedule.update.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
+            return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
         } catch (Exception $exception) {
             return redirect()->route('schedule.update.form', ['horaire' => $schedule['Horaire']])->withErrors("Impossible de modifier l'horaire.");
         }
-    };
+    }
     ### classrooms constraints ####
-     function classroomConstraints(Request $request){
+    public function classroomConstraints(Request $request) {
         $hasKey = $request->session()->has('user');
-        if(!$hasKey || $request->session()->get('user')['role'] != 'admin')
+        if (!$hasKey || $request->session()->get('user')['role'] != 'admin')
             return redirect()->route('login');
+
         $courses = $this->repository->lessons();
         $classrooms = $this->repository->classrooms();
-        return view('classroom_constraints', ['lessons' => $courses, 'classrooms' => $classrooms]);
-    };
+        $constraints = $this->repository->getConstraintsClassrooms($courses,$classrooms);
+        return view('constraints.classrooms', [
+            'lessons' => $courses,
+            'classrooms' => $classrooms,
+            'constraints' => $constraints,
+        ]);
+    }
      function addConstraintsClassrooms(Request $request)
 {
     $hasKey = $request->session()->has('user');
@@ -1030,7 +1036,7 @@ class Controller extends BaseController{
     $this->repository->addConstraintsClassrooms($validatedData);
 
     return redirect()->route('constraints.classrooms')->with('status', 'Contrainte ajoutée avec succès !');
-};
+}
      function updateConstraintsClassrooms(Request $request){
     $hasKey = $request->session()->has('user');
     if (!$hasKey || $request->session()->get('user')['role'] != 'admin') {
@@ -1058,6 +1064,7 @@ class Controller extends BaseController{
     $this->repository->updateConstraintsClassrooms($validatedData);
 
     return redirect()->route('constraints.classrooms')->with('status', 'Contrainte modifiée avec succès !');
+    }
 };
 
 

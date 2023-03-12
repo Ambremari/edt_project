@@ -181,7 +181,7 @@ Route::post('/schedule/add', [Controller::class, 'addSchedule'])
 Route::get('/schedule/update/{horaire}', [Controller::class, 'updateScheduleForm'])
     ->name('schedule.update.form');
 
-Route::post('/schedule/update', [Controller::class, 'updateSchedule'])
+Route::post('/schedule/update', [Controller::class, 'updateSchedules'])
     ->name('schedule.update');
 
 Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
@@ -190,13 +190,13 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
-Route::get('/classrooms', [App\Http\Controllers\ConstraintsController::class, 'classroomConstraints'])
+Route::get('/constraints/classrooms', [Controller::class, 'classroomConstraints'])
     ->name('constraints.classrooms');
 
-Route::post('/constraints/classrooms/add', [ConstraintsController::class, 'addConstraintsClassrooms'])
+Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsClassrooms'])
     ->name('constraints.classrooms.add');
 
-Route::post('/classrooms/update', [App\Http\Controllers\ConstraintsController::class, 'updateConstraintsClassrooms'])
+Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
 
 
