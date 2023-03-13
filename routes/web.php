@@ -92,6 +92,10 @@ Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
     ->where('idEns', '[ENS].*')
     ->name('subject.update.form');
 
+Route::get('/ens/{idEns}', [Controller::class, 'showSubject'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.show');
+
 Route::get('/div', [Controller::class, 'addDivisionForm'])
     ->name('division.form');
 

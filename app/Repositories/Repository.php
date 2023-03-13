@@ -46,6 +46,8 @@ class Repository {
         $this->addRandomOption();
         $this->generateGroups();
         $this->assignAllSubjectTeacher();
+        $this->generateAllTPGroups();
+        $this->setTeachersHVolume();
     }
 
     ##########TEACHERS#############
@@ -180,6 +182,17 @@ class Repository {
                     ->toArray();
     }
 
+    function setTeachersHVolume() : void{
+        $teachers = DB::table("VolumeHProf")
+                    ->get()
+                    ->toArray();
+        foreach($teachers as $teacher){
+            DB::table("Enseignants")
+                ->where('IdProf', $teacher['IdProf'])
+                ->update(['VolHProf' => $teacher['VolHReelProf']]);
+        }
+    }
+
     function assignAllSubjectTeacher(): void{
         $this->assignSubjectTeacher("Arts Plastiques", 1);
         $this->assignSubjectTeacher("Éducation musicale", 1);
@@ -197,7 +210,9 @@ class Repository {
         $this->assignOptionTeacher('%Allemand LV2', 1);
         $this->assignOptionTeacher('%Espagnol LV1', 1);
         $this->assignOptionTeacher('%Espagnol LV2', 1);
-        
+        $this->assignOptionTeacherFromSubject('%Latin', 'Français');
+        $this->assignOptionTeacherFromSubject('%européennes', 'Anglais%');
+        $this->assignOptionTeacherFromSubject('%régionales', 'Espagnol%');
     }
 
     function assignSubjectTeacher(string $lib, int $nbTeachers): void{
@@ -251,6 +266,42 @@ class Repository {
                                     'IdGrp' => $groups[$j]['IdGrp']]);
                     }
                 }
+            }
+        }
+    }
+
+    function assignOptionTeacherFromSubject(string $optionLib, string $subjectLib): void{
+        $options = $this->getSubjectsByLib($optionLib);
+        $subjects = $this->getSubjectsIdByLib($subjectLib);
+        $teachers = DB::table('Enseigne')
+                        ->whereIn('IdEns', $subjects)
+                        ->get('IdProf')
+                        ->toArray();
+        $minVol = DB::table("VolumeHProf")
+                        ->whereIn('IdProf', $teachers)
+                        ->min('VolHReelProf');
+        $teacher = DB::table("VolumeHProf")
+                        ->whereIn('IdProf', $teachers)
+                        ->where('VolHReelProf', $minVol)
+                        ->get()
+                        ->toArray();
+        $teacher = $teacher[0];
+        foreach($options as $option){
+            DB::table("Enseigne")
+                ->insert(['IdEns' => $option['IdEns'],
+                        'IdProf' => $teacher['IdProf']]);
+            $groups = DB::table("Groupes")
+                            ->where('NiveauGrp', $option['NiveauEns'])
+                            ->where('LibelleGrp', 'like', $optionLib)
+                            ->get()
+                            ->toArray();
+            for($j = 0 ; $j < count($groups) ; $j++){
+                $id = "CR".substr($option['IdEns'], 4, 2).substr($teacher['IdProf'], 4, 2).substr($groups[$j]['IdGrp'], 4, 3);
+                DB::table("Cours")
+                    ->insert(['IdCours' => $id,
+                            'IdEns' => $option['IdEns'],
+                            'IdProf' => $teacher['IdProf'],
+                            'IdGrp' => $groups[$j]['IdGrp']]);
             }
         }
     }
@@ -543,10 +594,28 @@ class Repository {
         return $subject[0];
     }
 
+    function getSubjectTeachers(string $id) : array{
+        $teachers = DB::table('Enseigne')
+                    ->where('IdEns', $id)
+                    ->get('IdProf')
+                    ->toArray();
+        return DB::table("Enseignants")
+                    ->whereIn('IdProf', $teachers)
+                    ->get()
+                    ->toArray();
+    }
+
     function getSubjectsByLib(string $lib) : array{
         return DB::table('Enseignements')
                     ->where('LibelleEns', "like", $lib)
                     ->get()
+                    ->toArray();
+    }
+
+    function getSubjectsIdByLib(string $lib) : array{
+        return DB::table('Enseignements')
+                    ->where('LibelleEns', "like", $lib)
+                    ->get('IdEns')
                     ->toArray();
     }
 
@@ -915,8 +984,52 @@ class Repository {
                 $firstDiv = $nDiv * $i;
             }
             
-        }
-        
+        } 
+    }
+
+    function generateTPGroups(string $subject): void{
+        $subjects = $this->getSubjectsIdByLib($subject);
+        $classes = DB::table("Cours")
+                        ->whereIn('IdEns', $subjects)
+                        ->get()
+                        ->toArray();
+        foreach($classes as $class){
+            $division = $this->getDivision($class['IdDiv']);
+            $students = DB::table("Eleves")
+                            ->where('IdDiv', $class['IdDiv'])
+                            ->get('IdEleve')
+                            ->toArray();
+            $firstStudent = 0;
+            for($i = 1 ; $i <= 2 ; $i++){
+                $group = ["IdGrp" =>  "GRP".substr($division["IdDiv"], 3, 3)."P".substr($subject, 0, 2).$i,
+                        "LibelleGrp" => "Grp TP".$i." ".$subject." ".$division["LibelleDiv"],
+                        "NiveauGrp" => $division["NiveauDiv"],
+                        "EffectifPrevGrp" => $division["EffectifPrevDiv"]/2];
+                $this->insertGroup($group);
+                DB::table("LiensGroupes")
+                    ->insert(['IdDiv' => $class['IdDiv'],
+                              'IdGrp' => $group['IdGrp']]);
+                $id = "CR".substr($class['IdCours'], 3, 6)."G".$i;
+                DB::table("Cours")
+                    ->insert(['IdCours' => $id,
+                            'IdEns' => $class['IdEns'],
+                            'IdProf' => $class['IdProf'],
+                            'IdGrp' => $group['IdGrp']]);
+                for($j = 0 ; $j < count($students)/2 ; $j++){
+                    if(array_key_exists($firstStudent + $j, $students))
+                        DB::table("CompoGroupes")
+                            ->insert(['IdGrp' => $group['IdGrp'],
+                                      'IdEleve' => $students[$firstStudent + $j]['IdEleve']]);
+                }
+                $firstStudent = ceil(count($students)/2);
+            }  
+        } 
+    }
+
+    function generateAllTPGroups(): void{
+        $this->generateTPGroups("Physique-chimie");
+        $this->generateTPGroups("SVT");
+        $this->generateTPGroups("SVT-physique-chimie");
     }
 
 

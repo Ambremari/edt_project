@@ -130,6 +130,15 @@ class Controller extends BaseController{
         return view('subjects', ['subjects' => $subjects]);
     }
 
+    public function showSubject(Request $request, string $idEns){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subject = $this->repository->getSubject($idEns);
+        $teachers = $this->repository->getSubjectTeachers($idEns);
+        return view('subject_show', ['subject' => $subject, 'teachers' => $teachers]);
+    }
+
     public function addSubjectForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
