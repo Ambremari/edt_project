@@ -219,6 +219,7 @@ class Repository {
         $subjects = $this->getSubjectsByLib($lib);
         for($i = 1 ; $i <= $nbTeachers ; $i++){
             $teachers = $this->teachersNoSubject();
+            $level = 0;
             $teacher = $teachers[rand(0, count($teachers) - 1)];
             foreach($subjects as $subject){
                 DB::table("Enseigne")
@@ -228,8 +229,10 @@ class Repository {
                                 ->where('NiveauDiv', $subject['NiveauEns'])
                                 ->get()
                                 ->toArray();
+                $level++;
                 for($j = 0 ; $j < count($divisions) ; $j++){
-                    if($j % $nbTeachers == $nbTeachers - $i){
+                    if($nbTeachers == 1 || ($j % $nbTeachers == $nbTeachers - $i && $level <= 2) || 
+                    ($j % $nbTeachers != $nbTeachers - $i && ($nbTeachers <= 2 || $j % $nbTeachers != ($nbTeachers - $i + 1) % $nbTeachers) && $level > 2)){
                         $id = "CR".substr($subject['IdEns'], 4, 2).substr($teacher['IdProf'], 4, 2).substr($divisions[$j]['IdDiv'], 3, 3);
                         DB::table("Cours")
                             ->insert(['IdCours' => $id,
@@ -239,6 +242,7 @@ class Repository {
                     }
                 }
             }
+            
         }
     }
 
