@@ -48,6 +48,7 @@ class Repository {
         $this->assignAllSubjectTeacher();
         $this->generateAllTPGroups();
         $this->setTeachersHVolume();
+        $this->generateClassroomsConstraints();
     }
 
     ##########TEACHERS#############
@@ -262,7 +263,7 @@ class Repository {
                                 ->toArray();
                 for($j = 0 ; $j < count($groups) ; $j++){
                     if($j % $nbTeachers == $nbTeachers - $i){
-                        $id = "CR".substr($subject['IdEns'], 4, 2).substr($teacher['IdProf'], 4, 2).substr($groups[$j]['IdGrp'], 4, 3);
+                        $id = "CR".substr($subject['IdEns'], 4, 2).substr($teacher['IdProf'], 4, 2).substr($groups[$j]['IdGrp'], 3, 4);
                         DB::table("Cours")
                             ->insert(['IdCours' => $id,
                                     'IdEns' => $subject['IdEns'],
@@ -1018,6 +1019,7 @@ class Repository {
                     ->insert(['IdCours' => $id,
                             'IdEns' => $class['IdEns'],
                             'IdProf' => $class['IdProf'],
+                            'IdDiv' => $class['IdDiv'],
                             'IdGrp' => $group['IdGrp']]);
                 for($j = 0 ; $j < count($students)/2 ; $j++){
                     if(array_key_exists($firstStudent + $j, $students))
@@ -1267,6 +1269,117 @@ class Repository {
             ->update($classroom);
     }
 
+    function generateClassroomsConstraints(): void{
+        $this->addClassroomsConstraintsForSubject("Arts Plastiques", 
+                                                  ['6EME', '5EME', '4EME', '3EME'],
+                                                  "Arts Plastiques", 1, 1);
+        $this->addClassroomsConstraintsForSubject("Éducation musicale", 
+                                                  ['6EME', '5EME', '4EME', '3EME'],
+                                                  "Musique", 1, 1);
+        $this->addClassroomsConstraintsForSubject("Technologie", 
+                                                  ['6EME', '5EME', '4EME', '3EME'],
+                                                  "Informatique", 1.5, 1);
+        $this->addClassroomsConstraintsForSubject("Éducation physique et sportive", 
+                                                  ['6EME', '5EME', '4EME', '3EME'],
+                                                  "Sport", 2, 2);
+        $this->addClassroomsConstraintsForSubject("Éducation physique et sportive", 
+                                                  ['6EME'],
+                                                  "Sport", 2, 2);
+        $this->addClassroomsConstraintsForSubject("Éducation physique et sportive", 
+                                                  ['5EME', '4EME', '3EME'],
+                                                  "Sport", 1, 1);
+        $this->addClassroomsConstraintsForSubject("Physique-chimie", 
+                                                  ['5EME', '4EME', '3EME'],
+                                                  "TP", 0.5, 1, 1);
+        $this->addClassroomsConstraintsForSubject("SVT", 
+                                                  ['5EME', '4EME', '3EME'],
+                                                  "TP", 0.5, 1, 1);
+        $this->addClassroomsConstraintsForSubject("SVT-physique-chimie", 
+                                                  ['6EME'],
+                                                  "TP", 2, 1, 1);
+        $this->generateClassroomsConstraintsForMissingVolume();
+    }
+
+    function addClassroomsConstraintsForSubject(string $lib, array $level, string $classroom, float $time, float $volMin, int $group = 0){
+        $subjects = DB::table("Enseignements")
+                        ->where('LibelleEns', 'like', $lib)
+                        ->whereIn('NiveauEns', $level)
+                        ->get('IdEns')
+                        ->toArray();
+        if(!$group)
+            $classes = DB::table("Cours")
+                            ->whereIn('IdEns', $subjects)
+                            ->get()
+                            ->toArray();
+        else
+            $classes = DB::table("Cours")
+                            ->whereNotNull('IdGrp')
+                            ->whereIn('IdEns', $subjects)
+                            ->get()
+                            ->toArray();
+        $index = rand(0, 500);
+        foreach($classes as $class){
+            $index++;
+            $id = "CS".substr($class['IdCours'], 2, 5).$index;
+            DB::table("ContraintesSalles")
+                ->insert(['IdContSalle' => $id,
+                          'TypeSalle' => $classroom,
+                          'IdCours' => $class['IdCours'],
+                          'VolHSalle' => $time,
+                          'DureeMinSalle' => $volMin]);
+        }
+        
+    }
+
+    function generateClassroomsConstraintsForMissingVolume(): void{
+        $classes = $this->classes();
+        $index = 0;
+        foreach($classes as $class){
+            $subject = DB::table("Enseignements")
+                        ->where('IdEns', $class['IdEns'])
+                        ->get()
+                        ->toArray();
+            if($class['IdGrp'] == null)
+                $vol = DB::table("VolumeCoursDivSalle")
+                            ->where('IdDiv', $class['IdDiv'])
+                            ->get()
+                            ->toArray();
+            else 
+                $vol = DB::table("VolumeCoursGrpSalle")
+                            ->where('IdGrp', $class['IdGrp'])
+                            ->get()
+                            ->toArray();
+            $missingVol = $subject[0]['VolHEns'] - $vol[0]['VolTotSalle'];
+            $index++;
+            if($missingVol > 0){
+                $id = "CS".substr($class['IdCours'], 2, 4)."c".$index;
+                DB::table("ContraintesSalles")
+                    ->insert(['IdContSalle' => $id,
+                              'TypeSalle' => 'Cours',
+                              'IdCours' => $class['IdCours'],
+                              'VolHSalle' => $missingVol,
+                              'DureeMinSalle' => 1]);
+            }
+        }
+    }
+
+    #######################CLASSES#################
+    
+    function classes() : array{
+        return DB::table('Cours')
+                    ->get()
+                    ->toArray();
+    }
+
+    function classesWithoutConstraints() : array{
+        $constraints =  DB::table('ContraintesSalles')
+                            ->get('IdCours')
+                            ->toArray();
+        return DB::table("Cours")
+                -whereNotIn('IdCours', $constraints)
+                ->get()
+                ->toArray();
+    }
 
 
     ######################## SCHEDULES ###################
@@ -1445,6 +1558,7 @@ class Repository {
             }
         }
     }
+
 }
 
 

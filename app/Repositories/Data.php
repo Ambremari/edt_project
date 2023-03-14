@@ -204,7 +204,9 @@ class Data
             ['TypeSalle' => 'Cours'],
             ['TypeSalle' => 'TP'],
             ['TypeSalle' => 'Informatique'],
-            ['TypeSalle' => 'Sport']
+            ['TypeSalle' => 'Sport'],
+            ['TypeSalle' => 'Arts Plastiques'],
+            ['TypeSalle' => 'Musique']
         ];
     }
 

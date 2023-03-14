@@ -181,11 +181,12 @@ CREATE TABLE Parentes(
 );
 
 CREATE TABLE ContraintesSalles(
+   IdContSalle VARCHAR(10) CHECK (IdContSalle LIKE 'CS%'),
    TypeSalle VARCHAR(15),
-   IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
+   IdCours VARCHAR(10),
    VolHSalle DECIMAL(3,2) NOT NULL,
    DureeMinSalle INT NOT NULL DEFAULT 1,
-   PRIMARY KEY(TypeSalle, IdCours),
+   PRIMARY KEY(IdContSalle),
    FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
 );
@@ -203,11 +204,10 @@ CREATE TABLE Unites(
    Semaine CHAR(1) CHECK (Semaine IN ('A', 'B')),
    Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   TypeSalle VARCHAR(15),
-   IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
+   IdContSalle VARCHAR(10),
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
-   FOREIGN KEY(TypeSalle, IdCours) REFERENCES ContraintesSalles(TypeSalle, IdCours),
+   FOREIGN KEY(IdContSalle) REFERENCES ContraintesSalles(IdContSalle),
    FOREIGN KEY(IdSalle) REFERENCES Salles(IdSalle)
 );
 
@@ -231,7 +231,7 @@ AS
 
 CREATE OR REPLACE VIEW LibellesCours
 AS
-   SELECT C.IdDiv, C.IdGrp, C.IdProf, C.IdEns, LibelleEns, NomProf, PrenomProf, LibelleDiv, LibelleGrp
+   SELECT C.IdCours, C.IdDiv, C.IdGrp, C.IdProf, C.IdEns, LibelleEns, NomProf, PrenomProf, LibelleDiv, LibelleGrp
    FROM (((Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
          JOIN Enseignants P ON C.IdProf = P.IdProf)
          LEFT JOIN Divisions D ON C.IdDiv = D.IdDiv)
@@ -298,3 +298,17 @@ AS
    SELECT E.IdEns, LibelleEns, NiveauEns, COUNT(IdEleve) Inscrits
    FROM Options O RIGHT JOIN EnsOption E ON O.IdEns = E.IdEns
    GROUP BY E.IdEns, LibelleEns, NiveauEns;
+
+CREATE OR REPLACE VIEW VolumeCoursDivSalle
+AS
+   SELECT IdDiv, IdEns, SUM(VolHSalle) VolTotSalle
+   FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
+   WHERE IdDiv IS NOT NULL
+   GROUP BY IdDiv, IdEns;
+
+CREATE OR REPLACE VIEW VolumeCoursGrpSalle
+AS
+   SELECT IdGrp, IdEns, SUM(VolHSalle) VolTotSalle
+   FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
+   WHERE IdGrp IS NOT NULL
+   GROUP BY IdGrp, IdEns;
