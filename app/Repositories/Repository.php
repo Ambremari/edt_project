@@ -1349,6 +1349,8 @@ class Repository {
                             ->where('IdGrp', $class['IdGrp'])
                             ->get()
                             ->toArray();
+            if(empty($vol))
+                $vol = [['VolTotSalle' => 0]];
             $missingVol = $subject[0]['VolHEns'] - $vol[0]['VolTotSalle'];
             $index++;
             if($missingVol > 0){

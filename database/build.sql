@@ -308,7 +308,7 @@ AS
 
 CREATE OR REPLACE VIEW VolumeCoursGrpSalle
 AS
-   SELECT IdGrp, IdEns, SUM(VolHSalle) VolTotSalle
+   SELECT IdDiv, IdGrp, IdEns, SUM(VolHSalle) VolTotSalle
    FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
    WHERE IdGrp IS NOT NULL
-   GROUP BY IdGrp, IdEns;
+   GROUP BY IdDiv, IdGrp, IdEns;
