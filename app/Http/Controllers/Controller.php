@@ -996,7 +996,7 @@ class Controller extends BaseController{
     ### classrooms constraints ####
     public function classroomConstraints(Request $request) {
         $hasKey = $request->session()->has('user');
-        if (!$hasKey || $request->session()->get('user')['role'] != 'admin')
+        if (!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
 
         $courses = $this->repository->lessons();
@@ -1011,7 +1011,7 @@ class Controller extends BaseController{
      function addConstraintsClassrooms(Request $request)
 {
     $hasKey = $request->session()->has('user');
-    if (!$hasKey || $request->session()->get('user')['role'] != 'admin') {
+    if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
         return redirect()->route('login');
     }
 
@@ -1039,7 +1039,7 @@ class Controller extends BaseController{
 }
      function updateConstraintsClassrooms(Request $request){
     $hasKey = $request->session()->has('user');
-    if (!$hasKey || $request->session()->get('user')['role'] != 'admin') {
+    if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
         return redirect()->route('login');
     }
 
