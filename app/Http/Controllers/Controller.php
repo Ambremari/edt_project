@@ -130,6 +130,15 @@ class Controller extends BaseController{
         return view('subjects', ['subjects' => $subjects]);
     }
 
+    public function showSubject(Request $request, string $idEns){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subject = $this->repository->getSubject($idEns);
+        $teachers = $this->repository->getSubjectTeachers($idEns);
+        return view('subject_show', ['subject' => $subject, 'teachers' => $teachers]);
+    }
+
     public function addSubjectForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
@@ -1078,5 +1087,23 @@ class Controller extends BaseController{
             }
         }
         return redirect()->route('subjects.constraints')->with('status', 'Contraintes actualisées avec succès');
+    }
+
+    public function showDataPreprocess(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjectsNoTeacher();
+        $teachers = $this->repository->teachersLackVolume();
+        $studentsNoDiv = $this->repository->studentsNoDivision();
+        $studentsNoLV1 = $this->repository->studentsNoLV1();
+        $studentsNoLV2 = $this->repository->studentsNoLV2();
+        $divisions = $this->repository->divisionSubjectsCount();
+        return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
+                                        'students_no_lv1' => $studentsNoLV1,
+                                        'students_no_lv2' => $studentsNoLV2,
+                                        'subjects' => $subjects,
+                                        'teachers' => $teachers,
+                                        'divisions' => $divisions,]);
     }
 };

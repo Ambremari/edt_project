@@ -92,6 +92,10 @@ Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
     ->where('idEns', '[ENS].*')
     ->name('subject.update.form');
 
+Route::get('/ens/{idEns}', [Controller::class, 'showSubject'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.show');
+
 Route::get('/div', [Controller::class, 'addDivisionForm'])
     ->name('division.form');
 
@@ -199,6 +203,9 @@ Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'
 
 Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
     ->name('subject.constraints.update');
+
+Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
+    ->name('data.preprocess');
 
 
 

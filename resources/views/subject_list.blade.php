@@ -17,6 +17,7 @@
     <th>Volume horaire hebdomadaire</th>
     <th>Optionnel</th>
     <th></th>
+    <th></th>
   </tr>
   @foreach ($subjects as $row)
         <tr>
@@ -29,6 +30,7 @@
               @endif
             </td>
             <td><a href="{{route('subject.update.form', ['idEns' => $row['IdEns']])}}">Modifier</a></td>
+            <td><a href="{{route('subject.show', ['idEns' => $row['IdEns']])}}">Fiche</a></td>
         </tr>
     @endforeach
 </table>

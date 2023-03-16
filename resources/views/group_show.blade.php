@@ -29,7 +29,7 @@ Groupe {{ $group['LibelleGrp'] }}
                 @csrf 
                 <input type="hidden" value="{{ $row['IdEleve'] }}" name="idStud">
                 <input type="hidden" value="{{ $group['IdGrp'] }}" name="idGrp">  
-                {{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}
+                {{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}......
                 <button class="list_button" type="submit">Retirer</button>
             </form>
         </span>

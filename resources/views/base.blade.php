@@ -85,7 +85,7 @@
                     <a href="{{ route('subjects.constraints')}}">Contraintes horaires</a>
                     <a href="#">Incompatibilités des enseignements</a>
                     <a href="#">Contraintes matérielles</a>
-                    <a href="#">Pré-traitement</a>
+                    <a href="{{ route('data.preprocess')}}">Pré-traitement</a>
                     <a href="#">Génération automatique</a>
                     <a href="#">Modification manuelle</a>
                     <a href="#">Optimisation</a>
