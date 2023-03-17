@@ -19,5 +19,3 @@ yarn-error.log
 /.idea
 /.vscode
 composer.lock
-.DS_Store
-/config/database.php
