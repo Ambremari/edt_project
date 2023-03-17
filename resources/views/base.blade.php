@@ -14,7 +14,7 @@
                 {{ session()->get('user')['firstname'] }} {{ session()->get('user')['name'] }}<br>
                 Identifiant : {{ session()->get('user')['id'] }}<br>
                     <form method="POST" action="{{route('logout.post')}}">
-                        @csrf 
+                        @csrf
                             <button class="header_button" type="submit">Déconnexion</button>
                     </form>
                 @else
@@ -84,7 +84,7 @@
                 <div class="dropdown-content">
                     <a href="{{ route('subjects.constraints')}}">Contraintes horaires</a>
                     <a href="#">Incompatibilités des enseignements</a>
-                    <a href="#">Contraintes matérielles</a>
+                    <a href="{{ route('constraints.classrooms')}}">Contraintes matérielles</a>
                     <a href="{{ route('data.preprocess')}}">Pré-traitement</a>
                     <a href="#">Génération automatique</a>
                     <a href="#">Modification manuelle</a>

@@ -1,13 +1,12 @@
 <div class="filter">
-    <label for="jour">Jour</label>
-    <select class="form-control" id="mySelect" onchange="filterSchedule()" name="jour" required>
+    <label for="jour">Filtrer par Jour</label>
+    <select class="form-control" id="mySelect" onchange="filterSchedule()">
         <option value="" selected>Tous</option>
-        <option value="lundi">Lundi</option>
-        <option value="mardi">Mardi</option>
-        <option value="mercredi">Mercredi</option>
-        <option value="jeudi">Jeudi</option>
-        <option value="vendredi">Vendredi</option>
-        <option value="samedi">Samedi</option>
+        <option value="Lundi">Lundi</option>
+        <option value="Mardi">Mardi</option>
+        <option value="Mercredi">Mercredi</option>
+        <option value="Jeudi">Jeudi</option>
+        <option value="Vendredi">Vendredi</option>
     </select>
 </div>
 <div class="myTable">
@@ -19,10 +18,13 @@
             <th>Heure de fin</th>
             <th></th>
         </tr>
-        @foreach($schedule as $row)
-            <tr>
+        @foreach($schedules as $row)
+            @php
+                $jour = $row['Jour'];
+            @endphp
+            <tr class="{{ in_array($jour, ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']) ? $jour : ''}}">
                 <td>{{ $row['Horaire'] }}</td>
-                <td>{{ $row['Jour'] }}</td>
+                <td>{{ $jour }}</td>
                 <td>{{ $row['HeureDebut'] }}</td>
                 <td>{{ $row['HeureFin'] }}</td>
                 <td><a href="{{route('schedule.update.form', ['horaire' => $row['Horaire']])}}">Modifier</a></td>
@@ -31,23 +33,23 @@
     </table>
 </div>
 <script>
-function filterSchedule() {
-    var select, filter, table, tr, td, i, txtValue;
-    select = document.getElementById("mySelect");
-    filter = select.value;
-    table = document.getElementById("horaireTable");
-    tr = table.getElementsByTagName("tr");
+    function filterSchedule() {
+        var select, filter, table, tr, td, i, txtValue;
+        select = document.getElementById("mySelect");
+        filter = select.value;
+        table = document.getElementById("horaireTable");
+        tr = table.getElementsByTagName("tr");
 
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[1];
-        if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue == filter || filter == "") {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue == filter || filter == "") {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
             }
         }
     }
-}
 </script>
