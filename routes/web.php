@@ -92,6 +92,10 @@ Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
     ->where('idEns', '[ENS].*')
     ->name('subject.update.form');
 
+Route::get('/ens/{idEns}', [Controller::class, 'showSubject'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.show');
+
 Route::get('/div', [Controller::class, 'addDivisionForm'])
     ->name('division.form');
 
@@ -190,6 +194,7 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
+
 Route::get('/constraints/classrooms', [Controller::class, 'classroomConstraints'])
     ->name('constraints.classrooms');
 
@@ -198,6 +203,20 @@ Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsCl
 
 Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
+
+Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
+    ->name('subjects.constraints');
+
+Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.constraints');
+
+Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
+    ->name('subject.constraints.update');
+
+Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
+    ->name('data.preprocess');
+
 
 
 

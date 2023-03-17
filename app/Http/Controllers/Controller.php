@@ -130,6 +130,15 @@ class Controller extends BaseController{
         return view('subjects', ['subjects' => $subjects]);
     }
 
+    public function showSubject(Request $request, string $idEns){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subject = $this->repository->getSubject($idEns);
+        $teachers = $this->repository->getSubjectTeachers($idEns);
+        return view('subject_show', ['subject' => $subject, 'teachers' => $teachers]);
+    }
+
     public function addSubjectForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
@@ -889,10 +898,16 @@ class Controller extends BaseController{
             return redirect()->route('login');
         $times = $this->repository->schedules();
         $id = $request->session()->get('user')['id'];
-        $constraints = $this->repository->getTeacherConstraints($id);
+        $constraints1 = $this->repository->getTeacherConstraints($id, 1);
+        $constraints2 = $this->repository->getTeacherConstraints($id, 2); 
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
         return view('teacher_constraints', ['times' => $times,
-                                            'constraints' => $constraints,
-                                            'id_prof' => $id]);
+                                            'first_constraints' => $constraints1,
+                                            'sec_constraints' => $constraints2,
+                                            'id_prof' => $id,
+                                            'start_morning' => $startMorning,
+                                            'start_afternoon' => $startAfternoon]);
     }
 
     public function updateProfConstraints(Request $request){
@@ -1064,6 +1079,96 @@ class Controller extends BaseController{
     $this->repository->updateConstraintsClassrooms($validatedData);
 
     return redirect()->route('constraints.classrooms')->with('status', 'Contrainte modifiée avec succès !');
+    }
+
+    public function subjectsConstraintsForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
+        $times = $this->repository->schedules();
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('subjects_constraints', ['subjects'=> $subjects,
+                                    'times' => $times,
+                                    'start_morning' => $startMorning,
+                                    'start_afternoon' => $startAfternoon]);
+    }
+
+    public function subjectConstraintsForm(Request $request, string $idEns){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subject = $this->repository->getSubject($idEns);
+        $subjects = $this->repository->subjects();
+        $times = $this->repository->schedules();
+        $constraints1 = $this->repository->getSubjectConstraints($idEns, 1);
+        $constraints2 = $this->repository->getSubjectConstraints($idEns, 2); 
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('subject_constraints', ['subject' => $subject,
+                                    'subjects'=> $subjects,
+                                    'times' => $times,
+                                    'first_cons' => $constraints1,
+                                    'sec_cons' => $constraints2,
+                                    'start_morning' => $startMorning,
+                                    'start_afternoon' => $startAfternoon]);
+    }
+
+    public function updateSubjectConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required_without:level'],
+            'level' => ['required_without:id'],
+            'first' => ['array'],
+            'second' => ['array'] 
+        ];
+        $messages = [
+            'id.required_withount' => 'Vous devez sélectionner un enseignement ou un niveau.',
+            'level.required_without' => 'Vous devez sélectionner un enseignement ou un niveau.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        if(!$request->has('first'))
+            $validatedData['first'] = [];
+        if(!$request->has('second'))
+            $validatedData['second'] = [];
+        if($request->has('id') && $validatedData['id'] != "all"){
+            try{
+                $this->repository->addSubjectConstraints($validatedData['id'], $validatedData['first'], $validatedData['second']);
+            } catch (Exception $exception) {
+                return redirect()->route('subjects.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+            }
+        }
+        else {
+            try{
+                $this->repository->addLevelConstraints($validatedData['level'], $validatedData['first'], $validatedData['second']);
+            } catch (Exception $exception) {
+                return redirect()->route('subjects.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+            }
+        }
+        return redirect()->route('subjects.constraints')->with('status', 'Contraintes actualisées avec succès');
+    }
+
+    public function showDataPreprocess(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjectsNoTeacher();
+        $teachers = $this->repository->teachersLackVolume();
+        $studentsNoDiv = $this->repository->studentsNoDivision();
+        $studentsNoLV1 = $this->repository->studentsNoLV1();
+        $studentsNoLV2 = $this->repository->studentsNoLV2();
+        $divisions = $this->repository->divisionSubjectsCount();
+        $divisionsVol = $this->repository->divisionLackingVolume();
+        return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
+                                        'students_no_lv1' => $studentsNoLV1,
+                                        'students_no_lv2' => $studentsNoLV2,
+                                        'subjects' => $subjects,
+                                        'teachers' => $teachers,
+                                        'divisions' => $divisions,
+                                        'divisions_vol' => $divisionsVol,]);
     }
 };
 

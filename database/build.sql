@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Unites;
+DROP TABLE IF EXISTS IncompatibilitesChoix;
 DROP TABLE IF EXISTS ContraintesSalles;
 DROP TABLE IF EXISTS Parentes;
 DROP TABLE IF EXISTS ContraintesProf;
@@ -180,13 +181,22 @@ CREATE TABLE Parentes(
 );
 
 CREATE TABLE ContraintesSalles(
+   IdContSalle VARCHAR(10) CHECK (IdContSalle LIKE 'CS%'),
    TypeSalle VARCHAR(15),
-   IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
+   IdCours VARCHAR(10),
    VolHSalle DECIMAL(3,2) NOT NULL,
    DureeMinSalle INT NOT NULL DEFAULT 1,
-   PRIMARY KEY(TypeSalle, IdCours),
+   PRIMARY KEY(IdContSalle),
    FOREIGN KEY(TypeSalle) REFERENCES TypesSalles(TypeSalle),
    FOREIGN KEY(IdCours) REFERENCES Cours(IdCours)
+);
+
+CREATE TABLE IncompatibilitesChoix(
+   IdEns1 VARCHAR(10),
+   IdEns2 VARCHAR(10),
+   PRIMARY KEY(IdEns1, IdEns2),
+   FOREIGN KEY(IdEns1) REFERENCES Enseignements(IdEns),
+   FOREIGN KEY(IdEns2) REFERENCES Enseignements(IdEns)
 );
 
 CREATE TABLE Unites(
@@ -194,11 +204,10 @@ CREATE TABLE Unites(
    Semaine CHAR(1) CHECK (Semaine IN ('A', 'B')),
    Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
    IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
-   TypeSalle VARCHAR(15),
-   IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
+   IdContSalle VARCHAR(10),
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
-   FOREIGN KEY(TypeSalle, IdCours) REFERENCES ContraintesSalles(TypeSalle, IdCours),
+   FOREIGN KEY(IdContSalle) REFERENCES ContraintesSalles(IdContSalle),
    FOREIGN KEY(IdSalle) REFERENCES Salles(IdSalle)
 );
 
@@ -222,7 +231,7 @@ AS
 
 CREATE OR REPLACE VIEW LibellesCours
 AS
-   SELECT C.IdDiv, C.IdGrp, C.IdProf, C.IdEns, LibelleEns, NomProf, PrenomProf, LibelleDiv, LibelleGrp
+   SELECT C.IdCours, C.IdDiv, C.IdGrp, C.IdProf, C.IdEns, LibelleEns, NomProf, PrenomProf, LibelleDiv, LibelleGrp
    FROM (((Cours C JOIN Enseignements E ON C.IdEns = E.IdEns)
          JOIN Enseignants P ON C.IdProf = P.IdProf)
          LEFT JOIN Divisions D ON C.IdDiv = D.IdDiv)
@@ -238,3 +247,88 @@ AS
    SELECT *
    FROM Enseignements
    WHERE OptionEns IS true;
+
+CREATE OR REPLACE VIEW HoraireDebutMatin
+AS
+   SELECT UNIQUE TIME_FORMAT(HeureDebut, '%H:%i') HeureDebut
+   FROM Horaires
+   WHERE Horaire LIKE "__M_";
+
+CREATE OR REPLACE VIEW HoraireDebutAprem
+AS
+   SELECT UNIQUE TIME_FORMAT(HeureDebut, '%H:%i') HeureDebut
+   FROM Horaires
+   WHERE Horaire LIKE "__S_";
+
+CREATE OR REPLACE VIEW GroupeLV1
+AS
+   SELECT IdEleve, C.IdGrp
+   FROM CompoGroupes C JOIN GROUPES G on C.IdGrp = G.IdGrp
+   WHERE LibelleGrp LIKE "%LV1%";
+
+CREATE OR REPLACE VIEW GroupeLV2
+AS
+   SELECT IdEleve, C.IdGrp
+   FROM CompoGroupes C JOIN GROUPES G on C.IdGrp = G.IdGrp
+   WHERE LibelleGrp LIKE "%LV2%";
+
+CREATE OR REPLACE VIEW VolumeHProf
+AS
+   SELECT T.IdProf, SUM(VolHEns) VolHReelProf
+   FROM (Enseignants T LEFT JOIN Cours E ON T.IdProf = E.IdProf)
+      LEFT JOIN Enseignements S ON E.IdEns = S.IdEns
+   GROUP BY T.IdProf;
+
+
+CREATE OR REPLACE VIEW CoursDivisions
+AS
+   SELECT D.IdDiv, COUNT(IdEns) NbReel
+   FROM Divisions D LEFT JOIN Cours C ON D.IdDiv = C.IdDiv
+   GROUP BY D.IdDiv;
+
+CREATE OR REPLACE VIEW CoursNiveau
+AS 
+   SELECT NiveauEns, COUNT(IdEns) NbCible
+   FROM Enseignements 
+   WHERE OptionEns IS false
+   GROUP BY NiveauEns;
+
+CREATE OR REPLACE VIEW OptionCount
+AS
+   SELECT E.IdEns, LibelleEns, NiveauEns, COUNT(IdEleve) Inscrits
+   FROM Options O RIGHT JOIN EnsOption E ON O.IdEns = E.IdEns
+   GROUP BY E.IdEns, LibelleEns, NiveauEns;
+
+CREATE OR REPLACE VIEW VolumeDivSalle
+AS
+   SELECT IdDiv, IdEns, ROUND(DECODE_ORACLE(IdGrp, NULL, VolHSalle, VolHSalle/2), 2) VolHSalle
+   FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
+   WHERE IdDiv IS NOT NULL;
+
+CREATE OR REPLACE VIEW VolumeCoursDivSalle
+AS
+   SELECT IdDiv, IdEns, SUM(VolHSalle) VolTotSalle
+   FROM VolumeDivSalle
+   GROUP BY IdDiv, IdEns;
+   
+
+CREATE OR REPLACE VIEW VolumeCoursGrpSalle
+AS
+   SELECT IdDiv, IdGrp, IdEns, SUM(VolHSalle) VolTotSalle
+   FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
+   WHERE IdGrp IS NOT NULL
+   GROUP BY IdDiv, IdGrp, IdEns;
+
+
+CREATE OR REPLACE VIEW VolumeDivTot
+AS
+   SELECT IdDiv, SUM(VolHSalle) VolTotSalle
+   FROM VolumeDivSalle
+   GROUP BY IdDiv;
+
+CREATE OR REPLACE VIEW VolumeNiveauTot
+AS
+   SELECT NiveauEns, SUM(VolHEns) VolTotEns
+   FROM Enseignements
+   WHERE OptionEns IS false
+   GROUP BY NiveauEns;

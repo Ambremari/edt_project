@@ -82,9 +82,10 @@
             <div class="dropdown">
                 <span><a href="#">Emploi du temps</a></span>
                 <div class="dropdown-content">
-                    <a href="#">Contraintes horaires</a>
+                    <a href="{{ route('subjects.constraints')}}">Contraintes horaires</a>
+                    <a href="#">Incompatibilités des enseignements</a>
                     <a href="{{ route('constraints.classrooms')}}">Contraintes matérielles</a>
-                    <a href="#">Pré-traitement</a>
+                    <a href="{{ route('data.preprocess')}}">Pré-traitement</a>
                     <a href="#">Génération automatique</a>
                     <a href="#">Modification manuelle</a>
                     <a href="#">Optimisation</a>
