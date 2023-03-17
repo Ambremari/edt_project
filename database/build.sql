@@ -299,12 +299,18 @@ AS
    FROM Options O RIGHT JOIN EnsOption E ON O.IdEns = E.IdEns
    GROUP BY E.IdEns, LibelleEns, NiveauEns;
 
+CREATE OR REPLACE VIEW VolumeDivSalle
+AS
+   SELECT IdDiv, IdEns, ROUND(DECODE_ORACLE(IdGrp, NULL, VolHSalle, VolHSalle/2), 2) VolHSalle
+   FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
+   WHERE IdDiv IS NOT NULL;
+
 CREATE OR REPLACE VIEW VolumeCoursDivSalle
 AS
    SELECT IdDiv, IdEns, SUM(VolHSalle) VolTotSalle
-   FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
-   WHERE IdDiv IS NOT NULL
+   FROM VolumeDivSalle
    GROUP BY IdDiv, IdEns;
+   
 
 CREATE OR REPLACE VIEW VolumeCoursGrpSalle
 AS
@@ -312,3 +318,17 @@ AS
    FROM Cours C LEFT JOIN ContraintesSalles S ON C.IdCours = S.IdCours
    WHERE IdGrp IS NOT NULL
    GROUP BY IdDiv, IdGrp, IdEns;
+
+
+CREATE OR REPLACE VIEW VolumeDivTot
+AS
+   SELECT IdDiv, SUM(VolHSalle) VolTotSalle
+   FROM VolumeDivSalle
+   GROUP BY IdDiv;
+
+CREATE OR REPLACE VIEW VolumeNiveauTot
+AS
+   SELECT NiveauEns, SUM(VolHEns) VolTotEns
+   FROM Enseignements
+   WHERE OptionEns IS false
+   GROUP BY NiveauEns;

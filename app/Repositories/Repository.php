@@ -939,6 +939,15 @@ class Repository {
                 ->toArray();
     }
 
+    function divisionLackingVolume(): array{
+        return DB::table('VolumeDivTot as Vd')
+                    ->join('Divisions as Div', 'Vd.IdDiv', '=', 'Div.IdDiv')
+                    ->join('VolumeNiveauTot as Vn', 'Div.NiveauDiv', '=', 'Vn.NiveauEns')
+                    ->whereColumn('Vd.VolTotSalle', '!=', 'Vn.VolTotEns')
+                    ->get(['Div.*', 'VolTotSalle', 'VolTotEns'])
+                    ->toArray();
+    }
+
     #############GROUPS##############
 
     function insertGroup(array $group): string {
@@ -1317,7 +1326,8 @@ class Repository {
                             ->whereIn('IdEns', $subjects)
                             ->get()
                             ->toArray();
-        $index = rand(0, 500);
+        $index = DB::table("ContraintesSalles")
+                    ->count();
         foreach($classes as $class){
             $index++;
             $id = "CS".substr($class['IdCours'], 2, 5).$index;
@@ -1335,32 +1345,37 @@ class Repository {
         $classes = $this->classes();
         $index = 0;
         foreach($classes as $class){
-            $subject = DB::table("Enseignements")
-                        ->where('IdEns', $class['IdEns'])
-                        ->get()
-                        ->toArray();
-            if($class['IdGrp'] == null)
-                $vol = DB::table("VolumeCoursDivSalle")
-                            ->where('IdDiv', $class['IdDiv'])
+            if($class['IdDiv'] == null || $class['IdGrp'] == null){
+                $subject = DB::table("Enseignements")
+                            ->where('IdEns', $class['IdEns'])
                             ->get()
                             ->toArray();
-            else 
-                $vol = DB::table("VolumeCoursGrpSalle")
-                            ->where('IdGrp', $class['IdGrp'])
-                            ->get()
-                            ->toArray();
-            if(empty($vol))
-                $vol = [['VolTotSalle' => 0]];
-            $missingVol = $subject[0]['VolHEns'] - $vol[0]['VolTotSalle'];
-            $index++;
-            if($missingVol > 0){
-                $id = "CS".substr($class['IdCours'], 2, 4)."c".$index;
-                DB::table("ContraintesSalles")
-                    ->insert(['IdContSalle' => $id,
-                              'TypeSalle' => 'Cours',
-                              'IdCours' => $class['IdCours'],
-                              'VolHSalle' => $missingVol,
-                              'DureeMinSalle' => 1]);
+                if($class['IdGrp'] == null){
+                    $vol = DB::table("VolumeCoursDivSalle")
+                                ->where('IdDiv', $class['IdDiv'])
+                                ->where('IdEns', $class['IdEns'])
+                                ->get()
+                                ->toArray();
+                } else {
+                    $vol = DB::table("VolumeCoursGrpSalle")
+                                ->where('IdGrp', $class['IdGrp'])
+                                ->where('IdEns', $class['IdEns'])
+                                ->get()
+                                ->toArray(); 
+                }
+                if(empty($vol))
+                    $vol = [['VolTotSalle' => 0]];
+                $missingVol = $subject[0]['VolHEns'] - $vol[0]['VolTotSalle'];
+                if($missingVol > 0){
+                    $index++;
+                    $id = "CS".substr($class['IdCours'], 2, 4)."c".$index;
+                    DB::table("ContraintesSalles")
+                        ->insert(['IdContSalle' => $id,
+                                'TypeSalle' => 'Cours',
+                                'IdCours' => $class['IdCours'],
+                                'VolHSalle' => $missingVol,
+                                'DureeMinSalle' => 1]);
+                }
             }
         }
     }
@@ -1378,9 +1393,9 @@ class Repository {
                             ->get('IdCours')
                             ->toArray();
         return DB::table("Cours")
-                -whereNotIn('IdCours', $constraints)
-                ->get()
-                ->toArray();
+                    ->whereNotIn('IdCours', $constraints)
+                    ->get()
+                    ->toArray();
     }
 
 

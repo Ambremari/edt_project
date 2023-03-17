@@ -11,6 +11,7 @@
     <button class="tablinks" onclick="openInfo(event, 'NoTeacher')">Enseignements sans enseignants : {{ count($subjects) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'InfTime')">Enseignants avec volume horaire insuffisant : {{ count($teachers) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'NoSubject')">Divisions avec enseignements manquants : {{ count($divisions) }}</button>
+    <button class="tablinks" onclick="openInfo(event, 'DivVol')">Divisions avec volume horaire insuffisant : {{ count($divisions_vol) }}</button>
     <span>Dernier pré-traitement : </span>
     <span>Dernière moficiation de la base : </span>    
 </div>
@@ -56,6 +57,13 @@
         <ul id="studentList">
         @foreach( $divisions as $division)
         <li><a href="{{route('division.show', ['idDiv' => $division['IdDiv']])}}">{{ $division['LibelleDiv'] }}</a></li>
+        @endforeach
+        </ul>
+    </div>
+    <div id="DivVol" class="tabcontentinfo">
+        <ul id="studentList">
+        @foreach( $divisions_vol as $division)
+        <li><a href="{{route('division.show', ['idDiv' => $division['IdDiv']])}}">{{ $division['LibelleDiv'] }} {{ $division['VolTotSalle'] }}/{{ $division['VolTotEns'] }}</a></li>
         @endforeach
         </ul>
     </div>
