@@ -1487,7 +1487,6 @@ class Repository {
             ->where('IdCours', $constraintsClassroom['IdCours'])
             ->update($constraintsClassroom);
     }
-};
 
 
     function getStartTimesMorning(): array{
@@ -1603,6 +1602,6 @@ class Repository {
                 throw new Exception('Enseignement optionnel non choisi');
             }
         }
-    }
+    } */
 
 }
