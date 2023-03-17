@@ -864,6 +864,7 @@ class Repository {
     function getDivisionLessonsLib(string $id) : array{
         return DB::table('LibellesCours')
                     ->where('IdDiv', $id)
+                    ->where('IdGrp', null)
                     ->get()
                     ->toArray();
     }
