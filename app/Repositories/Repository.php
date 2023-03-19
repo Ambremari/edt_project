@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use DateInterval;
-use DateTime;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -50,6 +49,7 @@ class Repository {
         $this->generateAllTPGroups();
         $this->generateClassroomsConstraints();
         $this->setTeachersHVolume();
+        $this->generateUnit();
     }
 
     ##########TEACHERS#############
@@ -1580,6 +1580,42 @@ class Repository {
                 $i++;
             } while($start->add($hour) <= $endDay);
         }
+    }
+
+    function addScheduleIncompatibility(string $subject1, string $subject2): void{
+        DB::table("IncompatibilitesHoraires")
+            ->insert([
+                'IdEns1' => $subject1,
+                'IdEns2' => $subject2
+            ]);
+        DB::table("IncompatibilitesHoraires")
+            ->insert([
+                'IdEns1' => $subject2,
+                'IdEns2' => $subject1
+            ]);
+    }
+
+    function deleteScheduleIncompatibility(string $subject1, string $subject2): void{
+        DB::table("IncompatibilitesHoraires")
+            ->where('IdEns1', $subject1)
+            ->where('IdEns2', $subject2)
+            ->delete();
+        DB::table("IncompatibilitesHoraires")
+            ->where('IdEns1', $subject2)
+            ->where('IdEns2', $subject1)
+            ->delete();
+    }
+
+    function scheduleIncompatibilities(): array{
+        return DB::table("IncompatibilitesHoraires as I")
+                    ->join("Enseignements as E", "I.IdEns1", "=", "E.IdEns")
+                    ->join("Enseignements as E2", "I.IdEns2", "=", "E2.IdEns")
+                    ->get(['I.*', 
+                        'E.LibelleEns as LibelleEns1', 
+                        'E.NiveauEns as NiveauEns1', 
+                        'E2.LibelleEns as LibelleEns2', 
+                        'E2.NiveauEns as NiveauEns2'])
+                    ->toArray();
     }
 
     #######PRE-PROCESSING DATA################

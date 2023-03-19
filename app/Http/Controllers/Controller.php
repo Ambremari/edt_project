@@ -1192,6 +1192,58 @@ class Controller extends BaseController{
         }
         return redirect()->route('data.preprocess')->with('status', 'Pré-traitement des données réalisé avec succès');
     }
+
+    public function showSubjectIncompatibility(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
+        $incomp = $this->repository->scheduleIncompatibilities();
+        return view('subject_incompatibility', ['subjects'=> $subjects,
+                                                'incomp' => $incomp]);
+    }
+
+    public function addSubjectIncompatibility(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'subject1' => ['required'],
+            'subject2' => ['required'],
+        ];
+        $messages = [
+            'subject1.required' => 'Vous devez sélectionner un enseignement.',
+            'subject2.required' => 'Vous devez sélectionner un deuxième enseignement.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->addScheduleIncompatibility($validatedData['subject1'], $validatedData['subject2']);
+        } catch (Exception $exception) {
+            return redirect()->route('subject.incompatibility')->withInput()->withErrors("Impossible d'ajouter les contraintes.");
+        }
+        return redirect()->route('subject.incompatibility')->with('status', 'Contrainte ajoutée avec succès');
+    }
+
+    public function deleteSubjectIncompatibility(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'subject1' => ['required'],
+            'subject2' => ['required'],
+        ];
+        $messages = [
+            'subject1.required' => 'Vous devez sélectionner un enseignement.',
+            'subject2.required' => 'Vous devez sélectionner un deuxième enseignement.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->deleteScheduleIncompatibility($validatedData['subject1'], $validatedData['subject2']);
+        } catch (Exception $exception) {
+            return redirect()->route('subject.incompatibility')->withInput()->withErrors("Impossible de supprimer les contraintes.");
+        }
+        return redirect()->route('subject.incompatibility')->with('status', 'Contrainte suprimée avec succès');
+    }
 };
 
 

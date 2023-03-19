@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Unites;
+DROP TABLE IF EXISTS IncompatibilitesHoraires;
 DROP TABLE IF EXISTS IncompatibilitesChoix;
 DROP TABLE IF EXISTS ContraintesSalles;
 DROP TABLE IF EXISTS Parentes;
@@ -197,6 +198,14 @@ CREATE TABLE IncompatibilitesChoix(
    FOREIGN KEY(IdEns2) REFERENCES Enseignements(IdEns)
 );
 
+CREATE TABLE IncompatibilitesHoraires(
+   IdEns1 VARCHAR(10),
+   IdEns2 VARCHAR(10),
+   PRIMARY KEY(IdEns1, IdEns2),
+   FOREIGN KEY(IdEns1) REFERENCES Enseignements(IdEns),
+   FOREIGN KEY(IdEns2) REFERENCES Enseignements(IdEns)
+);
+
 CREATE TABLE Unites(
    Unite VARCHAR(10) CHECK (Unite LIKE 'U%'),
    Semaine CHAR(1) CHECK (Semaine IN ('A', 'B')),
@@ -342,4 +351,10 @@ CREATE OR REPLACE VIEW UpdateTimes
 AS 
 	SELECT TABLE_NAME, UPDATE_TIME
 	FROM   information_schema.tables;
+
+CREATE OR REPLACE VIEW ToExport
+AS 
+	SELECT Unite, Semaine, Horaire, IdSalle, U.IdContSalle, IdEns, IdProf, IdDiv, IdGrp
+	FROM (Unites U JOIN ContraintesSalles Cs ON U.IdContSalle = Cs.IdContSalle)
+      JOIN Cours C ON Cs.IdCours = C.IdCours;
 	   

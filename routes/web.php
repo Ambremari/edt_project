@@ -220,6 +220,15 @@ Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
 Route::post('/edt/data', [Controller::class, 'preprocessData'])
     ->name('data.preprocess');
 
+Route::get('/edt/ens/incomp', [Controller::class, 'showSubjectIncompatibility'])
+    ->name('subject.incompatibility');
+
+Route::post('/edt/ens/incomp', [Controller::class, 'addSubjectIncompatibility'])
+    ->name('subject.incompatibility.add');
+
+Route::post('/edt/ens/incomp/delete', [Controller::class, 'deleteSubjectIncompatibility'])
+    ->name('subject.incompatibility.delete');
+
 
 
 
