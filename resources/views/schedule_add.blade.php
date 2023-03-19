@@ -46,7 +46,6 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-
         <div class="my_input" style="display: inline-block">
             <label for="heure_fin">Heure de fin</label>
             <input type="time" name="heure_fin" id="heure_fin" class="form-control" required>
@@ -54,8 +53,11 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        <div>
+            @csrf
+            <button type="submit" >Ajouter</button>
+        </div>
     </form>
-    <button type="submit">Ajouter</button>
 </div>
 <div class="coldown">
     @include('schedule_list')

@@ -30,8 +30,8 @@
                     <div class="dropdown-sub">
                         <a href="#">Elèves</a>
                         <div class="dropdown-subcontent">
-                            <a href="#">Saisie</a>
-                            <a href="#">Modification</a>
+                            <a href="{{route('student.form')}}">Saisie</a>
+                            <a href="{{route('student.update.list')}}">Modification</a>
                             <a href="{{route('student.option')}}">Scolarité</a>
                             <a href="{{route('students.show')}}">Fiches</a>
                         </div>

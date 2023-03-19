@@ -9,14 +9,14 @@
     @if ($errors->any())
         <div class="alert alert-warning">
             Les contraintes n'ont pas été mises à jour &#9785;
-        </div>  
+        </div>
     @endif
     @if (session('status'))
         <div class="alert alert-success">
             {{ session('status') }}
         </div>
     @endif
-    
+
     <div class="edt" id="myEdt">
         <div class="day-edt">
             <div>Lundi</div>
@@ -48,7 +48,7 @@
                 <p>M5</p>
             </div>
             <div style="height: 40px;">
-            </div>      
+            </div>
             <div class= "times-edt">
                 <div class="start-time">8h</div>
                 <p>S1</p>
@@ -71,21 +71,21 @@
             <div class="{{ $time['Horaire'] }}">
                 <span>
                     @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 1], $constraints))
-                        <input class="checkbox" type="checkbox" name="first[]" 
-                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()" checked> 
+                        <input class="checkbox" type="checkbox" name="first[]"
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()" checked>
                     @else
-                        <input class="checkbox" type="checkbox" name="first[]" 
-                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()"> 
+                        <input class="checkbox" type="checkbox" name="first[]"
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()">
                     @endif
                     <lablel for="mybox">Priorité 1</label>
                 </span>
                 <span>
                     @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 2], $constraints))
-                        <input class="checkbox" type="checkbox" name="second[]" 
-                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()" checked> 
+                        <input class="checkbox" type="checkbox" name="second[]"
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()" checked>
                     @else
-                        <input class="checkbox" type="checkbox" name="second[]" 
-                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()"> 
+                        <input class="checkbox" type="checkbox" name="second[]"
+                        value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()">
                     @endif
                     <lablel for="mybox">Priorité 2</label>
                 </span>
@@ -97,7 +97,6 @@
     <button type="submit">Valider</button>
 </form>
 </div>
-
 @include("edt_position")
 <script>
     function color1(){

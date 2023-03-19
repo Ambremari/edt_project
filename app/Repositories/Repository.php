@@ -187,6 +187,13 @@ class Repository {
                     ->get()
                     ->toArray();
     }
+     function getStudentId(String $idE)
+    {
+        $student = DB::table('Eleves')
+                    ->where('IdEleve', '=', $idE)
+                    ->first();
+        return $student;
+    }
 
     function getStudent(string $id) : array{
         $student = DB::table('Eleves as E')
@@ -799,15 +806,12 @@ class Repository {
                     ->get()
                     ->toArray();
     }
-    function getConstraintsClassrooms(array $typeSalle, array $idCours) : array{
-        $constraints = DB::table('ContraintesSalles')
-                    ->where('TypeSalle', $typeSalle)
+    function getConstraintsClassrooms(string $typeSalle, string $idCours): array {
+        return DB::table('ContraintesSalles')
+                    ->where('TypeSalle', (array)$typeSalle)
                     ->where('IdCours', $idCours)
                     ->get()
                     ->toArray();
-        if(empty($constraints))
-            throw new Exception('Contraintes inconnues');
-        return $constraints[0];
     }
 
     function addConstraintsClassrooms(array $constraintsClassroom): void{
@@ -829,7 +833,7 @@ class Repository {
                                 ->get()
                                 ->toArray();
         if(empty($existingConstraints))
-            throw new Exception('Les contraintes pour cette salle et cet enseignement n\'existent pas');
+            throw new Exception('Contraintes inconnues');
         DB::table('ContraintesSalles')
             ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
             ->where('IdCours', $constraintsClassroom['IdCours'])
