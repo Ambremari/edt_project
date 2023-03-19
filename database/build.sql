@@ -272,9 +272,16 @@ AS
 
 CREATE OR REPLACE VIEW VolumeHProf
 AS
-   SELECT T.IdProf, SUM(VolHEns) VolHReelProf
+   SELECT T.IdProf, SUM(DECODE_ORACLE(VolHSalle, NULL, 0, VolHSalle)) VolHReelProf
    FROM (Enseignants T LEFT JOIN Cours E ON T.IdProf = E.IdProf)
-      LEFT JOIN Enseignements S ON E.IdEns = S.IdEns
+         LEFT JOIN  ContraintesSalles Cs ON E.IdCours = Cs.IdCours
+   GROUP BY T.IdProf;
+
+CREATE OR REPLACE VIEW VolumeHIntermedProf
+AS
+   SELECT T.IdProf, SUM(VolHEns) VolHCalcProf
+   FROM (Enseignants T LEFT JOIN Cours C ON T.IdProf = C.IdProf)
+         LEFT JOIN  Enseignements E ON C.IdEns = E.IdEns
    GROUP BY T.IdProf;
 
 

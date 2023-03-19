@@ -48,8 +48,8 @@ class Repository {
         $this->generateGroups();
         $this->assignAllSubjectTeacher();
         $this->generateAllTPGroups();
-        $this->setTeachersHVolume();
         $this->generateClassroomsConstraints();
+        $this->setTeachersHVolume();
     }
 
     ##########TEACHERS#############
@@ -283,12 +283,12 @@ class Repository {
                         ->whereIn('IdEns', $subjects)
                         ->get('IdProf')
                         ->toArray();
-        $minVol = DB::table("VolumeHProf")
+        $minVol = DB::table("VolumeHIntermedProf")
                         ->whereIn('IdProf', $teachers)
-                        ->min('VolHReelProf');
-        $teacher = DB::table("VolumeHProf")
+                        ->min('VolHCalcProf');
+        $teacher = DB::table("VolumeHIntermedProf")
                         ->whereIn('IdProf', $teachers)
-                        ->where('VolHReelProf', $minVol)
+                        ->where('VolHCalcProf', $minVol)
                         ->get()
                         ->toArray();
         $teacher = $teacher[0];
