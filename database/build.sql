@@ -140,8 +140,6 @@ CREATE TABLE Options(
    FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
 );
 
-
-
 CREATE TABLE Cours(
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
@@ -332,3 +330,9 @@ AS
    FROM Enseignements
    WHERE OptionEns IS false
    GROUP BY NiveauEns;
+
+CREATE OR REPLACE VIEW UpdateTimes
+AS 
+	SELECT TABLE_NAME, UPDATE_TIME
+	FROM   information_schema.tables;
+	   

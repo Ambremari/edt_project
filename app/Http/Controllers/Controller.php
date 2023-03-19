@@ -1160,15 +1160,37 @@ class Controller extends BaseController{
         $studentsNoDiv = $this->repository->studentsNoDivision();
         $studentsNoLV1 = $this->repository->studentsNoLV1();
         $studentsNoLV2 = $this->repository->studentsNoLV2();
+        $studentsNoLV1Gp = $this->repository->studentsNoLV1Group();
+        $studentsNoLV2Gp = $this->repository->studentsNoLV2Group();
         $divisions = $this->repository->divisionSubjectsCount();
         $divisionsVol = $this->repository->divisionLackingVolume();
+        $unitCount = $this->repository->getUnitCount();
+        $lastPreprocess = $this->repository->lastPreprocess();
+        $lastBDUpdate = $this->repository->lastDBUpdate();
         return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
                                         'students_no_lv1' => $studentsNoLV1,
                                         'students_no_lv2' => $studentsNoLV2,
+                                        'students_no_glv1' => $studentsNoLV1Gp,
+                                        'students_no_glv2' => $studentsNoLV2Gp,
                                         'subjects' => $subjects,
                                         'teachers' => $teachers,
                                         'divisions' => $divisions,
-                                        'divisions_vol' => $divisionsVol,]);
+                                        'divisions_vol' => $divisionsVol,
+                                        'unit_count' => $unitCount,
+                                        'last_preprocess' => $lastPreprocess,
+                                        'last_update' => $lastBDUpdate]);
+    }
+
+    public function preprocessData(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        try{
+            $this->repository->preprocess();
+        } catch (Exception $exception) {
+            return redirect()->route('data.preprocess')->withInput()->withErrors("Impossible de réaliser le pré-traitement");
+        }
+        return redirect()->route('data.preprocess')->with('status', 'Pré-traitement des données réalisé avec succès');
     }
 };
 

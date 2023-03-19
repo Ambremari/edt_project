@@ -217,6 +217,9 @@ Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
 Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
     ->name('data.preprocess');
 
+Route::post('/edt/data', [Controller::class, 'preprocessData'])
+    ->name('data.preprocess');
+
 
 
 

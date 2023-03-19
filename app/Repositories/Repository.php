@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use DateInterval;
+use DateTime;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -353,7 +354,13 @@ class Repository {
                             ->where('NiveauDiv', $student['NiveauEleve'])
                             ->get()
                             ->toArray();
-            $random = rand(0, count($divisions) - 1);
+            do{
+                $random = rand(0, count($divisions) - 1);
+                $count = DB::table("DivisionCount")
+                        ->where('IdDiv', $divisions[$random]['IdDiv'])
+                        ->get()
+                        ->toArray();
+            } while($count[0]['EffectifReelDiv'] >= 35);
             DB::table("Eleves")
                 ->where('IdEleve', $student['IdEleve'])
                 ->update(['IdDiv' => $divisions[$random]['IdDiv']]);
@@ -361,6 +368,20 @@ class Repository {
     }
 
     function studentsNoLV1() : array{
+        $students = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where('LibelleEns', 'like', '%LV1%')
+                        ->get('IdEleve')
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV1Group() : array{
         $students = DB::table("GroupeLV1")
                         ->get("IdEleve")
                         ->toArray();
@@ -388,6 +409,21 @@ class Repository {
     }
 
     function studentsNoLV2() : array{
+        $students = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where('LibelleEns', 'like', '%LV2%')
+                        ->get('IdEleve')
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->where("NiveauEleve", "!=", "6EME")
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV2Group() : array{
         $students = DB::table("GroupeLV2")
                         ->get("IdEleve")
                         ->toArray();
@@ -1545,6 +1581,70 @@ class Repository {
             } while($start->add($hour) <= $endDay);
         }
     }
+
+    #######PRE-PROCESSING DATA################
+
+    function lastPreprocess(): array {
+        $time = DB::table('UpdateTimes')
+                    ->where('TABLE_NAME', 'unites')
+                    ->get('UPDATE_TIME')
+                    ->toArray();
+        return $time[0];
+    }
+
+    function lastDBUpdate(): string {
+        $time = DB::table('UpdateTimes')
+                    ->where('TABLE_NAME', 'cours')
+                    ->orWhere('TABLE_NAME', 'contraintessalles')
+                    ->min('UPDATE_TIME');
+        return $time;
+    }
+
+    function generateUnit(): void{
+        $constraints = $this->constraintsClassrooms();
+        $index = 0;
+        foreach($constraints as $constraint){
+            for($i = 1 ; $i <= $constraint['VolHSalle'] ; $i++){
+                DB::table('Unites')
+                    ->insert([
+                        'Unite' => 'U'.$index,
+                        'IdContSalle' => $constraint['IdContSalle']
+                    ]);
+                $index++;
+            }
+            if($constraint['VolHSalle'] * 10 % 10 == 5){
+                DB::table('Unites')
+                    ->insert([
+                        'Unite' => 'U'.$index,
+                        'IdContSalle' => $constraint['IdContSalle'],
+                        'Semaine' => 'A',
+                    ]);
+                $index++;
+            }
+        }
+    }
+
+    function deleteUnits(): void{
+        DB::table('Unites')
+            ->delete();
+    }
+
+    function getUnitCount(): int{
+        return DB::table("Unites")
+                    ->count();
+    }
+    function preprocess(): void {
+        if(!empty($this->subjectsNoTeacher()))
+            throw new Exception('Tous les enseignements ne sont pas affectés');
+        if(!empty($this->divisionSubjectsCount()))
+            throw new Exception('Manque des enseignements pour certaines divisions');
+        $this->generateClassroomsConstraintsForMissingVolume();
+        if(!empty($this->divisionLackingVolume()))
+            throw new Exception('Manque des heures d\'enseignements pour certaines divisions');
+        $this->deleteUnits();
+        $this->generateUnit();
+    }
+
 
 ##### TRIGGER CHECK DIV AND GRP #####
    /* function checkGrpAndDivLevel(string $idGrp): void {
