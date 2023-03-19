@@ -41,6 +41,7 @@ class Repository {
             $this->insertStudent($row);
         $this->addRandomDivision();
         $this->setOptionIncompatibility();
+        $this->generateScheduleIncompatibility();
         $this->addRandomLV1();
         $this->addRandomLV2();
         $this->addRandomOption();
@@ -601,6 +602,14 @@ class Repository {
         return DB::table('Enseignements')
                     ->orderBy('LibelleEns')
                     ->orderBy('NiveauEns')
+                    ->get()
+                    ->toArray();
+    }
+
+    function subjectsLib() : array{
+        return DB::table('Enseignements')
+                    ->select(DB::raw('UNIQUE LibelleEns'))
+                    ->orderBy('LibelleEns')
                     ->get()
                     ->toArray();
     }
@@ -1583,16 +1592,23 @@ class Repository {
     }
 
     function addScheduleIncompatibility(string $subject1, string $subject2): void{
-        DB::table("IncompatibilitesHoraires")
-            ->insert([
-                'IdEns1' => $subject1,
-                'IdEns2' => $subject2
-            ]);
-        DB::table("IncompatibilitesHoraires")
-            ->insert([
-                'IdEns1' => $subject2,
-                'IdEns2' => $subject1
-            ]);
+        $exist = DB::table("IncompatibilitesHoraires")
+                    ->where("IdEns1", $subject1)
+                    ->where("IdEns2", $subject2)
+                    ->get()
+                    ->toArray();
+        if(empty($exist)){
+            DB::table("IncompatibilitesHoraires")
+                ->insert([
+                    'IdEns1' => $subject1,
+                    'IdEns2' => $subject2
+                ]);
+            DB::table("IncompatibilitesHoraires")
+                ->insert([
+                    'IdEns1' => $subject2,
+                    'IdEns2' => $subject1
+                ]);
+        }
     }
 
     function deleteScheduleIncompatibility(string $subject1, string $subject2): void{
@@ -1616,6 +1632,35 @@ class Repository {
                         'E2.LibelleEns as LibelleEns2', 
                         'E2.NiveauEns as NiveauEns2'])
                     ->toArray();
+    }
+
+    function generateScheduleIncompatibility(): void {
+        $options = $this->optionalSubjects();
+        foreach($options as $option){
+            $options2 = DB::table("EnsOption")
+                          ->where("NiveauEns", $option["NiveauEns"])
+                          ->where("IdEns", "!=", $option["IdEns"])
+                          ->get()
+                          ->toArray();
+            foreach($options2 as $option2)
+                if(!$this->compatible($option, $option2)){
+                    $this->addScheduleIncompatibility($option['IdEns'], $option2['IdEns']);
+                }
+        }
+    }
+
+    function compatible(array $option1, array $option2): bool{
+        if(preg_match("/LV1/", $option1['LibelleEns']) && preg_match("/LV1/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/LV2/", $option1['LibelleEns']) && preg_match("/LV2/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Anglais/", $option1['LibelleEns']) && preg_match("/Anglais/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Espagnol/", $option1['LibelleEns']) && preg_match("/Espagnol/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Allemand/", $option1['LibelleEns']) && preg_match("/Allemand/", $option2['LibelleEns']))
+            return true;
+        return false;
     }
 
     #######PRE-PROCESSING DATA################

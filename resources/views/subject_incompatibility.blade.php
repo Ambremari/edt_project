@@ -54,6 +54,13 @@
     <option value="4EME">4ème</option>
     <option value="3EME">3ème</option>
 </select>
+<label for="grade">Filtrer par Enseignement</label>
+<select class="form-control" id="selectLib" onchange="filterSubject()">
+    <option value="" selected>Tous</option>
+    @foreach($subjects_lib as $subject)
+        <option value="{{ $subject['LibelleEns'] }}">{{ $subject['LibelleEns'] }}</option>
+    @endforeach
+</select>
 </div>
 
 <div class="myTable">
@@ -89,15 +96,19 @@ function filterSubject() {
   var select, filter, table, tr, td, i, txtValue;
   select = document.getElementById("mySelect");
   filter = select.value;
+  select2 = document.getElementById("selectLib");
+  filter2 = select2.value;
   table = document.getElementById("subjectTable");
   tr = table.getElementsByTagName("tr");
 
   // Loop through all table rows, and hide those who don't match the search query
   for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[1];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue == filter || filter == "") {
+    level = tr[i].getElementsByTagName("td")[1];
+    lib = tr[i].getElementsByTagName("td")[0];
+    if (level) {
+      levelValue = level.textContent || level.innerText;
+      libValue = lib.textContent || lib.innerText;
+      if (( levelValue == filter || filter == "" ) && ( libValue == filter2 || filter2 == "" )) {
         tr[i].style.display = "";
       } else {
         tr[i].style.display = "none";

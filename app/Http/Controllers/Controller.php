@@ -1198,9 +1198,11 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
         $subjects = $this->repository->subjects();
+        $subjectsLib = $this->repository->subjectsLib();
         $incomp = $this->repository->scheduleIncompatibilities();
         return view('subject_incompatibility', ['subjects'=> $subjects,
-                                                'incomp' => $incomp]);
+                                                'incomp' => $incomp,
+                                                'subjects_lib'=> $subjectsLib]);
     }
 
     public function addSubjectIncompatibility(Request $request){
