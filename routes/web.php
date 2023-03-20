@@ -175,6 +175,11 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+Route::get('/college/horaires', [Controller::class, 'showSchedules'])
+    ->name('schedule.show');
+
+Route::post('/college/horaires', [Controller::class, 'generateSchedules'])
+    ->name('schedule.generate');
 
 Route::get('/schedule/add', [Controller::class, 'addScheduleForm'])
     ->name('schedule.form');

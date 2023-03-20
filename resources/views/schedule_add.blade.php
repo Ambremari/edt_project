@@ -54,8 +54,8 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        <button type="submit">Ajouter</button>
     </form>
-    <button type="submit">Ajouter</button>
 </div>
 <div class="coldown">
     @include('schedule_list')

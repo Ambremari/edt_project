@@ -821,17 +821,18 @@ class Data
     function schedule(){
         return [
             [
-            'start' => '08:00:00',
-            'end' => '17:30:00'
+            'start' => '08:00',
+            'end' => '17:30'
             ],
             [
-            'start' => '12:30:00',
-            'end' => '13:30:00'
+            'start' => '12:30',
+            'end' => '13:30'
             ],
             [ 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'
                 ],
             [ 'LUNDI', 'MARDI', 'JEUDI', 'VENDREDI'
             ],
+            5
     ];
     }
 }

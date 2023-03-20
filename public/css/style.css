@@ -297,6 +297,18 @@ table {
     margin-right: auto;
 }
 
+.schedule th, .schedule td{
+    padding: 0;
+    padding-right: 50px;
+    width : auto;
+    text-align: center;
+    background-color: #f6f5f5;
+}
+
+.schedule table{
+    margin-bottom: 20px;
+}
+
 .myTable{
     height: 500px;
     overflow: auto;

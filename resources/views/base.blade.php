@@ -74,7 +74,7 @@
                 <span><a href="#">Etablissement</a></span>
                 <div class="dropdown-content">
                     <a href="{{route('classroom.form')}}">Infrastructures</a>
-                    <a href="{{ route('schedule.form')}}">Horaires</a>
+                    <a href="{{ route('schedule.show')}}">Horaires</a>
                     <a href="#">Fiche établissement</a>
                 </div>
             </div>

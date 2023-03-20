@@ -982,6 +982,54 @@ class Controller extends BaseController{
         return view('schedule_update', ['schedule' => $schedule, 'schedules' => $schedules]);
     }
 
+    function showSchedules(Request $request){
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
+            return redirect()->route('login');
+        }
+        $schedules =$this->repository->schedules();
+        $collegeSchedule = $this->repository->collegeSchedule();
+        return view('schedule_show', ['schedules' => $schedules,
+                                      'college_schedule' => $collegeSchedule]);
+    }
+
+    function generateSchedules(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'start_day' => ['required'],
+            'end_day' => ['required'],
+            'start_break' => ['required'],
+            'end_break' => ['required'],
+            'mornings' => ['required'],
+            'afternoons' => ['required'],
+            'interval' => ['required']
+        ];
+        $messages = [
+            'start_day.required' => 'Vous devez sélectionner l\'horaire de début.',
+            'end_day.required' => 'Vous devez sélectionner l\'horaire de fin.',
+            'start_break.required' => 'Vous devez sélectionner l\'horaire de début de la pause.',
+            'end_break.required' => 'Vous devez sélectionner l\'horaire de fin de la pause.',
+            'mornings.required' => 'Vous devez sélectionner les matinées d\'ouverture.',
+            'afternoons.required' => 'Vous devez sélectionner les après-midi d\ouverture.',
+            'interval.required' => 'Vous devez sélectionner la durée de l\'interclasse.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->generateSchedule(['start' => $validatedData['start_day'], 
+                                                 'end' => $validatedData['end_day']], 
+                                                 ['start' => $validatedData['start_break'], 
+                                                 'end' => $validatedData['end_break']],
+                                                $validatedData['mornings'],
+                                                $validatedData['afternoons'],
+                                                $validatedData['interval']);
+        } catch (Exception $exception) {
+            return redirect()->route('schedule.show')->withInput()->withErrors("Impossible de générer les horaires.");
+        }
+        return redirect()->route('schedule.show')->with('status', 'Horaires générés avec succès');
+    }
+
        function updateSchedules(Request $request)
     {
         $validatedData = $request->validate([
