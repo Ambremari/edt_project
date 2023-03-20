@@ -587,3 +587,7 @@ table {
     display: block;
     margin: 10px;
 }
+
+.alert {
+    margin: 10px;
+}

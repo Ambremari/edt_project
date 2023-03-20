@@ -41,14 +41,17 @@ class Repository {
             $this->insertStudent($row);
         $this->addRandomDivision();
         $this->setOptionIncompatibility();
+        $this->generateScheduleIncompatibility();
+        $this->generateSubjectConstraints();
         $this->addRandomLV1();
         $this->addRandomLV2();
         $this->addRandomOption();
         $this->generateGroups();
         $this->assignAllSubjectTeacher();
         $this->generateAllTPGroups();
-        $this->setTeachersHVolume();
         $this->generateClassroomsConstraints();
+        $this->setTeachersHVolume();
+        $this->generateUnit();
     }
 
     ##########TEACHERS#############
@@ -82,7 +85,7 @@ class Repository {
                     ->get(['E.IdProf', 'NomProf', 'PrenomProf', 'MailProf', 'VolHProf', 'VolHReelProf'])
                     ->toArray();
         if(empty($teacher))
-            throw new Exception('Enseignant inconnu'); 
+            throw new Exception('Enseignant inconnu');
         return $teacher[0];
     }
 
@@ -110,13 +113,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpProf']))    
+        if(!Hash::check($password, $user['MdpProf']))
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdProf'], 
-            'name'=> $user['NomProf'], 
+            'id' => $user['IdProf'],
+            'name'=> $user['NomProf'],
             'firstname'=> $user['PrenomProf'],
-            'role'=> 'prof'];  
+            'role'=> 'prof'];
     }
 
     function updateTeacher(array $teacher): void{
@@ -282,12 +285,12 @@ class Repository {
                         ->whereIn('IdEns', $subjects)
                         ->get('IdProf')
                         ->toArray();
-        $minVol = DB::table("VolumeHProf")
+        $minVol = DB::table("VolumeHIntermedProf")
                         ->whereIn('IdProf', $teachers)
-                        ->min('VolHReelProf');
-        $teacher = DB::table("VolumeHProf")
+                        ->min('VolHCalcProf');
+        $teacher = DB::table("VolumeHIntermedProf")
                         ->whereIn('IdProf', $teachers)
-                        ->where('VolHReelProf', $minVol)
+                        ->where('VolHCalcProf', $minVol)
                         ->get()
                         ->toArray();
         $teacher = $teacher[0];
@@ -353,7 +356,13 @@ class Repository {
                             ->where('NiveauDiv', $student['NiveauEleve'])
                             ->get()
                             ->toArray();
-            $random = rand(0, count($divisions) - 1);
+            do{
+                $random = rand(0, count($divisions) - 1);
+                $count = DB::table("DivisionCount")
+                        ->where('IdDiv', $divisions[$random]['IdDiv'])
+                        ->get()
+                        ->toArray();
+            } while($count[0]['EffectifReelDiv'] >= 35);
             DB::table("Eleves")
                 ->where('IdEleve', $student['IdEleve'])
                 ->update(['IdDiv' => $divisions[$random]['IdDiv']]);
@@ -361,6 +370,20 @@ class Repository {
     }
 
     function studentsNoLV1() : array{
+        $students = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where('LibelleEns', 'like', '%LV1%')
+                        ->get('IdEleve')
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV1Group() : array{
         $students = DB::table("GroupeLV1")
                         ->get("IdEleve")
                         ->toArray();
@@ -388,6 +411,21 @@ class Repository {
     }
 
     function studentsNoLV2() : array{
+        $students = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where('LibelleEns', 'like', '%LV2%')
+                        ->get('IdEleve')
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->where("NiveauEleve", "!=", "6EME")
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV2Group() : array{
         $students = DB::table("GroupeLV2")
                         ->get("IdEleve")
                         ->toArray();
@@ -462,7 +500,7 @@ class Repository {
                     ->get(['E.*', 'LibelleDiv'])
                     ->toArray();
         if(empty($student))
-            throw new Exception('Elève inconnu'); 
+            throw new Exception('Elève inconnu');
         return $student[0];
     }
 
@@ -489,13 +527,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpEleve']))    
+        if(!Hash::check($password, $user['MdpEleve']))
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdEleve'], 
-            'name'=> $user['NomEleve'], 
+            'id' => $user['IdEleve'],
+            'name'=> $user['NomEleve'],
             'firstname'=> $user['PrenomEleve'],
-            'role'=> 'eleve'];  
+            'role'=> 'eleve'];
     }
 
     function updateStudent(array $student): void{
@@ -540,13 +578,13 @@ class Repository {
         if(empty($users))
             throw new Exception('Utilisateur inconnu');
         $user = $users[0];
-        if(!Hash::check($password, $user['MdpDir']))    
+        if(!Hash::check($password, $user['MdpDir']))
             throw new Exception('Utilisateur inconnu');
         return [
-            'id' => $user['IdDir'], 
-            'name'=> $user['NomDir'], 
+            'id' => $user['IdDir'],
+            'name'=> $user['NomDir'],
             'firstname'=> $user['PrenomDir'],
-            'role'=> 'dir'];  
+            'role'=> 'dir'];
     }
 
     #########SUBJECTS#############
@@ -565,6 +603,14 @@ class Repository {
         return DB::table('Enseignements')
                     ->orderBy('LibelleEns')
                     ->orderBy('NiveauEns')
+                    ->get()
+                    ->toArray();
+    }
+
+    function subjectsLib() : array{
+        return DB::table('Enseignements')
+                    ->select(DB::raw('UNIQUE LibelleEns'))
+                    ->orderBy('LibelleEns')
                     ->get()
                     ->toArray();
     }
@@ -595,7 +641,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($subject))
-            throw new Exception('Enseignement inconnu'); 
+            throw new Exception('Enseignement inconnu');
         return $subject[0];
     }
 
@@ -640,7 +686,7 @@ class Repository {
     function options(): array{
         return DB::table('Options')
             ->get()
-            ->toArray(); 
+            ->toArray();
     }
 
     function getStudentOptions(string $id) : array{
@@ -807,6 +853,46 @@ class Repository {
         }
     }
 
+    function generateSubjectConstraints(): void{
+        $saturday = DB::table("Horaires")
+                        ->where("Jour", "Samedi")
+                        ->get('Horaire')
+                        ->toArray();
+        $lastHour = DB::table("Horaires")
+                        ->where("Horaire", "like", "%ES3")
+                        ->get()
+                        ->toArray();
+        $firstGrade = DB::table("Enseignements")
+                        ->where("NiveauEns", "6EME")
+                        ->get()
+                        ->toArray();
+        $notOptions = DB::table("Enseignements")
+                        ->where("OptionEns", false)
+                        ->get()
+                        ->toArray();
+        foreach($saturday as $time){
+            foreach($firstGrade as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time['Horaire'],
+                        'Prio' => 1
+                    ]);
+            }
+        }
+        foreach($lastHour as $time){
+            foreach($notOptions as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time['Horaire'],
+                        'Prio' => 2
+                    ]);
+            }
+        }
+
+    }
+
     function getSubjectConstraints(string $idEns, int $prio) : array{
         return DB::table("ContraintesEns")
                     ->where('IdEns', $idEns)
@@ -845,7 +931,7 @@ class Repository {
                     ->get(['D.*', 'EffectifReelDiv'])
                     ->toArray();
         if(empty($division))
-            throw new Exception('Division inconnue'); 
+            throw new Exception('Division inconnue');
         return $division[0];
     }
 
@@ -864,6 +950,7 @@ class Repository {
     function getDivisionLessonsLib(string $id) : array{
         return DB::table('LibellesCours')
                     ->where('IdDiv', $id)
+                    ->where('IdGrp', null)
                     ->get()
                     ->toArray();
     }
@@ -891,7 +978,7 @@ class Repository {
         foreach($students as $id){
             $student = $this->getStudent($id);
             if(!in_array(['IdDiv' => $student['IdDiv']], $divisions))
-                throw new Exception('Division incompatible'); 
+                throw new Exception('Division incompatible');
             DB::table('CompoGroupes')
                 ->insert(['IdGrp' => $idGrp,
                           'IdEleve' => $id]);
@@ -937,6 +1024,15 @@ class Repository {
                 ->whereColumn('NbReel', '<', 'NbCible')
                 ->get(['D.*'])
                 ->toArray();
+    }
+
+    function divisionLackingVolume(): array{
+        return DB::table('VolumeDivTot as Vd')
+                    ->join('Divisions as Div', 'Vd.IdDiv', '=', 'Div.IdDiv')
+                    ->join('VolumeNiveauTot as Vn', 'Div.NiveauDiv', '=', 'Vn.NiveauEns')
+                    ->whereColumn('Vd.VolTotSalle', '!=', 'Vn.VolTotEns')
+                    ->get(['Div.*', 'VolTotSalle', 'VolTotEns'])
+                    ->toArray();
     }
 
     #############GROUPS##############
@@ -1046,7 +1142,7 @@ class Repository {
                     ->get(['G.*', 'EffectifReelGrp'])
                     ->toArray();
         if(empty($group))
-            throw new Exception('Group inconnu'); 
+            throw new Exception('Group inconnu');
         return $group[0];
     }
 
@@ -1204,6 +1300,13 @@ class Repository {
                     ->toArray();
     }
 
+    function getTeacherLessonsGroup(string $id) : array{
+        return DB::table('Cours')
+                    ->where('IdProf', $id)
+                    ->get(['IdEns', 'IdGrp'])
+                    ->toArray();
+    }
+
     function removeTeacherSubject(string $idProf, string $idEns): void{
         DB::table('Cours')
             ->where('IdProf', $idProf)
@@ -1253,7 +1356,7 @@ class Repository {
                     ->get()
                     ->toArray();
         if(empty($classroom))
-            throw new Exception('Salle inconnue'); 
+            throw new Exception('Salle inconnue');
         return $classroom[0];
     }
 
@@ -1317,7 +1420,8 @@ class Repository {
                             ->whereIn('IdEns', $subjects)
                             ->get()
                             ->toArray();
-        $index = rand(0, 500);
+        $index = DB::table("ContraintesSalles")
+                    ->count();
         foreach($classes as $class){
             $index++;
             $id = "CS".substr($class['IdCours'], 2, 5).$index;
@@ -1335,32 +1439,37 @@ class Repository {
         $classes = $this->classes();
         $index = 0;
         foreach($classes as $class){
-            $subject = DB::table("Enseignements")
-                        ->where('IdEns', $class['IdEns'])
-                        ->get()
-                        ->toArray();
-            if($class['IdGrp'] == null)
-                $vol = DB::table("VolumeCoursDivSalle")
-                            ->where('IdDiv', $class['IdDiv'])
+            if($class['IdDiv'] == null || $class['IdGrp'] == null){
+                $subject = DB::table("Enseignements")
+                            ->where('IdEns', $class['IdEns'])
                             ->get()
                             ->toArray();
-            else 
-                $vol = DB::table("VolumeCoursGrpSalle")
-                            ->where('IdGrp', $class['IdGrp'])
-                            ->get()
-                            ->toArray();
-            if(empty($vol))
-                $vol = [['VolTotSalle' => 0]];
-            $missingVol = $subject[0]['VolHEns'] - $vol[0]['VolTotSalle'];
-            $index++;
-            if($missingVol > 0){
-                $id = "CS".substr($class['IdCours'], 2, 4)."c".$index;
-                DB::table("ContraintesSalles")
-                    ->insert(['IdContSalle' => $id,
-                              'TypeSalle' => 'Cours',
-                              'IdCours' => $class['IdCours'],
-                              'VolHSalle' => $missingVol,
-                              'DureeMinSalle' => 1]);
+                if($class['IdGrp'] == null){
+                    $vol = DB::table("VolumeCoursDivSalle")
+                                ->where('IdDiv', $class['IdDiv'])
+                                ->where('IdEns', $class['IdEns'])
+                                ->get()
+                                ->toArray();
+                } else {
+                    $vol = DB::table("VolumeCoursGrpSalle")
+                                ->where('IdGrp', $class['IdGrp'])
+                                ->where('IdEns', $class['IdEns'])
+                                ->get()
+                                ->toArray(); 
+                }
+                if(empty($vol))
+                    $vol = [['VolTotSalle' => 0]];
+                $missingVol = $subject[0]['VolHEns'] - $vol[0]['VolTotSalle'];
+                if($missingVol > 0){
+                    $index++;
+                    $id = "CS".substr($class['IdCours'], 2, 4)."c".$index;
+                    DB::table("ContraintesSalles")
+                        ->insert(['IdContSalle' => $id,
+                                'TypeSalle' => 'Cours',
+                                'IdCours' => $class['IdCours'],
+                                'VolHSalle' => $missingVol,
+                                'DureeMinSalle' => 1]);
+                }
             }
         }
     }
@@ -1378,22 +1487,20 @@ class Repository {
                             ->get('IdCours')
                             ->toArray();
         return DB::table("Cours")
-                -whereNotIn('IdCours', $constraints)
-                ->get()
-                ->toArray();
+                    ->whereNotIn('IdCours', $constraints)
+                    ->get()
+                    ->toArray();
     }
 
 
     ######################## SCHEDULES ###################
 
+
     function insertSchedule(array $schedule): void{
         DB::table('Horaires')
             ->insert($schedule);
     }
-
-
-
-    function schedules() : array{
+     public function schedules() : array{
         return DB::table('Horaires')
                     ->orderBy('Jour')
                     ->orderBy('HeureDebut')
@@ -1401,7 +1508,7 @@ class Repository {
                     ->toArray();
     }
 
-    function getSchedules(string $horaire) : array{
+     public function getSchedules(string $horaire) : array{
         $horaire = DB::table('Horaires')
                     ->where('Horaire', $horaire)
                     ->get()
@@ -1411,23 +1518,70 @@ class Repository {
         return $horaire[0];
     }
 
-    function updateSchedules(array $horaire): void{
-        $horaires = DB::table('Horaires')
-                        ->where('Horaire', $horaire['Horaire'])
+     public function updateSchedules(array $schedule) : void {
+        $schedules = DB::table('horaires')
+                        ->where('Horaire', $schedule['Horaire'])
                         ->get()
                         ->toArray();
-        if(empty($horaires))
+        if(empty($schedules))
             throw new Exception('Horaire inconnu');
-        DB::table('Horaires')
-            ->where('Horaire', $horaire['Horaire'])
-            ->update($horaire);
+        DB::table('horaires')
+            ->where('Horaire', $schedule['Horaire'])
+            ->update($schedule);
     }
 
-    function deleteSchedules(string $horaire): void{
+    public function deleteSchedules(string $horaire): void{
         DB::table('Horaires')
             ->where('Horaire', $horaire)
             ->delete();
     }
+
+
+##### Constraints classrooms #####
+    function constraintsClassrooms() : array{
+        return DB::table('ContraintesSalles')
+                    ->orderBy('TypeSalle')
+                    ->orderBy('IdCours')
+                    ->get()
+                    ->toArray();
+    }
+    function getConstraintsClassrooms(array $typeSalle, array $idCours) : array{
+        $constraints = DB::table('ContraintesSalles')
+                    ->where('TypeSalle', $typeSalle)
+                    ->where('IdCours', $idCours)
+                    ->get()
+                    ->toArray();
+        if(empty($constraints))
+            throw new Exception('Contraintes inconnues');
+        return $constraints[0];
+    }
+
+    function addConstraintsClassrooms(array $constraintsClassroom): void{
+        $existingConstraints = DB::table('ContraintesSalles')
+                                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+                                ->where('IdCours', $constraintsClassroom['IdCours'])
+                                ->get()
+                                ->toArray();
+        if(!empty($existingConstraints))
+            throw new Exception('Les contraintes pour cette salle et cet enseignement existent déjà');
+        DB::table('ContraintesSalles')
+        ->insert($constraintsClassroom);
+    }
+
+    function updateConstraintsClassrooms(array $constraintsClassroom): void{
+        $existingConstraints = DB::table('ContraintesSalles')
+                                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+                                ->where('IdCours', $constraintsClassroom['IdCours'])
+                                ->get()
+                                ->toArray();
+        if(empty($existingConstraints))
+            throw new Exception('Les contraintes pour cette salle et cet enseignement n\'existent pas');
+        DB::table('ContraintesSalles')
+            ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+            ->where('IdCours', $constraintsClassroom['IdCours'])
+            ->update($constraintsClassroom);
+    }
+
 
     function getStartTimesMorning(): array{
         return DB::table("HoraireDebutMatin")
@@ -1485,8 +1639,150 @@ class Repository {
         }
     }
 
+    function addScheduleIncompatibility(string $subject1, string $subject2): void{
+        $exist = DB::table("IncompatibilitesHoraires")
+                    ->where("IdEns1", $subject1)
+                    ->where("IdEns2", $subject2)
+                    ->get()
+                    ->toArray();
+        if(empty($exist)){
+            DB::table("IncompatibilitesHoraires")
+                ->insert([
+                    'IdEns1' => $subject1,
+                    'IdEns2' => $subject2
+                ]);
+            DB::table("IncompatibilitesHoraires")
+                ->insert([
+                    'IdEns1' => $subject2,
+                    'IdEns2' => $subject1
+                ]);
+        }
+    }
+
+    function deleteScheduleIncompatibility(string $subject1, string $subject2): void{
+        DB::table("IncompatibilitesHoraires")
+            ->where('IdEns1', $subject1)
+            ->where('IdEns2', $subject2)
+            ->delete();
+        DB::table("IncompatibilitesHoraires")
+            ->where('IdEns1', $subject2)
+            ->where('IdEns2', $subject1)
+            ->delete();
+    }
+
+    function scheduleIncompatibilities(): array{
+        return DB::table("IncompatibilitesHoraires as I")
+                    ->join("Enseignements as E", "I.IdEns1", "=", "E.IdEns")
+                    ->join("Enseignements as E2", "I.IdEns2", "=", "E2.IdEns")
+                    ->get(['I.*', 
+                        'E.LibelleEns as LibelleEns1', 
+                        'E.NiveauEns as NiveauEns1', 
+                        'E2.LibelleEns as LibelleEns2', 
+                        'E2.NiveauEns as NiveauEns2'])
+                    ->toArray();
+    }
+
+    function generateScheduleIncompatibility(): void {
+        $options = $this->optionalSubjects();
+        foreach($options as $option){
+            $options2 = DB::table("EnsOption")
+                          ->where("NiveauEns", $option["NiveauEns"])
+                          ->where("IdEns", "!=", $option["IdEns"])
+                          ->get()
+                          ->toArray();
+            foreach($options2 as $option2)
+                if(!$this->compatible($option, $option2)){
+                    $this->addScheduleIncompatibility($option['IdEns'], $option2['IdEns']);
+                }
+        }
+    }
+
+    function compatible(array $option1, array $option2): bool{
+        if(preg_match("/LV1/", $option1['LibelleEns']) && preg_match("/LV1/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/LV2/", $option1['LibelleEns']) && preg_match("/LV2/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Anglais/", $option1['LibelleEns']) && preg_match("/Anglais/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Espagnol/", $option1['LibelleEns']) && preg_match("/Espagnol/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Allemand/", $option1['LibelleEns']) && preg_match("/Allemand/", $option2['LibelleEns']))
+            return true;
+        return false;
+    }
+
+    #######PRE-PROCESSING DATA################
+
+    function lastPreprocess(): array {
+        $time = DB::table('UpdateTimes')
+                    ->where('TABLE_NAME', 'unites')
+                    ->get('UPDATE_TIME')
+                    ->toArray();
+        return $time[0];
+    }
+
+    function lastDBUpdate(): string {
+        $time = DB::table('UpdateTimes')
+                    ->where('TABLE_NAME', 'cours')
+                    ->orWhere('TABLE_NAME', 'contraintessalles')
+                    ->min('UPDATE_TIME');
+        return $time;
+    }
+
+    function generateUnit(): void{
+        $constraints = $this->constraintsClassrooms();
+        $index = 0;
+        foreach($constraints as $constraint){
+            for($i = 1 ; $i <= $constraint['VolHSalle'] ; $i++){
+                DB::table('Unites')
+                    ->insert([
+                        'Unite' => 'U'.$index,
+                        'IdContSalle' => $constraint['IdContSalle']
+                    ]);
+                $index++;
+            }
+            if($constraint['VolHSalle'] * 10 % 10 == 5){
+                DB::table('Unites')
+                    ->insert([
+                        'Unite' => 'U'.$index,
+                        'IdContSalle' => $constraint['IdContSalle'],
+                        'Semaine' => 'A',
+                    ]);
+                $index++;
+            }
+        }
+    }
+
+    function deleteUnits(): void{
+        DB::table('Unites')
+            ->delete();
+    }
+
+    function getUnitCount(): int{
+        return DB::table("Unites")
+                    ->count();
+    }
+
+    function evaluateAvailability() : int{
+        $classrooms = count($this->classrooms());
+        $schedules = count($this->schedules());
+        return $classrooms*$schedules;
+    }
+    function preprocess(): void {
+        if(!empty($this->subjectsNoTeacher()))
+            throw new Exception('Tous les enseignements ne sont pas affectés');
+        if(!empty($this->divisionSubjectsCount()))
+            throw new Exception('Manque des enseignements pour certaines divisions');
+        $this->generateClassroomsConstraintsForMissingVolume();
+        if(!empty($this->divisionLackingVolume()))
+            throw new Exception('Manque des heures d\'enseignements pour certaines divisions');
+        $this->deleteUnits();
+        $this->generateUnit();
+    }
+
+
 ##### TRIGGER CHECK DIV AND GRP #####
-    function checkGrpAndDivLevel(string $idGrp): void {
+   /* function checkGrpAndDivLevel(string $idGrp): void {
         $group = DB::table('Groupes')
                     ->where('IdGrp', $idGrp)
                     ->first();
@@ -1497,34 +1793,17 @@ class Repository {
     if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
         throw new Exception('Niveau de groupe incompatible avec la division correspondante');
     }
-    }
-##### lien entre groupe et divisions ####
-    function checkGrpAndDivLevell(string $idGrp): void {
-        $group = getGroup($idGrp);
-        $division = getDivision($group['IdDiv']);
-        if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
-        throw new Exception('Niveau de groupe incompatible avec la division correspondante');
-     }
-            $liensGroupes = DB::table('LiensGroupes')
-                                ->where('IdGrp', $idGrp)
-                                ->get()
-                                ->toArray();
-            foreach ($liensGroupes as $lien) {
-                $division =getDivision($lien->IdDiv);
-                if ($group['NiveauGrp'] !== $division['NiveauDiv']) {
-                    throw new Exception('Niveau de groupe incompatible avec la division correspondante');
-                }
-            }
-    }   
+  }
+
     function checkStudentLevel(string $idEleve): void {
-        $eleve = getStudent($idEleve);
-        $division = getDivision($eleve['IdDiv']);
+        $eleve = $this->getStudent($idEleve);
+        $division = $this->getDivision($eleve['IdDiv']);
         $groupes = DB::table('LiensGroupes')
                     ->where('IdDiv', $eleve['IdDiv'])
                     ->get(['IdGrp'])
                     ->toArray();
         foreach ($groupes as $groupe) {
-            $grp = getGroup($groupe->IdGrp);
+            $grp = $this->getGroup($groupe->IdGrp);
             if ($eleve['NiveauEleve'] !== $grp['NiveauGrp'] || $eleve['NiveauEleve'] !== $division['NiveauDiv']) {
                 throw new Exception('Niveau de l\'élève incompatible avec la division ou le groupe correspondant');
             }
@@ -1559,10 +1838,6 @@ class Repository {
                 throw new Exception('Enseignement optionnel non choisi');
             }
         }
-    }
+    } */
 
 }
-
-
-
-

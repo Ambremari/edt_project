@@ -90,11 +90,19 @@ Affectation des Groupes
 <script>
 function filterOption() {
   var input = document.getElementById("optionList");
-  var filter = input.value;
+  var filterOption = input.value;
   var table = document.getElementById("myTable");
   var tr = table.getElementsByTagName("tr");
   var ul = document.getElementById("studentList");
   var li = ul.getElementsByTagName('li');
+  var filterOptionLib = "";
+
+  var options = input.getElementsByTagName("option");
+  for(var j = 0 ; j < options.length ; j++){
+    var optionValue = options[j].getAttribute('value');
+    if(optionValue == filterOption)
+      filterOptionLib = options[j].textContent || options[j].innerText;
+  }
 
     for (var j = 0; j < li.length; j++) {
         li[j].style.display = "none";
@@ -106,10 +114,10 @@ function filterOption() {
         if (ens) {
             var txtValue = ens.textContent || ens.innerText;
             var txtEleve = eleve.textContent || eleve.innerText;
-            if (txtValue == filter || filter == "") {
+            if (txtValue == filterOption || filterOption == "") {
                 for (var j = 0; j < li.length; j++) {
                     var student = li[j].getAttribute("class");
-                    if(student == txtEleve || filter == "")
+                    if(student == txtEleve || filterOption == "")
                         li[j].style.display = "";
                 } 
             }
@@ -117,13 +125,13 @@ function filterOption() {
     }
 
   var inputDiv = document.getElementById("divList");
-  var filterB = inputDiv.value;
+  var filterDiv = inputDiv.value;
 
   for (var i = 0; i < li.length; i++) {
     var div = li[i].getElementsByTagName("div")[0];
     var studDiv = div.getAttribute("class");
     if (div) {
-      if ((studDiv == filterB || filterB == "" ) && li[i].style.display == "") 
+      if ((studDiv == filterDiv || filterDiv == "" ) && li[i].style.display == "") 
         li[i].style.display = "";
       else
         li[i].style.display = "none";
@@ -135,7 +143,7 @@ function filterOption() {
   var div = document.getElementById("divOptions");
   var span = div.getElementsByTagName("span");
   var select = document.getElementById("mySelect");
-  var filterC = select.value;
+  var filterLevel = select.value;
 
   for (var j = 0; j < span.length; j++) {
       span[j].style.display = "none";
@@ -147,12 +155,14 @@ function filterOption() {
       if (myDiv) {
         var txtDiv = myDiv.textContent || myDiv.innerText;
         var txtGrp = myGrp.textContent || myGrp.innerText;
-        if (txtDiv == filterB || filterB == "") {
+        if (txtDiv == filterDiv || filterDiv == "") {
           for (var j = 0; j < span.length; j++) {
               var idGrp = span[j].getElementsByTagName("div")[0];
               var group = idGrp.getAttribute("class");
               var nvGrp = span[j].getAttribute("class");
-              if(group == txtGrp || filterB == "" && nvGrp == filterC)
+              var libGrp = span[j].textContent || span[j].innerText;
+              var pattern = new RegExp(filterOptionLib);
+              if((group == txtGrp || filterDiv == "") && nvGrp == filterLevel && (filterOption == "" || pattern.test(libGrp)))
                   span[j].style.display = "";
           } 
         }

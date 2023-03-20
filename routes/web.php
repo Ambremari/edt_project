@@ -185,7 +185,7 @@ Route::post('/schedule/add', [Controller::class, 'addSchedule'])
 Route::get('/schedule/update/{horaire}', [Controller::class, 'updateScheduleForm'])
     ->name('schedule.update.form');
 
-Route::post('/schedule/update', [Controller::class, 'updateSchedule'])
+Route::post('/schedule/update', [Controller::class, 'updateSchedules'])
     ->name('schedule.update');
 
 Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
@@ -193,6 +193,16 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
+
+
+Route::get('/constraints/classrooms', [Controller::class, 'classroomConstraints'])
+    ->name('constraints.classrooms');
+
+Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsClassrooms'])
+    ->name('constraints.classrooms.add');
+
+Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
+    ->name('constraints.classrooms.update');
 
 Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
     ->name('subjects.constraints');
@@ -206,6 +216,19 @@ Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
 
 Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
     ->name('data.preprocess');
+
+Route::post('/edt/data', [Controller::class, 'preprocessData'])
+    ->name('data.preprocess');
+
+Route::get('/edt/ens/incomp', [Controller::class, 'showSubjectIncompatibility'])
+    ->name('subject.incompatibility');
+
+Route::post('/edt/ens/incomp', [Controller::class, 'addSubjectIncompatibility'])
+    ->name('subject.incompatibility.add');
+
+Route::post('/edt/ens/incomp/delete', [Controller::class, 'deleteSubjectIncompatibility'])
+    ->name('subject.incompatibility.delete');
+
 
 
 

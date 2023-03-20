@@ -4,17 +4,35 @@
 
 @section('content')
 <div class="colleft">
+    @if ($errors->any())
+        <div class="alert">
+            Le pré-traitement n'a pas pu être réalisé &#9785;
+        </div>  
+    @endif
+    @if (session('status'))
+        <div class="alert">
+            {{ session('status') }}
+        </div>
+    @endif
     <div class="infos">
     <button class="tablinks" onclick="openInfo(event, 'NoDiv')">Elèves sans division : {{ count($students_no_div) }}</button>
-    <button class="tablinks" onclick="openInfo(event, 'NoLV1')">Elèves sans Groupe LV1 : {{ count($students_no_lv1) }}</button>
-    <button class="tablinks" onclick="openInfo(event, 'NoLV2')">Elèves sans Groupe LV2 : {{ count($students_no_lv2) }}</button>
+    <button class="tablinks" onclick="openInfo(event, 'NoLV1')">Elèves sans LV1 : {{ count($students_no_lv1) }}</button>
+    <button class="tablinks" onclick="openInfo(event, 'NoLV2')">Elèves sans LV2 : {{ count($students_no_lv2) }}</button>
+    <button class="tablinks" onclick="openInfo(event, 'NoLV1Gp')">Elèves sans Groupe LV1 : {{ count($students_no_glv1) }}</button>
+    <button class="tablinks" onclick="openInfo(event, 'NoLV2Gp')">Elèves sans Groupe LV2 : {{ count($students_no_glv2) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'NoTeacher')">Enseignements sans enseignants : {{ count($subjects) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'InfTime')">Enseignants avec volume horaire insuffisant : {{ count($teachers) }}</button>
     <button class="tablinks" onclick="openInfo(event, 'NoSubject')">Divisions avec enseignements manquants : {{ count($divisions) }}</button>
-    <span>Dernier pré-traitement : </span>
-    <span>Dernière moficiation de la base : </span>    
-</div>
-<button>Lancer le pré-traitement</button>
+    <button class="tablinks" onclick="openInfo(event, 'DivVol')">Divisions avec volume horaire insuffisant : {{ count($divisions_vol) }}</button>
+    <span>Dernier pré-traitement : {{ $last_preprocess['UPDATE_TIME'] }}</span>
+    <span>Dernière moficiation de la base : {{ $last_update }}</span>
+    <span>Nombre d'unités à placer : {{ $unit_count }}</span>    
+    <span>Nombre d'unités potentiellement plaçables : {{ $availability }}</span>
+    </div>
+    <form method="POST" action="{{route('data.preprocess')}}">
+        @csrf
+    <button type='submit'>Lancer le pré-traitement</button>
+    </form>
 </div>
 <div class="colright">
     <div id="NoDiv" class="tabcontentinfo">
@@ -38,6 +56,20 @@
         @endforeach
         </ul>
     </div>
+    <div id="NoLV1Gp" class="tabcontentinfo">
+        <ul id="studentList">
+        @foreach( $students_no_glv1 as $student )
+        <li><a href="{{route('group.fill.form')}}">{{ $student['PrenomEleve'] }} {{ $student['NomEleve']}}</a></li>
+        @endforeach
+        </ul>
+    </div>
+    <div id="NoLV2Gp" class="tabcontentinfo">
+        <ul id="studentList">
+        @foreach( $students_no_glv2 as $student )
+        <li><a href="{{route('group.fill.form')}}">{{ $student['PrenomEleve'] }} {{ $student['NomEleve']}}</a></li>
+        @endforeach
+        </ul>
+    </div>
     <div id="NoTeacher" class="tabcontentinfo">
         <ul id="studentList">
         @foreach( $subjects as $subject)
@@ -56,6 +88,13 @@
         <ul id="studentList">
         @foreach( $divisions as $division)
         <li><a href="{{route('division.show', ['idDiv' => $division['IdDiv']])}}">{{ $division['LibelleDiv'] }}</a></li>
+        @endforeach
+        </ul>
+    </div>
+    <div id="DivVol" class="tabcontentinfo">
+        <ul id="studentList">
+        @foreach( $divisions_vol as $division)
+        <li><a href="{{route('division.show', ['idDiv' => $division['IdDiv']])}}">{{ $division['LibelleDiv'] }} {{ $division['VolTotSalle'] }}/{{ $division['VolTotEns'] }}</a></li>
         @endforeach
         </ul>
     </div>
