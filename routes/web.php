@@ -92,6 +92,10 @@ Route::get('/ens/modif/{idEns}', [Controller::class, 'updateSubjectForm'])
     ->where('idEns', '[ENS].*')
     ->name('subject.update.form');
 
+Route::get('/ens/{idEns}', [Controller::class, 'showSubject'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.show');
+
 Route::get('/div', [Controller::class, 'addDivisionForm'])
     ->name('division.form');
 
@@ -190,6 +194,7 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
+
 Route::get('/constraints/classrooms', [Controller::class, 'classroomConstraints'])
     ->name('constraints.classrooms');
 
@@ -199,17 +204,6 @@ Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsCl
 Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
 
-Route::get('/students/add', [Controller::class, 'addStudentForm'])
-    ->name('student.form');
-
-Route::post('/students/add', [Controller::class, 'addStudent'])
-    ->name('student.add');
-
-Route::get('/students/update', [Controller::class, 'updateStudentList'])
-    ->name('student.update.list');
-
-Route::put('/students/update', [Controller::class, 'updateStudent'])
-    ->name('student.update');
 
 Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
     ->where('id', '[ELV].*')
