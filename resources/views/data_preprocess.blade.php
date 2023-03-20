@@ -27,11 +27,11 @@
     <span>Dernier pré-traitement : {{ $last_preprocess['UPDATE_TIME'] }}</span>
     <span>Dernière moficiation de la base : {{ $last_update }}</span>
     <span>Nombre d'unités à placer : {{ $unit_count }}</span>    
-</div>
-<form method="POST" action="{{route('data.preprocess')}}">
-    @csrf
-<button type='submit'>Lancer le pré-traitement</button>
-</form>
+    </div>
+    <form method="POST" action="{{route('data.preprocess')}}">
+        @csrf
+    <button type='submit'>Lancer le pré-traitement</button>
+    </form>
 </div>
 <div class="colright">
     <div id="NoDiv" class="tabcontentinfo">

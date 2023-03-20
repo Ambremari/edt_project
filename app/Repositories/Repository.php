@@ -1259,6 +1259,13 @@ class Repository {
                     ->toArray();
     }
 
+    function getTeacherLessonsGroup(string $id) : array{
+        return DB::table('Cours')
+                    ->where('IdProf', $id)
+                    ->get(['IdEns', 'IdGrp'])
+                    ->toArray();
+    }
+
     function removeTeacherSubject(string $idProf, string $idEns): void{
         DB::table('Cours')
             ->where('IdProf', $idProf)

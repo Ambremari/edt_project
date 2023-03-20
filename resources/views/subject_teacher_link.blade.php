@@ -72,9 +72,12 @@
             @endif
         @endforeach
         @foreach($groups as $grp)
-            @if($grp['NiveauGrp'] == $row['NiveauEns'])
+            @if($grp['NiveauGrp'] == $row['NiveauEns'] && 
+            (preg_match("/".$row['LibelleEns']."/", $grp["LibelleGrp"]) || 
+            preg_match("/GP A/", $grp["LibelleGrp"]) ||
+            preg_match("/GP B/", $grp["LibelleGrp"])))
                 <div class="my_input" style="display: inline-block">
-                @if(in_array(['IdEns' => $row['IdEns'], 'IdDiv' => null, 'IdGrp' => $grp['IdGrp']], $teacher_lessons))
+                @if(in_array(['IdEns' => $row['IdEns'], 'IdGrp' => $grp['IdGrp']], $teacher_lessons_gp))
                     <input class="form-check-input" type="checkbox" name="groups[]" value="{{ $grp['IdGrp'] }}" id="optiong" checked>
                 @else
                     <input class="form-check-input" type="checkbox" name="groups[]" value="{{ $grp['IdGrp'] }}" id="optiong">

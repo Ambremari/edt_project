@@ -358,13 +358,15 @@ class Controller extends BaseController{
         $teacher = $this->repository->getTeacher($idProf);
         $teacherSubjects = $this->repository->getTeacherSubjects($idProf);
         $teacherLessons = $this->repository->getTeacherLessons($idProf);
+        $teacherLessonsGrp = $this->repository->getTeacherLessonsGroup($idProf);
         return view('subject_teacher_link', ['teacher'=> $teacher,
                                              'teachers' => $teachers,
                                              'subjects' => $subjects,
                                              'divisions' => $divisions,
                                              'groups' => $groups,
                                              'teacher_subjects' => $teacherSubjects,
-                                             'teacher_lessons' => $teacherLessons]);
+                                             'teacher_lessons' => $teacherLessons,
+                                             'teacher_lessons_gp' => $teacherLessonsGrp]);
     }
 
     public function linkTeacherSubject(Request $request){
