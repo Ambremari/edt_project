@@ -42,6 +42,7 @@ class Repository {
         $this->addRandomDivision();
         $this->setOptionIncompatibility();
         $this->generateScheduleIncompatibility();
+        $this->generateSubjectConstraints();
         $this->addRandomLV1();
         $this->addRandomLV2();
         $this->addRandomOption();
@@ -850,6 +851,46 @@ class Repository {
                     ]);
             }
         }
+    }
+
+    function generateSubjectConstraints(): void{
+        $saturday = DB::table("Horaires")
+                        ->where("Jour", "Samedi")
+                        ->get('Horaire')
+                        ->toArray();
+        $lastHour = DB::table("Horaires")
+                        ->where("Horaire", "like", "%ES3")
+                        ->get()
+                        ->toArray();
+        $firstGrade = DB::table("Enseignements")
+                        ->where("NiveauEns", "6EME")
+                        ->get()
+                        ->toArray();
+        $notOptions = DB::table("Enseignements")
+                        ->where("OptionEns", false)
+                        ->get()
+                        ->toArray();
+        foreach($saturday as $time){
+            foreach($firstGrade as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time['Horaire'],
+                        'Prio' => 1
+                    ]);
+            }
+        }
+        foreach($lastHour as $time){
+            foreach($notOptions as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time['Horaire'],
+                        'Prio' => 2
+                    ]);
+            }
+        }
+
     }
 
     function getSubjectConstraints(string $idEns, int $prio) : array{
