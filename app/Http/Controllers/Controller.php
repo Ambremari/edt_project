@@ -1169,6 +1169,7 @@ class Controller extends BaseController{
         $unitCount = $this->repository->getUnitCount();
         $lastPreprocess = $this->repository->lastPreprocess();
         $lastBDUpdate = $this->repository->lastDBUpdate();
+        $availability = $this->repository->evaluateAvailability();
         return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
                                         'students_no_lv1' => $studentsNoLV1,
                                         'students_no_lv2' => $studentsNoLV2,
@@ -1180,7 +1181,8 @@ class Controller extends BaseController{
                                         'divisions_vol' => $divisionsVol,
                                         'unit_count' => $unitCount,
                                         'last_preprocess' => $lastPreprocess,
-                                        'last_update' => $lastBDUpdate]);
+                                        'last_update' => $lastBDUpdate,
+                                        'availability' => $availability]);
     }
 
     public function preprocessData(Request $request){

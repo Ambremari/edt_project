@@ -27,6 +27,7 @@
     <span>Dernier pré-traitement : {{ $last_preprocess['UPDATE_TIME'] }}</span>
     <span>Dernière moficiation de la base : {{ $last_update }}</span>
     <span>Nombre d'unités à placer : {{ $unit_count }}</span>    
+    <span>Nombre d'unités potentiellement plaçables : {{ $availability }}</span>
     </div>
     <form method="POST" action="{{route('data.preprocess')}}">
         @csrf

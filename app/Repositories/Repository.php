@@ -1721,6 +1721,12 @@ class Repository {
         return DB::table("Unites")
                     ->count();
     }
+
+    function evaluateAvailability() : int{
+        $classrooms = count($this->classrooms());
+        $schedules = count($this->schedules());
+        return $classrooms*$schedules;
+    }
     function preprocess(): void {
         if(!empty($this->subjectsNoTeacher()))
             throw new Exception('Tous les enseignements ne sont pas affectés');
