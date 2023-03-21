@@ -935,54 +935,50 @@ class Controller extends BaseController{
         return redirect()->route('update.prof.constraints')->with('status', 'Contraintes actualisées avec succès !');
     }
 
-      function addSchedule(Request $request)
-    {
-    $hasKey = $request->session()->has('user');
-    if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
-        return redirect()->route('login');
+    public function addSchedule(Request $request){
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') 
+            return redirect()->route('login');
+
+        $validatedData = $request->validate([
+            'horaire' => ['required', 'unique:horaires,Horaire'],
+            'jour' => ['required'],
+            'heure_debut' => ['required'],
+            'heure_fin' => ['required'],
+        ], [
+            'horaire.required' => 'Vous devez saisir un horaire.',
+            'horaire.unique' => 'Cet horaire existe déjà.',
+            'jour.required' => 'Vous devez sélectionner un jour.',
+            'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
+            'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
+        ]);
+
+        $schedule = [
+            'Horaire' => $validatedData['horaire'],
+            'Jour' => $validatedData['jour'],
+            'HeureDebut' => $validatedData['heure_debut'],
+            'HeureFin' => $validatedData['heure_fin'],
+        ];
+
+        try {
+            $this->repository->insertSchedule($schedule);
+        } catch (Exception $exception) {
+            return redirect()->route('schedule.form')->withInput()->withErrors("Impossible d'ajouter l'horaire.");
+        }
+        return redirect()->route('schedule.form')->with('status','Horaire ajouté avec succès');
     }
 
-    $validatedData = $request->validate([
-        'horaire' => ['required', 'unique:horaires,Horaire'],
-        'jour' => ['required'],
-        'heure_debut' => ['required'],
-        'heure_fin' => ['required'],
-    ], [
-        'horaire.required' => 'Vous devez saisir un horaire.',
-        'horaire.unique' => 'Cet horaire existe déjà.',
-        'jour.required' => 'Vous devez sélectionner un jour.',
-        'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
-        'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
-    ]);
-
-    $schedule = [
-        'Horaire' => $validatedData['horaire'],
-        'Jour' => $validatedData['jour'],
-        'HeureDebut' => $validatedData['heure_debut'],
-        'HeureFin' => $validatedData['heure_fin'],
-    ];
-
-    try {
-        $this->repository->insertSchedule($schedule);
-        return redirect()->route('schedule.form')->withInput()->withErrors("Impossible d'ajouter l'horaire.");
-    } catch (Exception $exception) {
-        return redirect()->route('schedule.form')->with('status','Horaire ajouté avec succés');
-    }
-    }
-
-          function updateScheduleForm(Request $request, string $horaire)
-    {
+    public function updateScheduleForm(Request $request, string $horaire){
         $hasKey = $request->session()->has('user');
         if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
             return redirect()->route('login');
         }
         $schedules =$this->repository->schedules();
         $schedule =$this->repository->getSchedules($horaire);
-
         return view('schedule_update', ['schedule' => $schedule, 'schedules' => $schedules]);
     }
 
-    function showSchedules(Request $request){
+    public function showSchedules(Request $request){
         $hasKey = $request->session()->has('user');
         if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
             return redirect()->route('login');
@@ -993,7 +989,7 @@ class Controller extends BaseController{
                                       'college_schedule' => $collegeSchedule]);
     }
 
-    function generateSchedules(Request $request){
+    public function generateSchedules(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
@@ -1030,33 +1026,32 @@ class Controller extends BaseController{
         return redirect()->route('schedule.show')->with('status', 'Horaires générés avec succès');
     }
 
-       function updateSchedules(Request $request)
-    {
+    public function updateSchedules(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
         $validatedData = $request->validate([
             'horaire' => ['required'],
-            'jour' => ['required'],
             'heure_debut' => ['required'],
             'heure_fin' => ['required'],
         ], [
             'horaire.required' => 'Vous devez saisir un horaire.',
-            'jour.required' => 'Vous devez sélectionner un jour.',
             'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
             'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
         ]);
 
         $schedule = [
             'Horaire' => $validatedData['horaire'],
-            'Jour' => $validatedData['jour'],
             'HeureDebut' => $validatedData['heure_debut'],
             'HeureFin' => $validatedData['heure_fin'],
         ];
 
         try {
             $this->repository->updateSchedules($schedule);
-            return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
         } catch (Exception $exception) {
             return redirect()->route('schedule.update.form', ['horaire' => $schedule['Horaire']])->withErrors("Impossible de modifier l'horaire.");
         }
+        return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
     }
     ### classrooms constraints ####
     public function classroomConstraints(Request $request) {
