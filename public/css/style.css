@@ -109,6 +109,25 @@ h2 {
     background-color: #f1f1f1;
 }
 
+.warning {
+    margin: 10px;
+    padding-top : 50px;
+    display: inline-block;
+  }
+.warning-content {
+    display: none;
+    position: absolute;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    max-width: 300px;
+    z-index: 1;
+  }
+
+.warning:hover .warning-content {
+    display: block;
+  }
+
 .content{
     clear: left;
 }
@@ -249,12 +268,12 @@ button {
 
 #teacherInput{
     background-image: url('/css/searchicon.png'); 
-    background-position: 10px 12px; 
+    background-position: 5px 0px; 
     background-repeat: no-repeat; 
     width: 40%; 
     font-size: 16px; 
-    padding: 12px 20px 12px 40px; 
-    border: 1px solid #ddd; 
+    padding: 16px 20px 16px 45px; 
+    border: 0px solid #ddd; 
     margin-bottom: 12px;
     margin-right: 6%;
 }
@@ -426,12 +445,12 @@ table {
 
 #studentInput{
     background-image: url('/css/searchicon.png'); 
-    background-position: 10px 12px; 
+    background-position: 5px 0px; 
     background-repeat: no-repeat; 
     width: 40%; 
     font-size: 16px; 
-    padding: 12px 20px 12px 40px; 
-    border: 1px solid #ddd; 
+    padding: 16px 40px 16px 45px; 
+    border: 0px solid #ddd; 
     margin-bottom: 12px;
     margin-right: 6%;
 }

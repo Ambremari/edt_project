@@ -64,7 +64,8 @@
                 <td>
                     <div class="my_input" style="display: inline-block">
                         <label for="interval">Durée (min)</label>
-                        <input type="number" name="interval" id="interval" class="form-control" style="width: 40px" required>
+                        <input type="number" name="interval" id="interval" class="form-control" style="width: 40px" 
+                        value="{{ $college_schedule['Interval'] }}" required>
                         @error('interval')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -109,7 +110,14 @@
             </tr>
         </table>
         </div>
-        <button type="submit">Générer les horaires automatiquement</button>
+        <button type="submit">Générer les horaires automatiquement</button> 
+        <div class="warning"> 
+            <img src="/css/warning_icon.png" width="40">
+            <div class="warning-content">
+                La génération automatique provoque la suppression des données relatives aux contraintes horaires. 
+                Si les horaires ont déjà été génrés privilégiez l'ajout manuel.
+            </div>
+        </div>
     </form>
     <a href="{{ route('schedule.form') }}">Ajouter un horaire manuellement</a>
 </div>

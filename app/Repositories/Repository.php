@@ -42,7 +42,7 @@ class Repository {
         $this->addRandomDivision();
         $this->setOptionIncompatibility();
         $this->generateScheduleIncompatibility();
-        // $this->generateSubjectConstraints();
+        $this->generateSubjectConstraints();
         $this->addRandomLV1();
         $this->addRandomLV2();
         $this->addRandomOption();
@@ -1596,6 +1596,10 @@ class Repository {
     }
 
     function generateSchedule(array $day, array $break, array $mornings, array $afternoons, int $interval): void{
+        DB::table('ContraintesEns')
+            ->delete();
+        DB::table('ContraintesProf')
+            ->delete();
         DB::table('Horaires')
             ->delete();
         $hour = DateInterval::createFromDateString('1 hour');
@@ -1603,8 +1607,8 @@ class Repository {
         $interval = $interval." minutes";
         $interval = DateInterval::createFromDateString($interval);
         foreach($mornings as $morning){
-            $start = date_create_immutable_from_format('H:i', $day['start']);
-            $startBreak = date_create_immutable_from_format('H:i', $break['start']);
+            $start = date_create_immutable_from_format('H:i:s', $day['start']);
+            $startBreak = date_create_immutable_from_format('H:i:s', $break['start']);
             $i = 1;
             do{
                 if($i % 3 == 0)
@@ -1622,8 +1626,8 @@ class Repository {
             } while($start->add($hour) <= $startBreak);
         }
         foreach($afternoons as $afternoon){
-            $start = date_create_immutable_from_format('H:i', $break['end']);
-            $endDay = date_create_immutable_from_format('H:i', $day['end']);
+            $start = date_create_immutable_from_format('H:i:s', $break['end']);
+            $endDay = date_create_immutable_from_format('H:i:s', $day['end']);
             $i = 1;
             do{
                 if($i % 3 == 0)
@@ -1663,12 +1667,22 @@ class Repository {
                         ->where("Horaire", "like", "__S%")
                         ->get()
                         ->toArray();
+        $intervalLow = DB::table("Horaires")
+                        ->where("Horaire", "like", "__M1")
+                        ->min("HeureFin");
+        $intervalUp = DB::table("Horaires")
+                        ->where("Horaire", "like", "__M2")
+                        ->min("HeureDebut");
+        $intervalLow = date_create_from_format('H:i:s', $intervalLow);
+        $intervalUp = date_create_from_format('H:i:s', $intervalUp);
+        $interval = $intervalUp->diff($intervalLow);
         return ['StartDay' => $startDay,
                 'EndDay' => $endDay,
                 'StartBreak' => $startBreak,
                 'EndBreak' => $endBreak,
                 'Mornings' => $mornings,
-                'Afternoons' => $afternoons];
+                'Afternoons' => $afternoons,
+                'Interval' =>$interval->i];
     }
 
     function addScheduleIncompatibility(string $subject1, string $subject2): void{

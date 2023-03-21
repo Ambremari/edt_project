@@ -7,6 +7,7 @@
         <option value="Mercredi">Mercredi</option>
         <option value="Jeudi">Jeudi</option>
         <option value="Vendredi">Vendredi</option>
+        <option value="Vendredi">Samedi</option>
     </select>
 </div>
 <div class="myTable">
@@ -37,6 +38,7 @@
         var select, filter, table, tr, td, i, txtValue;
         select = document.getElementById("mySelect");
         filter = select.value;
+        pattern = new RegExp(filter, 'i');
         table = document.getElementById("horaireTable");
         tr = table.getElementsByTagName("tr");
 
@@ -44,7 +46,7 @@
             td = tr[i].getElementsByTagName("td")[1];
             if (td) {
                 txtValue = td.textContent || td.innerText;
-                if (txtValue == filter || filter == "") {
+                if (pattern.test(txtValue) || filter == "") {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
