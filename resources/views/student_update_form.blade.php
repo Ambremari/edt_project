@@ -6,12 +6,6 @@
 <div class="colleft">
     @include('student_list')
 </div>
-<input type="text" id="studentInput" onkeyup="searchStudent()" placeholder="Rechercher un élève...">
-<ul id="studentList">
-    @foreach ($students as $row)
-        <li><a href="{{route('student.update.form', ['id' => $row['IdEleve']])}}">{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</a></li>
-    @endforeach
-</ul>
 <div class="colright">
     <form method="POST" action="{{ route('student.update', ['id' => $student['IdEleve']]) }}">
         @csrf
@@ -51,13 +45,24 @@
             </div>
             @enderror
             <div class="my_input">
-                <label for="birthdate">Date de naissance</label>
-                <input type="date" id="birthdate" name="birthdate"
+                <label for="birthdate">Année de naissance</label>
+                <input type="number" id="birthdate" name="birthdate"
                     aria-describedby="birthdate_feedback"
                     value="{{ $student['AnneeNaisEleve'] }}" required>
             </div>
             @error('birthdate')
             <div id="birthdate_feedback" class="invalid-feedback">
+                {{ $message }}
+            </div>
+            @enderror
+            <div class="my_input">
+                <label for="level">Niveau</label>
+                <input type="text" id="level" name="level"
+                    aria-describedby="level_feedback"
+                    value="{{ $student['NiveauEleve'] }}" required>
+            </div>
+            @error('level')
+            <div id="level_feedback" class="invalid-feedback">
                 {{ $message }}
             </div>
             @enderror

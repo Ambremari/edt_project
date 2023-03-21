@@ -40,9 +40,9 @@
                 </div>
                 @enderror
                 <div class="my_input">
-                    <label for="birthdate">Date de naissance</label>
-                    <input type="date" id="birthdate" name="birthdate" aria-describedby="birthdate_feedback"
-                        value="{{ old('birthdate') }}" required>
+                    <label for="birthdate">Année de naissance</label>
+                    <input type="number" id="birthdate" name="birthdate" aria-describedby="birthdate_feedback"
+                    min="2000" max="2100" value="{{ old('birthdate') }}" required>
                 </div>
                 @error('birthdate')
                 <div id="birthdate_feedback" class="invalid-feedback">
@@ -51,12 +51,8 @@
                 @enderror
                 <div class="my_input">
                     <label for="level">Niveau</label>
-                <select class="form-control" id="mySelect">
-                    <option value="6EME">6ème</option>
-                    <option value="5EME">5ème</option>
-                    <option value="4EME">4ème</option>
-                    <option value="3EME">3ème</option>
-                </select>
+                    <input type="text" id="level" name="level" aria-describedby="level_feedback"
+                     value="{{ old('level') }}" required>
                 </div>
                 @error('level')
                 <div id="level_feedback" class="invalid-feedback">

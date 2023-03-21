@@ -206,7 +206,20 @@ Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstra
 
 
 Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
-    ->where('id', '[ELV].*')
     ->name('student.update.form');
 
+Route::get('/students/add', [Controller::class, 'addStudentForm'])
+     ->name('student.form');
+
+Route::post('/students/add', [Controller::class, 'addStudent'])
+     ->name('student.add');
+
+Route::get('/students/update', [Controller::class, 'updateStudentList'])
+     ->name('student.update.list');
+
+Route::post('/students/update/{id}', [Controller::class, 'updateStudent'])
+     ->name('student.update');
+
+Route::get('/etablissement/info', [Controller::class, 'showInfo'])
+     ->name('info.show');
 

@@ -1080,6 +1080,114 @@ class Controller extends BaseController{
 
     return redirect()->route('constraints.classrooms')->with('status', 'Contrainte modifiée avec succès !');
     }
+     ###### STUDENTS ##########
+     public function addStudentForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+                return view('student_add');
+        }
+    public function addStudent(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+            $rules = [
+                    'name' => ['required', 'min:2', 'max:15'],
+                    'firstname' => ['required', 'min:2', 'max:15'],
+                    'birthdate' => ['required'],
+                    'level' => ['required']
+                ];
+            $messages = [
+                    'name.required' => 'Vous devez saisir un nom.',
+                    'firstname.required' => 'Vous devez saisir un prénom.',
+                    'name.min' => "Le nom doit contenir au moins :min caractères.",
+                    'name.max' => "Le nom doit contenir au plus :max caractères.",
+                    'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
+                    'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
+                    'birthdate.required' => 'Vous devez saisir une année de naissance.',
+                    'level.required' => 'Vous devez saisir un niveau.',
+                ];
+                $validatedData = $request->validate($rules, $messages);
+                $student = [
+                        'NomEtud' => $validatedData['name'],
+                        'PrenomEtud' => $validatedData['firstname'],
+                        'DateNaissEtud' => $validatedData['birthdate'],
+                        'NiveauEtud' => $validatedData['level']];
+        try{
+                $this->repository->insertStudent($student);
+            } catch (Exception $exception) {
+                return redirect()->route('student.form')->withInput()->withErrors("Impossible d'ajouter l'élève.");
+            }
+        return redirect()->route('student.form')->with('status', 'Elève ajouté avec succès !');
+        }
+    public function updateStudentList(Request $request){
+        $hasKey = $request->session()->has('user');
+            if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+                return redirect()->route('login');
+            $students = $this->repository->students();
+        return view('student_update', ['students' => $students]);
+        }
+        public function updateStudentForm(Request $request, String $idEleve) {
+        $hasKey = $request->session()->has('user');
+            if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+                return redirect()->route('login');
+        $students = $this->repository->students();
+        $student = $this->repository->getStudentId($idEleve);
+        return view('student_update_form', ['idEleve'=>$idEleve,'student'=> $student, 'students' => $students]);
+        }
+        public function updateStudent(Request $request, $id){
+            $hasKey = $request->session()->has('user');
+            if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+                return redirect()->route('login');
+            $rules = [
+                'name' => ['required', 'min:2', 'max:15'],
+                'firstname' => ['required', 'min:2', 'max:15'],
+                'birthdate' => ['required', 'integer'],
+                'level' => ['required']
+            ];
+            $messages = [
+                'name.required' => 'Vous devez saisir un nom.',
+                'firstname.required' => 'Vous devez saisir un prénom.',
+                'name.min' => "Le nom doit contenir au moins :min caractères.",
+                'name.max' => "Le nom doit contenir au plus :max caractères.",
+                'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
+                'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
+                'birthdate.required' => 'Vous devez saisir une date de naissance.',
+                'birthdate.integer' => 'Vous devez saisir une date valide.',
+                'level.required' => 'Vous devez saisir un niveau.',
+            ];
+            $validatedData = $request->validate($rules, $messages);
+            $student = [
+                'id' => $id,
+                'NomEtud' => $validatedData['name'],
+                'PrenomEtud' => $validatedData['firstname'],
+                'DateNaissEtud' => $validatedData['birthdate'],
+                'NiveauEtud' => $validatedData['level']
+            ];
+            try {
+                $this->repository->updateStudent($student);
+            } catch (Exception $exception) {
+                return redirect()->route('student.update.form', ['id' => $id])->withInput()->withErrors("Impossible de modifier l'elève.");
+            }
+            return redirect()->route('student.update.form', ['id' => $id])->with('status', 'Elève modifié avec succès !');
+        }
+        ###### fiche établissement ########
+        public function showInfo()
+    {
+        $nombreEleves = $this->repository->getNombreEleves();
+        $nombreEnseignants = $this->repository->getNombreEnseignants();
+        $nombreDivisionsParNiveau = $this->repository->getNombreDivisionsParNiveau();
+        $nombreInfrastructuresParType = $this->repository->getNombreInfrastructuresParType();
+        $horairesOuverture = $this->repository->getHorairesOuverture();
+
+        return view('school_show', [
+            'nombreEleves' => $nombreEleves,
+            'nombreEnseignants' => $nombreEnseignants,
+            'nombreDivisionsParNiveau' => $nombreDivisionsParNiveau,
+            'nombreInfrastructuresParType' => $nombreInfrastructuresParType,
+            'horairesOuverture' => $horairesOuverture
+        ]);
+    }
 };
 
 
