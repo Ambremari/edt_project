@@ -204,7 +204,6 @@ Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsCl
 Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
 
-
 Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
     ->name('student.update.form');
 

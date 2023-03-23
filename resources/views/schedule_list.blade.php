@@ -2,11 +2,12 @@
     <label for="mySelect">Filtrer par jour</label>
     <select class="form-control" id="mySelect" onchange="filterSchedule()">
         <option value="" selected>Tous</option>
-        <option value="Lundi">Lundi</option>
-        <option value="Mardi">Mardi</option>
-        <option value="Mercredi">Mercredi</option>
-        <option value="Jeudi">Jeudi</option>
-        <option value="Vendredi">Vendredi</option>
+        <option value="LUNDI">LUNDI</option>
+        <option value="MARDI">MARDI</option>
+        <option value="MERCREDI">MERCREDI</option>
+        <option value="JEUDI">JEUDI</option>
+        <option value="VENDREDI">VENDREDI</option>
+        <option value="SAMEDI">SAMEDI</option>
     </select>
 </div>
 <div class="myTable">

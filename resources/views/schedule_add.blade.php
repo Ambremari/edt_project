@@ -28,12 +28,12 @@
             <label for="jour">Jour</label>
             <select name="jour" id="jour" class="form-control" required>
                 <option value="">-- Sélectionnez un jour --</option>
-                <option value="Lundi">Lundi</option>
-                <option value="Mardi">Mardi</option>
-                <option value="Mercredi">Mercredi</option>
-                <option value="Jeudi">Jeudi</option>
-                <option value="Vendredi">Vendredi</option>
-                <option value="Samedi">Samedi</option>
+                <option value="LUNDI">LUNDI</option>
+                <option value="MARDI">MARDI</option>
+                <option value="MERCREDI">MERCREDI</option>
+                <option value="JEUDI">JEUDI</option>
+                <option value="VENDREDI">VENDREDI</option>
+                <option value="SAMEDI">SAMEDI</option>
             </select>
             @error('jour')
                 <div class="invalid-feedback">{{ $message }}</div>

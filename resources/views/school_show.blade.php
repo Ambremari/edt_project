@@ -1,6 +1,6 @@
 @extends('base')
 @section('title')
-Fiches établissement
+Fiche établissement
 @endsection
 @section('content')
 <div class="colleft">
@@ -37,14 +37,16 @@ Fiches établissement
         <label for="mySelect">Filtrer par jour</label>
         <select class="form-control" id="mySelect" onchange="filterSchedule()">
             <option value="" selected>Tous</option>
-            <option value="Lundi">Lundi</option>
-            <option value="Mardi">Mardi</option>
-            <option value="Mercredi">Mercredi</option>
-            <option value="Jeudi">Jeudi</option>
-            <option value="endredi">Vendredi</option>
+            <option value="LUNDI">LUNDI</option>
+            <option value="MARDI">MARDI</option>
+            <option value="MERCREDI">MERCREDI</option>
+            <option value="JEUDI">JEUDI</option>
+            <option value="VENDREDI">VENDREDI</option>
+            <option value="SAMEDI">SAMEDI</option>
         </select>
     </div>
-    <table id="horaireTable" class="table">
+    <div class="table">
+    <table id="horaireTable">
         <thead>
             <tr class="header">
                 <th>Jour</th>
@@ -54,10 +56,10 @@ Fiches établissement
         </thead>
         <tbody>
             @foreach ($horairesOuverture as $horaire)
-            <tr>
-                <td>{{ ucfirst($horaire['Jour']) }}</td>
-                <td>{{ substr($horaire['HeureDebut'], 0, 5) }}</td>
-                <td>{{ substr($horaire['HeureFin'], 0, 5) }}</td>
+            <tr class="{{ in_array($horaire['Jour'], ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']) ? $horaire['Jour'] : ''}}">
+                <td>{{$horaire['Jour']}}</td>
+                <td>{{$horaire['HeureDebut']}}</td>
+                <td>{{ $horaire['HeureFin']}}</td>
             </tr>
             @endforeach
         </tbody>
@@ -65,7 +67,6 @@ Fiches établissement
 </div>
 @endsection
 
-@section('scripts')
 <script>
 function filterSchedule() {
     var select = document.getElementById("mySelect");
@@ -74,7 +75,7 @@ function filterSchedule() {
     for (var i = 0; i < rows.length; i++) {
         var cells = rows[i].getElementsByTagName("td");
         if (cells.length > 0) {
-            var day = cells[1].innerText;
+            var day = cells[0].innerText;
             if (select.value == "" || day == select.value) {
                 rows[i].style.display = "";
             } else {
@@ -84,9 +85,3 @@ function filterSchedule() {
     }
 }
 </script>
-<style>
-    .white-text-center {
-      background-color: white;
-      text-align: center;
-    }
-    </style>

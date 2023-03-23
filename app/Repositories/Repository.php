@@ -1592,7 +1592,7 @@ class Repository {
             throw new Exception('Elève inconnu');
         }
 
-        if ($eleve->NiveauEleve !== $enseignement->NiveauEns) {
+        if ($eleve['NiveauEleve'] !== $enseignement['NiveauEns']) {
             throw new Exception('Niveau de l\'élève incompatible avec l\'enseignement');
         }
 
