@@ -36,7 +36,7 @@
 </div>
 
 <script>
-    function filterSchedule() {
+function filterSchedule() {
         var select, filter, table, tr, td, i, txtValue;
         select = document.getElementById("mySelect");
         filter = select.value;
@@ -55,6 +55,6 @@
                 }
             }
         }
-    }
 }
+
 </script>
