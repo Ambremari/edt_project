@@ -9,7 +9,7 @@
     @if ($errors->any())
         <div class="alert alert-warning">
             L'enseignement n'a pas pu être modifié &#9785;
-        </div>  
+        </div>
     @endif
     @if (session('status'))
         <div class="alert alert-success">

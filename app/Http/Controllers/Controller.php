@@ -901,7 +901,7 @@ class Controller extends BaseController{
         $times = $this->repository->schedules();
         $id = $request->session()->get('user')['id'];
         $constraints1 = $this->repository->getTeacherConstraints($id, 1);
-        $constraints2 = $this->repository->getTeacherConstraints($id, 2); 
+        $constraints2 = $this->repository->getTeacherConstraints($id, 2);
         $startMorning = $this->repository->getStartTimesMorning();
         $startAfternoon = $this->repository->getStartTimesAfternoon();
         return view('teacher_constraints', ['times' => $times,
@@ -1049,7 +1049,7 @@ class Controller extends BaseController{
         try {
             $this->repository->updateSchedules($schedule);
         } catch (Exception $exception) {
-            return redirect()->route('schedule.update.form', ['horaire' => $schedule['Horaire']])->withErrors("Impossible de modifier l'horaire.");
+            return redirect()->route('schedule.update.form', ['horaire' => $schedule['Horaire']])->withInput()->withErrors("Impossible de modifier l'horaire.");
         }
         return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
     }
@@ -1059,11 +1059,11 @@ class Controller extends BaseController{
         if (!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
 
-        $courses = $this->repository->lessons();
+        $lessons = $this->repository->lessons();
         $classrooms = $this->repository->classrooms();
-        $constraints = $this->repository->getConstraintsClassrooms($courses,$classrooms);
-        return view('constraints.classrooms', [
-            'lessons' => $courses,
+        $constraints = $this->repository->getConstraintsClassrooms('', '');
+        return view('classrooms_constraints', [
+            'lessons' => $lessons,
             'classrooms' => $classrooms,
             'constraints' => $constraints,
         ]);
@@ -1076,21 +1076,21 @@ class Controller extends BaseController{
     }
 
     $validatedData = $request->validate([
-        'typeSalle' => 'required|exists:TypesSalles,TypeSalle',
-        'idCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
-        'volHSalle' => 'required|numeric',
-        'dureeMinSalle' => 'required|integer|min:1',
+        'TypeSalle' => 'required|exists:TypesSalles,TypeSalle',
+        'IdCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
+        'VolHSalle' => 'required|numeric',
+        'DureeMinSalle' => 'required|integer|min:1',
     ], [
-        'typeSalle.required' => 'Le type de salle est obligatoire.',
-        'typeSalle.exists' => 'Le type de salle sélectionné est invalide.',
-        'idCours.required' => 'L\'identifiant du cours est obligatoire.',
-        'idCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
-        'idCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
-        'volHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
-        'volHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
-        'dureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
-        'dureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
-        'dureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
+        'TypeSalle.required' => 'Le type de salle est obligatoire.',
+        'TypeSalle.exists' => 'Le type de salle sélectionné est invalide.',
+        'IdCours.required' => 'L\'identifiant du cours est obligatoire.',
+        'IdCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
+        'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
+        'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
+        'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
+        'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
+        'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
+        'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
     ]);
 
     $this->repository->addConstraintsClassrooms($validatedData);
@@ -1104,28 +1104,119 @@ class Controller extends BaseController{
     }
 
     $validatedData = $request->validate([
-        'typeSalle' => 'required|exists:TypesSalles,TypeSalle',
-        'idCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
-        'volHSalle' => 'required|numeric',
-        'dureeMinSalle' => 'required|integer|min:1',
+        'TypeSalle' => 'required|exists:TypesSalles,TypeSalle',
+        'IdCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
+        'VolHSalle' => 'required|numeric',
+        'DureeMinSalle' => 'required|integer|min:1',
     ], [
-        'typeSalle.required' => 'Le type de salle est obligatoire.',
-        'typeSalle.exists' => 'Le type de salle sélectionné est invalide.',
-        'idCours.required' => 'L\'identifiant du cours est obligatoire.',
-        'idCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
-        'idCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
-        'volHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
-        'volHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
-        'dureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
-        'dureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
-        'dureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
+        'TypeSalle.required' => 'Le type de salle est obligatoire.',
+        'TypeSalle.exists' => 'Le type de salle sélectionné est invalide.',
+        'IdCours.required' => 'L\'identifiant du cours est obligatoire.',
+        'IdCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
+        'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
+        'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
+        'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
+        'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
+        'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
+        'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
     ]);
 
     $this->repository->updateConstraintsClassrooms($validatedData);
 
     return redirect()->route('constraints.classrooms')->with('status', 'Contrainte modifiée avec succès !');
     }
-
+     ###### STUDENTS ##########
+     public function addStudentForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+                return view('student_add');
+        }
+    public function addStudent(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+            $rules = [
+                    'name' => ['required', 'min:2', 'max:15'],
+                    'firstname' => ['required', 'min:2', 'max:15'],
+                    'birthdate' => ['required'],
+                    'level' => ['required']
+                ];
+            $messages = [
+                    'name.required' => 'Vous devez saisir un nom.',
+                    'firstname.required' => 'Vous devez saisir un prénom.',
+                    'name.min' => "Le nom doit contenir au moins :min caractères.",
+                    'name.max' => "Le nom doit contenir au plus :max caractères.",
+                    'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
+                    'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
+                    'birthdate.required' => 'Vous devez saisir une année de naissance.',
+                    'level.required' => 'Vous devez saisir un niveau.',
+                ];
+                $validatedData = $request->validate($rules, $messages);
+                $student = [
+                        'NomEtud' => $validatedData['name'],
+                        'PrenomEtud' => $validatedData['firstname'],
+                        'DateNaissEtud' => $validatedData['birthdate'],
+                        'NiveauEtud' => $validatedData['level']];
+        try{
+                $this->repository->insertStudent($student);
+            } catch (Exception $exception) {
+                return redirect()->route('student.form')->withInput()->withErrors("Impossible d'ajouter l'élève.");
+            }
+        return redirect()->route('student.form')->with('status', 'Elève ajouté avec succès !');
+        }
+    public function updateStudentList(Request $request){
+        $hasKey = $request->session()->has('user');
+            if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+                return redirect()->route('login');
+            $students = $this->repository->students();
+        return view('student_update', ['students' => $students]);
+        }
+        public function updateStudentForm(Request $request, String $idEleve) {
+        $hasKey = $request->session()->has('user');
+            if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+                return redirect()->route('login');
+        $students = $this->repository->students();
+        $student = $this->repository->getStudentId($idEleve);
+        return view('student_update_form', ['idEleve'=>$idEleve,'student'=> $student, 'students' => $students]);
+        }
+        public function updateStudent(Request $request, $id){
+            $hasKey = $request->session()->has('user');
+            if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+                return redirect()->route('login');
+            $rules = [
+                'name' => ['required', 'min:2', 'max:15'],
+                'firstname' => ['required', 'min:2', 'max:15'],
+                'birthdate' => ['required', 'integer'],
+                'level' => ['required']
+            ];
+            $messages = [
+                'name.required' => 'Vous devez saisir un nom.',
+                'firstname.required' => 'Vous devez saisir un prénom.',
+                'name.min' => "Le nom doit contenir au moins :min caractères.",
+                'name.max' => "Le nom doit contenir au plus :max caractères.",
+                'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
+                'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
+                'birthdate.required' => 'Vous devez saisir une date de naissance.',
+                'birthdate.integer' => 'Vous devez saisir une date valide.',
+                'level.required' => 'Vous devez saisir un niveau.',
+            ];
+            $validatedData = $request->validate($rules, $messages);
+            $student = [
+                'id' => $id,
+                'NomEtud' => $validatedData['name'],
+                'PrenomEtud' => $validatedData['firstname'],
+                'DateNaissEtud' => $validatedData['birthdate'],
+                'NiveauEtud' => $validatedData['level']
+            ];
+            try {
+                $this->repository->updateStudent($student);
+            } catch (Exception $exception) {
+                return redirect()->route('student.update.form', ['id' => $id])->withInput()->withErrors("Impossible de modifier l'elève.");
+            }
+            return redirect()->route('student.update.form', ['id' => $id])->with('status', 'Elève modifié avec succès !');
+        }
+        
     public function subjectsConstraintsForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
@@ -1211,6 +1302,7 @@ class Controller extends BaseController{
         $divisionsVol = $this->repository->divisionLackingVolume();
         $unitCount = $this->repository->getUnitCount();
         $lastPreprocess = $this->repository->lastPreprocess();
+        
         $lastBDUpdate = $this->repository->lastDBUpdate();
         $availability = $this->repository->evaluateAvailability();
         return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
@@ -1292,7 +1384,24 @@ class Controller extends BaseController{
             return redirect()->route('subject.incompatibility')->withInput()->withErrors("Impossible de supprimer les contraintes.");
         }
         return redirect()->route('subject.incompatibility')->with('status', 'Contrainte suprimée avec succès');
+        }
+        
+        ###### fiche établissement ########
+        public function showInfo(){
+        $nombreEleves = $this->repository->getNombreEleves();
+        $nombreEnseignants = $this->repository->getNombreEnseignants();
+        $nombreDivisionsParNiveau = $this->repository->getNombreDivisionsParNiveau();
+        $nombreInfrastructuresParType = $this->repository->getNombreInfrastructuresParType();
+        $horairesOuverture = $this->repository->getHorairesOuverture();
+
+        return view('school_show', [
+            'nombreEleves' => $nombreEleves,
+            'nombreEnseignants' => $nombreEnseignants,
+            'nombreDivisionsParNiveau' => $nombreDivisionsParNiveau,
+            'nombreInfrastructuresParType' => $nombreInfrastructuresParType,
+            'horairesOuverture' => $horairesOuverture
+        ]);
     }
-};
+}
 
 

@@ -209,18 +209,11 @@ Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsCl
 Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
 
-Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
-    ->name('subjects.constraints');
+Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
+    ->name('student.update.form');
 
-Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
-    ->where('idEns', '[ENS].*')
-    ->name('subject.constraints');
-
-Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
-    ->name('subject.constraints.update');
-
-Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
-    ->name('data.preprocess');
+Route::get('/students/add', [Controller::class, 'addStudentForm'])
+     ->name('student.form');
 
 Route::post('/edt/data', [Controller::class, 'preprocessData'])
     ->name('data.preprocess');
@@ -234,7 +227,15 @@ Route::post('/edt/ens/incomp', [Controller::class, 'addSubjectIncompatibility'])
 Route::post('/edt/ens/incomp/delete', [Controller::class, 'deleteSubjectIncompatibility'])
     ->name('subject.incompatibility.delete');
 
+Route::post('/students/add', [Controller::class, 'addStudent'])
+     ->name('student.add');
 
+Route::get('/students/update', [Controller::class, 'updateStudentList'])
+     ->name('student.update.list');
 
+Route::post('/students/update/{id}', [Controller::class, 'updateStudent'])
+     ->name('student.update');
 
+Route::get('/etablissement/info', [Controller::class, 'showInfo'])
+     ->name('info.show');
 

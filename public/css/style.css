@@ -75,7 +75,7 @@ h2 {
     position: relative;
     display: block;
 }
-  
+
 .dropdown-content {
     display: none;
     position: absolute;
@@ -91,7 +91,7 @@ h2 {
     min-width: 160px;
     z-index: 1;
   }
-  
+
   .dropdown:hover .dropdown-content {
     display: block;
   }
@@ -290,16 +290,16 @@ button {
   }
 
 #teacherList li a {
-    border: 1px solid #ddd; 
-    margin-top: -1px; 
-    background-color: #f6f6f6; 
-    padding: 12px; 
-    text-decoration: none; 
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
 }
-  
+
   #teacherList li a:hover:not(.header) {
     background-color: #eee;
   }
@@ -394,13 +394,13 @@ table {
   }
 
   #divisionList span {
-    background-color: #f9f9f9; 
-    padding: 12px; 
+    background-color: #f9f9f9;
+    padding: 12px;
     margin: 5px;
-    text-decoration: none; 
-    font-size: 14px; 
-    color: black; 
-    display: inline-block; 
+    text-decoration: none;
+    font-size: 14px;
+    color: black;
+    display: inline-block;
     border-radius: 8px;
 }
 
@@ -429,16 +429,16 @@ table {
   }
 
 #studentList li a {
-    border: 1px solid #ddd; 
-    margin-top: -1px; 
-    background-color: #f6f6f6; 
-    padding: 12px; 
-    text-decoration: none; 
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
 }
-  
+
 #studentList li a:hover:not(.header) {
     background-color: #eee;
   }
@@ -473,14 +473,14 @@ table {
 }
 
 #studentList span {
-    border: 1px solid #ddd; 
-    margin-top: -1px; 
-    background-color: #f6f6f6; 
-    padding: 12px; 
-    text-decoration: none; 
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
 }
 
 .divisionList {
@@ -495,13 +495,13 @@ table {
   }
 
 .divisionList span {
-    background-color: #f9f9f9; 
-    padding: 12px; 
+    background-color: #f9f9f9;
+    padding: 12px;
     margin: 5px;
-    text-decoration: none; 
-    font-size: 14px; 
-    color: black; 
-    display: inline-block; 
+    text-decoration: none;
+    font-size: 14px;
+    color: black;
+    display: inline-block;
     border-radius: 8px;
 }
 
@@ -513,7 +513,7 @@ table {
     width: 1085px;
     margin-bottom: 20px;
     margin-top: 10px;
-    
+
 }
 .day-edt {
     margin: 0px;
@@ -592,20 +592,20 @@ table {
   }
 
 .infos button{
-    margin-top: -1px; 
-    background-color: #DEEAEA; 
-    padding: 12px; 
-    text-decoration: none; 
+    margin-top: -1px;
+    background-color: #DEEAEA;
+    padding: 12px;
+    text-decoration: none;
     font-weight: normal;
-    font-size: 18px; 
+    font-size: 18px;
     cursor: pointer;
-    color: black; 
+    color: black;
     width: 90%;
-    display: block; 
+    display: block;
 }
 
 .infos button.active{
-    background-color: #F7D5D5; 
+    background-color: #F7D5D5;
 }
 
 .tabcontentinfo{
@@ -619,6 +619,8 @@ table {
     margin: 10px;
 }
 
+
 .alert {
     margin: 10px;
 }
+
