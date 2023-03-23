@@ -238,4 +238,16 @@ Route::post('/students/update/{id}', [Controller::class, 'updateStudent'])
 
 Route::get('/etablissement/info', [Controller::class, 'showInfo'])
      ->name('info.show');
+    
+Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
+    ->name('subjects.constraints');
 
+Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.constraints');
+
+Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
+    ->name('subject.constraints.update');
+
+Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
+    ->name('data.preprocess');
