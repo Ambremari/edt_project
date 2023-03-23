@@ -1,8 +1,6 @@
 @extends('base')
 
-@section('title')
-Contraintes matérielles des enseignements
-@endsection
+@section('title','Contraintes matérielles des enseignements')
 
 @section('content')
 
