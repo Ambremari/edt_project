@@ -53,7 +53,7 @@
         @foreach($times as $time)
             <div class="{{ $time['Horaire'] }}">
                 <span>
-                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 1], $constraints))
+                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 1], $first_constraints))
                         <input class="checkbox" type="checkbox" name="first[]"
                         value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()" checked>
                     @else
@@ -63,7 +63,7 @@
                     <lablel for="mybox">Priorité 1</label>
                 </span>
                 <span>
-                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 2], $constraints))
+                    @if(in_array(['IdProf' => $id_prof, 'Horaire' => $time['Horaire'], 'Prio' => 2], $sec_constraints))
                         <input class="checkbox" type="checkbox" name="second[]"
                         value="{{ $time['Horaire'] }}" id="mybox" onclick="color2()" checked>
                     @else
