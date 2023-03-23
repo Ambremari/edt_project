@@ -354,7 +354,7 @@ AS
 
 CREATE OR REPLACE VIEW ToExport
 AS 
-	SELECT Unite, Semaine, Horaire, IdSalle, U.IdContSalle, IdEns, IdProf, IdDiv, IdGrp
+	SELECT Unite, Semaine, Horaire, IdSalle, Cs.TypeSalle, IdEns, IdProf, IdDiv, IdGrp
 	FROM (Unites U JOIN ContraintesSalles Cs ON U.IdContSalle = Cs.IdContSalle)
       JOIN Cours C ON Cs.IdCours = C.IdCours;
 	   
