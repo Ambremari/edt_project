@@ -81,7 +81,32 @@ public class Class {
 		return teacher.equals(other.getTeacher());
 	}
 	
+	public boolean sameSchedule(Class other) {
+		return schedule.equals(other.getSchedule()) && week.equals(other.week);
+	}
+	
 	public boolean sameRoom(Class other) {
 		return room.equals(other.getRoom());
+	}
+	
+	public boolean sameDivision(Class other) {
+		return division.equals(other.getDivision());
+	}
+	
+	public boolean sameGroup(Class other) {
+		return group.equals(other.getGroup()) && group.length() != 1;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Class)
+			return ((Class) obj).getUnit().equals(this.unit);
+		return super.equals(obj);
+	}
+	
+	public void permute(Class other) {
+		Schedule temp = this.schedule;
+		setSchedule(other.getSchedule());
+		other.setSchedule(temp);
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Planning {
+public class GeneratePlanning {
 
 	public static void main(String[] args) {
 		List<Class> classes = CSVReader.readClassesFromCSV("data/classes.csv");
@@ -14,8 +14,29 @@ public class Planning {
 		setSchedule(classes, schedules);
 		setClassroom(classes, rooms);
 		
-		for(Class myClass : classes)
-			System.out.println(myClass);
+		Planning randomPlanning = new Planning(classes);
+		System.out.println(randomPlanning.getPrimaryCost());
+		
+		Planning bestPlanning = new Planning(randomPlanning.getClasses());
+		
+		for(int i = 0 ; i < 8 ; i++) {
+			Planning copyPlanning = new Planning(bestPlanning.getClasses());
+			copyPlanning.permuteTeachers();
+			if(copyPlanning.getPrimaryCost() < bestPlanning.getPrimaryCost()) {
+				bestPlanning = new Planning(copyPlanning.getClasses());
+			}
+			copyPlanning = new Planning(bestPlanning.getClasses());
+			copyPlanning.permuteDivisions();
+			if(copyPlanning.getPrimaryCost() < bestPlanning.getPrimaryCost()) {
+				bestPlanning = new Planning(copyPlanning.getClasses());
+			}
+			copyPlanning = new Planning(bestPlanning.getClasses());
+			copyPlanning.permuteGroups();
+			if(copyPlanning.getPrimaryCost() < bestPlanning.getPrimaryCost()) {
+				bestPlanning = new Planning(copyPlanning.getClasses());
+			}
+		}
+		System.out.println(bestPlanning);
 	}
 	
 	public static void setSchedule(List<Class> classes, List<Schedule> schedules) {
