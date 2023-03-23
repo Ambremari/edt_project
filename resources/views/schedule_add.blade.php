@@ -53,10 +53,7 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-        <div>
-            @csrf
-            <button type="submit" >Ajouter</button>
-        </div>
+        <button type="submit">Ajouter</button>
     </form>
 </div>
 <div class="coldown">

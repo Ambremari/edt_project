@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Unites;
+DROP TABLE IF EXISTS IncompatibilitesHoraires;
 DROP TABLE IF EXISTS IncompatibilitesChoix;
 DROP TABLE IF EXISTS ContraintesSalles;
 DROP TABLE IF EXISTS Parentes;
@@ -140,8 +141,6 @@ CREATE TABLE Options(
    FOREIGN KEY(IdEns) REFERENCES Enseignements(IdEns)
 );
 
-
-
 CREATE TABLE Cours(
    IdCours VARCHAR(10) CHECK (IdCours LIKE 'CR%'),
    IdEns VARCHAR(10) CHECK (IdEns LIKE 'ENS%'),
@@ -192,6 +191,14 @@ CREATE TABLE ContraintesSalles(
 );
 
 CREATE TABLE IncompatibilitesChoix(
+   IdEns1 VARCHAR(10),
+   IdEns2 VARCHAR(10),
+   PRIMARY KEY(IdEns1, IdEns2),
+   FOREIGN KEY(IdEns1) REFERENCES Enseignements(IdEns),
+   FOREIGN KEY(IdEns2) REFERENCES Enseignements(IdEns)
+);
+
+CREATE TABLE IncompatibilitesHoraires(
    IdEns1 VARCHAR(10),
    IdEns2 VARCHAR(10),
    PRIMARY KEY(IdEns1, IdEns2),
@@ -274,9 +281,16 @@ AS
 
 CREATE OR REPLACE VIEW VolumeHProf
 AS
-   SELECT T.IdProf, SUM(VolHEns) VolHReelProf
+   SELECT T.IdProf, SUM(DECODE_ORACLE(VolHSalle, NULL, 0, VolHSalle)) VolHReelProf
    FROM (Enseignants T LEFT JOIN Cours E ON T.IdProf = E.IdProf)
-      LEFT JOIN Enseignements S ON E.IdEns = S.IdEns
+         LEFT JOIN  ContraintesSalles Cs ON E.IdCours = Cs.IdCours
+   GROUP BY T.IdProf;
+
+CREATE OR REPLACE VIEW VolumeHIntermedProf
+AS
+   SELECT T.IdProf, SUM(VolHEns) VolHCalcProf
+   FROM (Enseignants T LEFT JOIN Cours C ON T.IdProf = C.IdProf)
+         LEFT JOIN  Enseignements E ON C.IdEns = E.IdEns
    GROUP BY T.IdProf;
 
 
@@ -332,3 +346,15 @@ AS
    FROM Enseignements
    WHERE OptionEns IS false
    GROUP BY NiveauEns;
+
+CREATE OR REPLACE VIEW UpdateTimes
+AS 
+	SELECT TABLE_NAME, UPDATE_TIME
+	FROM   information_schema.tables;
+
+CREATE OR REPLACE VIEW ToExport
+AS 
+	SELECT Unite, Semaine, Horaire, IdSalle, Cs.TypeSalle, IdEns, IdProf, IdDiv, IdGrp
+	FROM (Unites U JOIN ContraintesSalles Cs ON U.IdContSalle = Cs.IdContSalle)
+      JOIN Cours C ON Cs.IdCours = C.IdCours;
+	   

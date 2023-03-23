@@ -109,6 +109,25 @@ h2 {
     background-color: #f1f1f1;
 }
 
+.warning {
+    margin: 10px;
+    padding-top : 50px;
+    display: inline-block;
+  }
+.warning-content {
+    display: none;
+    position: absolute;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    max-width: 300px;
+    z-index: 1;
+  }
+
+.warning:hover .warning-content {
+    display: block;
+  }
+
 .content{
     clear: left;
 }
@@ -248,13 +267,13 @@ button {
 }
 
 #teacherInput{
-    background-image: url('/css/searchicon.png');
-    background-position: 10px 12px;
-    background-repeat: no-repeat;
-    width: 40%;
-    font-size: 16px;
-    padding: 12px 20px 12px 40px;
-    border: 1px solid #ddd;
+    background-image: url('/css/searchicon.png'); 
+    background-position: 5px 0px; 
+    background-repeat: no-repeat; 
+    width: 40%; 
+    font-size: 16px; 
+    padding: 16px 20px 16px 45px; 
+    border: 0px solid #ddd; 
     margin-bottom: 12px;
     margin-right: 6%;
 }
@@ -295,6 +314,18 @@ th, td {
 table {
     margin-left: auto;
     margin-right: auto;
+}
+
+.schedule th, .schedule td{
+    padding: 0;
+    padding-right: 50px;
+    width : auto;
+    text-align: center;
+    background-color: #f6f5f5;
+}
+
+.schedule table{
+    margin-bottom: 20px;
 }
 
 .myTable{
@@ -413,13 +444,13 @@ table {
   }
 
 #studentInput{
-    background-image: url('/css/searchicon.png');
-    background-position: 10px 12px;
-    background-repeat: no-repeat;
-    width: 40%;
-    font-size: 16px;
-    padding: 12px 20px 12px 40px;
-    border: 1px solid #ddd;
+    background-image: url('/css/searchicon.png'); 
+    background-position: 5px 0px; 
+    background-repeat: no-repeat; 
+    width: 40%; 
+    font-size: 16px; 
+    padding: 16px 40px 16px 45px; 
+    border: 0px solid #ddd; 
     margin-bottom: 12px;
     margin-right: 6%;
 }
@@ -585,6 +616,11 @@ table {
 
 .infos span{
     display: block;
+    margin: 10px;
+}
+
+
+.alert {
     margin: 10px;
 }
 

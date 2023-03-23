@@ -24,7 +24,7 @@ class Repository {
         $classrooms = $data->classrooms();
         $students = $studentData->students();
         $schedule = $data->schedule();
-        $this->generateSchedule($schedule[0], $schedule[1], $schedule[2], $schedule[3]);
+        $this->generateSchedule($schedule[0], $schedule[1], $schedule[2], $schedule[3], $schedule[4]);
         foreach($teachers as $row)
             $this->insertTeacher($row);
         foreach($directors as $row)
@@ -41,14 +41,17 @@ class Repository {
             $this->insertStudent($row);
         $this->addRandomDivision();
         $this->setOptionIncompatibility();
+        $this->generateScheduleIncompatibility();
+        $this->generateSubjectConstraints();
         $this->addRandomLV1();
         $this->addRandomLV2();
         $this->addRandomOption();
         $this->generateGroups();
         $this->assignAllSubjectTeacher();
         $this->generateAllTPGroups();
-        $this->setTeachersHVolume();
         $this->generateClassroomsConstraints();
+        $this->setTeachersHVolume();
+        $this->generateUnit();
     }
 
     ##########TEACHERS#############
@@ -282,12 +285,12 @@ class Repository {
                         ->whereIn('IdEns', $subjects)
                         ->get('IdProf')
                         ->toArray();
-        $minVol = DB::table("VolumeHProf")
+        $minVol = DB::table("VolumeHIntermedProf")
                         ->whereIn('IdProf', $teachers)
-                        ->min('VolHReelProf');
-        $teacher = DB::table("VolumeHProf")
+                        ->min('VolHCalcProf');
+        $teacher = DB::table("VolumeHIntermedProf")
                         ->whereIn('IdProf', $teachers)
-                        ->where('VolHReelProf', $minVol)
+                        ->where('VolHCalcProf', $minVol)
                         ->get()
                         ->toArray();
         $teacher = $teacher[0];
@@ -360,7 +363,13 @@ class Repository {
                             ->where('NiveauDiv', $student['NiveauEleve'])
                             ->get()
                             ->toArray();
-            $random = rand(0, count($divisions) - 1);
+            do{
+                $random = rand(0, count($divisions) - 1);
+                $count = DB::table("DivisionCount")
+                        ->where('IdDiv', $divisions[$random]['IdDiv'])
+                        ->get()
+                        ->toArray();
+            } while($count[0]['EffectifReelDiv'] >= 35);
             DB::table("Eleves")
                 ->where('IdEleve', $student['IdEleve'])
                 ->update(['IdDiv' => $divisions[$random]['IdDiv']]);
@@ -368,6 +377,20 @@ class Repository {
     }
 
     function studentsNoLV1() : array{
+        $students = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where('LibelleEns', 'like', '%LV1%')
+                        ->get('IdEleve')
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV1Group() : array{
         $students = DB::table("GroupeLV1")
                         ->get("IdEleve")
                         ->toArray();
@@ -395,6 +418,21 @@ class Repository {
     }
 
     function studentsNoLV2() : array{
+        $students = DB::table("Options as O")
+                        ->join("Enseignements as E", "O.IdEns", "=", "E.IdEns")
+                        ->where('LibelleEns', 'like', '%LV2%')
+                        ->get('IdEleve')
+                        ->toArray();
+        return DB::table('Eleves')
+                    ->where("NiveauEleve", "!=", "6EME")
+                    ->whereNotIn('IdEleve', $students)
+                    ->orderBy('NomEleve')
+                    ->orderBy('PrenomEleve')
+                    ->get()
+                    ->toArray();
+    }
+
+    function studentsNoLV2Group() : array{
         $students = DB::table("GroupeLV2")
                         ->get("IdEleve")
                         ->toArray();
@@ -572,6 +610,14 @@ class Repository {
         return DB::table('Enseignements')
                     ->orderBy('LibelleEns')
                     ->orderBy('NiveauEns')
+                    ->get()
+                    ->toArray();
+    }
+
+    function subjectsLib() : array{
+        return DB::table('Enseignements')
+                    ->select(DB::raw('UNIQUE LibelleEns'))
+                    ->orderBy('LibelleEns')
                     ->get()
                     ->toArray();
     }
@@ -814,6 +860,46 @@ class Repository {
         }
     }
 
+    function generateSubjectConstraints(): void{
+        $saturday = DB::table("Horaires")
+                        ->where("Jour", "Samedi")
+                        ->get('Horaire')
+                        ->toArray();
+        $lastHour = DB::table("Horaires")
+                        ->where("Horaire", "like", "%ES3")
+                        ->get()
+                        ->toArray();
+        $firstGrade = DB::table("Enseignements")
+                        ->where("NiveauEns", "6EME")
+                        ->get()
+                        ->toArray();
+        $notOptions = DB::table("Enseignements")
+                        ->where("OptionEns", false)
+                        ->get()
+                        ->toArray();
+        foreach($saturday as $time){
+            foreach($firstGrade as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time['Horaire'],
+                        'Prio' => 1
+                    ]);
+            }
+        }
+        foreach($lastHour as $time){
+            foreach($notOptions as $subject){
+                DB::table("ContraintesEns")
+                    ->insert([
+                        'IdEns' => $subject['IdEns'],
+                        'Horaire' => $time['Horaire'],
+                        'Prio' => 2
+                    ]);
+            }
+        }
+
+    }
+
     function getSubjectConstraints(string $idEns, int $prio) : array{
         return DB::table("ContraintesEns")
                     ->where('IdEns', $idEns)
@@ -871,6 +957,7 @@ class Repository {
     function getDivisionLessonsLib(string $id) : array{
         return DB::table('LibellesCours')
                     ->where('IdDiv', $id)
+                    ->where('IdGrp', null)
                     ->get()
                     ->toArray();
     }
@@ -1220,6 +1307,13 @@ class Repository {
                     ->toArray();
     }
 
+    function getTeacherLessonsGroup(string $id) : array{
+        return DB::table('Cours')
+                    ->where('IdProf', $id)
+                    ->get(['IdEns', 'IdGrp'])
+                    ->toArray();
+    }
+
     function removeTeacherSubject(string $idProf, string $idEns): void{
         DB::table('Cours')
             ->where('IdProf', $idProf)
@@ -1505,10 +1599,17 @@ class Repository {
                     ->toArray();
     }
 
-    function generateSchedule(array $day, array $break, array $mornings, array $afternoons): void{
+    function generateSchedule(array $day, array $break, array $mornings, array $afternoons, int $interval): void{
+        DB::table('ContraintesEns')
+            ->delete();
+        DB::table('ContraintesProf')
+            ->delete();
+        DB::table('Horaires')
+            ->delete();
         $hour = DateInterval::createFromDateString('1 hour');
         $recess = DateInterval::createFromDateString('10 minutes');
-        $interval = DateInterval::createFromDateString('5 minutes');
+        $interval = $interval." minutes";
+        $interval = DateInterval::createFromDateString($interval);
         foreach($mornings as $morning){
             $start = date_create_immutable_from_format('H:i:s', $day['start']);
             $startBreak = date_create_immutable_from_format('H:i:s', $break['start']);
@@ -1548,6 +1649,187 @@ class Repository {
             } while($start->add($hour) <= $endDay);
         }
     }
+
+    function collegeSchedule(): array{
+        $startDay = DB::table("Horaires")
+                        ->min("HeureDebut");
+        $endDay = DB::table("Horaires")
+                        ->max("HeureFin");
+        $startBreak = DB::table("Horaires")
+                        ->where("Horaire", "like", "__M%")
+                        ->max("HeureFin");
+        $endBreak = DB::table("Horaires")
+                        ->where("Horaire", "like", "__S%")
+                        ->min("HeureDebut");
+        $mornings = DB::table("Horaires")
+                        ->select(DB::raw('UNIQUE Jour'))
+                        ->where("Horaire", "like", "__M%")
+                        ->get()
+                        ->toArray();
+        $afternoons = DB::table("Horaires")
+                        ->select(DB::raw('UNIQUE Jour'))
+                        ->where("Horaire", "like", "__S%")
+                        ->get()
+                        ->toArray();
+        $intervalLow = DB::table("Horaires")
+                        ->where("Horaire", "like", "__M1")
+                        ->min("HeureFin");
+        $intervalUp = DB::table("Horaires")
+                        ->where("Horaire", "like", "__M2")
+                        ->min("HeureDebut");
+        $intervalLow = date_create_from_format('H:i:s', $intervalLow);
+        $intervalUp = date_create_from_format('H:i:s', $intervalUp);
+        $interval = $intervalUp->diff($intervalLow);
+        return ['StartDay' => $startDay,
+                'EndDay' => $endDay,
+                'StartBreak' => $startBreak,
+                'EndBreak' => $endBreak,
+                'Mornings' => $mornings,
+                'Afternoons' => $afternoons,
+                'Interval' =>$interval->i];
+    }
+
+    function addScheduleIncompatibility(string $subject1, string $subject2): void{
+        $exist = DB::table("IncompatibilitesHoraires")
+                    ->where("IdEns1", $subject1)
+                    ->where("IdEns2", $subject2)
+                    ->get()
+                    ->toArray();
+        if(empty($exist)){
+            DB::table("IncompatibilitesHoraires")
+                ->insert([
+                    'IdEns1' => $subject1,
+                    'IdEns2' => $subject2
+                ]);
+            DB::table("IncompatibilitesHoraires")
+                ->insert([
+                    'IdEns1' => $subject2,
+                    'IdEns2' => $subject1
+                ]);
+        }
+    }
+
+    function deleteScheduleIncompatibility(string $subject1, string $subject2): void{
+        DB::table("IncompatibilitesHoraires")
+            ->where('IdEns1', $subject1)
+            ->where('IdEns2', $subject2)
+            ->delete();
+        DB::table("IncompatibilitesHoraires")
+            ->where('IdEns1', $subject2)
+            ->where('IdEns2', $subject1)
+            ->delete();
+    }
+
+    function scheduleIncompatibilities(): array{
+        return DB::table("IncompatibilitesHoraires as I")
+                    ->join("Enseignements as E", "I.IdEns1", "=", "E.IdEns")
+                    ->join("Enseignements as E2", "I.IdEns2", "=", "E2.IdEns")
+                    ->get(['I.*', 
+                        'E.LibelleEns as LibelleEns1', 
+                        'E.NiveauEns as NiveauEns1', 
+                        'E2.LibelleEns as LibelleEns2', 
+                        'E2.NiveauEns as NiveauEns2'])
+                    ->toArray();
+    }
+
+    function generateScheduleIncompatibility(): void {
+        $options = $this->optionalSubjects();
+        foreach($options as $option){
+            $options2 = DB::table("EnsOption")
+                          ->where("NiveauEns", $option["NiveauEns"])
+                          ->where("IdEns", "!=", $option["IdEns"])
+                          ->get()
+                          ->toArray();
+            foreach($options2 as $option2)
+                if(!$this->compatible($option, $option2)){
+                    $this->addScheduleIncompatibility($option['IdEns'], $option2['IdEns']);
+                }
+        }
+    }
+
+    function compatible(array $option1, array $option2): bool{
+        if(preg_match("/LV1/", $option1['LibelleEns']) && preg_match("/LV1/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/LV2/", $option1['LibelleEns']) && preg_match("/LV2/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Anglais/", $option1['LibelleEns']) && preg_match("/Anglais/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Espagnol/", $option1['LibelleEns']) && preg_match("/Espagnol/", $option2['LibelleEns']))
+            return true;
+        if(preg_match("/Allemand/", $option1['LibelleEns']) && preg_match("/Allemand/", $option2['LibelleEns']))
+            return true;
+        return false;
+    }
+
+    #######PRE-PROCESSING DATA################
+
+    function lastPreprocess(): array {
+        $time = DB::table('UpdateTimes')
+                    ->where('TABLE_NAME', 'unites')
+                    ->get('UPDATE_TIME')
+                    ->toArray();
+        return $time[0];
+    }
+
+    function lastDBUpdate(): string {
+        $time = DB::table('UpdateTimes')
+                    ->where('TABLE_NAME', 'cours')
+                    ->orWhere('TABLE_NAME', 'contraintessalles')
+                    ->min('UPDATE_TIME');
+        return $time;
+    }
+
+    function generateUnit(): void{
+        $constraints = $this->constraintsClassrooms();
+        $index = 0;
+        foreach($constraints as $constraint){
+            for($i = 1 ; $i <= $constraint['VolHSalle'] ; $i++){
+                DB::table('Unites')
+                    ->insert([
+                        'Unite' => 'U'.$index,
+                        'IdContSalle' => $constraint['IdContSalle']
+                    ]);
+                $index++;
+            }
+            if($constraint['VolHSalle'] * 10 % 10 == 5){
+                DB::table('Unites')
+                    ->insert([
+                        'Unite' => 'U'.$index,
+                        'IdContSalle' => $constraint['IdContSalle'],
+                        'Semaine' => 'A',
+                    ]);
+                $index++;
+            }
+        }
+    }
+
+    function deleteUnits(): void{
+        DB::table('Unites')
+            ->delete();
+    }
+
+    function getUnitCount(): int{
+        return DB::table("Unites")
+                    ->count();
+    }
+
+    function evaluateAvailability() : int{
+        $classrooms = count($this->classrooms());
+        $schedules = count($this->schedules());
+        return $classrooms*$schedules;
+    }
+    function preprocess(): void {
+        if(!empty($this->subjectsNoTeacher()))
+            throw new Exception('Tous les enseignements ne sont pas affectés');
+        if(!empty($this->divisionSubjectsCount()))
+            throw new Exception('Manque des enseignements pour certaines divisions');
+        $this->generateClassroomsConstraintsForMissingVolume();
+        if(!empty($this->divisionLackingVolume()))
+            throw new Exception('Manque des heures d\'enseignements pour certaines divisions');
+        $this->deleteUnits();
+        $this->generateUnit();
+    }
+
 
 ##### TRIGGER CHECK DIV AND GRP #####
     function checkGrpAndDivLevel(string $idGrp): void {

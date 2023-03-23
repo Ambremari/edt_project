@@ -175,6 +175,11 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+Route::get('/college/horaires', [Controller::class, 'showSchedules'])
+    ->name('schedule.show');
+
+Route::post('/college/horaires', [Controller::class, 'generateSchedules'])
+    ->name('schedule.generate');
 
 Route::get('/schedule/add', [Controller::class, 'addScheduleForm'])
     ->name('schedule.form');
@@ -209,6 +214,18 @@ Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
 
 Route::get('/students/add', [Controller::class, 'addStudentForm'])
      ->name('student.form');
+
+Route::post('/edt/data', [Controller::class, 'preprocessData'])
+    ->name('data.preprocess');
+
+Route::get('/edt/ens/incomp', [Controller::class, 'showSubjectIncompatibility'])
+    ->name('subject.incompatibility');
+
+Route::post('/edt/ens/incomp', [Controller::class, 'addSubjectIncompatibility'])
+    ->name('subject.incompatibility.add');
+
+Route::post('/edt/ens/incomp/delete', [Controller::class, 'deleteSubjectIncompatibility'])
+    ->name('subject.incompatibility.delete');
 
 Route::post('/students/add', [Controller::class, 'addStudent'])
      ->name('student.add');

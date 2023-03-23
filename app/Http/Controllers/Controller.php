@@ -358,13 +358,15 @@ class Controller extends BaseController{
         $teacher = $this->repository->getTeacher($idProf);
         $teacherSubjects = $this->repository->getTeacherSubjects($idProf);
         $teacherLessons = $this->repository->getTeacherLessons($idProf);
+        $teacherLessonsGrp = $this->repository->getTeacherLessonsGroup($idProf);
         return view('subject_teacher_link', ['teacher'=> $teacher,
                                              'teachers' => $teachers,
                                              'subjects' => $subjects,
                                              'divisions' => $divisions,
                                              'groups' => $groups,
                                              'teacher_subjects' => $teacherSubjects,
-                                             'teacher_lessons' => $teacherLessons]);
+                                             'teacher_lessons' => $teacherLessons,
+                                             'teacher_lessons_gp' => $teacherLessonsGrp]);
     }
 
     public function linkTeacherSubject(Request $request){
@@ -933,62 +935,19 @@ class Controller extends BaseController{
         return redirect()->route('update.prof.constraints')->with('status', 'Contraintes actualisées avec succès !');
     }
 
-      function addSchedule(Request $request)
-    {
-    $hasKey = $request->session()->has('user');
-    if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
-        return redirect()->route('login');
-    }
-
-    $validatedData = $request->validate([
-        'horaire' => ['required', 'unique:horaires,Horaire'],
-        'jour' => ['required'],
-        'heure_debut' => ['required'],
-        'heure_fin' => ['required'],
-    ], [
-        'horaire.required' => 'Vous devez saisir un horaire.',
-        'horaire.unique' => 'Cet horaire existe déjà.',
-        'jour.required' => 'Vous devez sélectionner un jour.',
-        'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
-        'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
-    ]);
-
-    $schedule = [
-        'Horaire' => $validatedData['horaire'],
-        'Jour' => $validatedData['jour'],
-        'HeureDebut' => $validatedData['heure_debut'],
-        'HeureFin' => $validatedData['heure_fin'],
-    ];
-
-    try {
-        $this->repository->insertSchedule($schedule);
-        return redirect()->route('schedule.form')->withInput()->withErrors("Impossible d'ajouter l'horaire.");
-    } catch (Exception $exception) {
-        return redirect()->route('schedule.form')->with('status','Horaire ajouté avec succés');
-    }
-    }
-
-          function updateScheduleForm(Request $request, string $horaire)
-    {
+    public function addSchedule(Request $request){
         $hasKey = $request->session()->has('user');
-        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
+        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') 
             return redirect()->route('login');
-        }
-        $schedules =$this->repository->schedules();
-        $schedule =$this->repository->getSchedules($horaire);
 
-        return view('schedule_update', ['schedule' => $schedule, 'schedules' => $schedules]);
-    }
-
-       function updateSchedules(Request $request)
-    {
         $validatedData = $request->validate([
-            'horaire' => ['required'],
+            'horaire' => ['required', 'unique:horaires,Horaire'],
             'jour' => ['required'],
             'heure_debut' => ['required'],
             'heure_fin' => ['required'],
         ], [
             'horaire.required' => 'Vous devez saisir un horaire.',
+            'horaire.unique' => 'Cet horaire existe déjà.',
             'jour.required' => 'Vous devez sélectionner un jour.',
             'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
             'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
@@ -1002,11 +961,97 @@ class Controller extends BaseController{
         ];
 
         try {
+            $this->repository->insertSchedule($schedule);
+        } catch (Exception $exception) {
+            return redirect()->route('schedule.form')->withInput()->withErrors("Impossible d'ajouter l'horaire.");
+        }
+        return redirect()->route('schedule.form')->with('status','Horaire ajouté avec succès');
+    }
+
+    public function updateScheduleForm(Request $request, string $horaire){
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
+            return redirect()->route('login');
+        }
+        $schedules =$this->repository->schedules();
+        $schedule =$this->repository->getSchedules($horaire);
+        return view('schedule_update', ['schedule' => $schedule, 'schedules' => $schedules]);
+    }
+
+    public function showSchedules(Request $request){
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') {
+            return redirect()->route('login');
+        }
+        $schedules =$this->repository->schedules();
+        $collegeSchedule = $this->repository->collegeSchedule();
+        return view('schedule_show', ['schedules' => $schedules,
+                                      'college_schedule' => $collegeSchedule]);
+    }
+
+    public function generateSchedules(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'start_day' => ['required'],
+            'end_day' => ['required'],
+            'start_break' => ['required'],
+            'end_break' => ['required'],
+            'mornings' => ['required'],
+            'afternoons' => ['required'],
+            'interval' => ['required']
+        ];
+        $messages = [
+            'start_day.required' => 'Vous devez sélectionner l\'horaire de début.',
+            'end_day.required' => 'Vous devez sélectionner l\'horaire de fin.',
+            'start_break.required' => 'Vous devez sélectionner l\'horaire de début de la pause.',
+            'end_break.required' => 'Vous devez sélectionner l\'horaire de fin de la pause.',
+            'mornings.required' => 'Vous devez sélectionner les matinées d\'ouverture.',
+            'afternoons.required' => 'Vous devez sélectionner les après-midi d\ouverture.',
+            'interval.required' => 'Vous devez sélectionner la durée de l\'interclasse.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->generateSchedule(['start' => $validatedData['start_day'], 
+                                                 'end' => $validatedData['end_day']], 
+                                                 ['start' => $validatedData['start_break'], 
+                                                 'end' => $validatedData['end_break']],
+                                                $validatedData['mornings'],
+                                                $validatedData['afternoons'],
+                                                $validatedData['interval']);
+        } catch (Exception $exception) {
+            return redirect()->route('schedule.show')->withInput()->withErrors("Impossible de générer les horaires.");
+        }
+        return redirect()->route('schedule.show')->with('status', 'Horaires générés avec succès');
+    }
+
+    public function updateSchedules(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $validatedData = $request->validate([
+            'horaire' => ['required'],
+            'heure_debut' => ['required'],
+            'heure_fin' => ['required'],
+        ], [
+            'horaire.required' => 'Vous devez saisir un horaire.',
+            'heure_debut.required' => 'Vous devez sélectionner une heure de début.',
+            'heure_fin.required' => 'Vous devez sélectionner une heure de fin.',
+        ]);
+
+        $schedule = [
+            'Horaire' => $validatedData['horaire'],
+            'HeureDebut' => $validatedData['heure_debut'],
+            'HeureFin' => $validatedData['heure_fin'],
+        ];
+
+        try {
             $this->repository->updateSchedules($schedule);
-            return redirect()->route('schedule.update.form',['horaire' => $schedule['Horaire']])->with('status',"Horaire modifié avec succès !");
         } catch (Exception $exception) {
             return redirect()->route('schedule.update.form', ['horaire' => $schedule['Horaire']])->withInput()->withErrors("Impossible de modifier l'horaire.");
         }
+        return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
     }
     ### classrooms constraints ####
     public function classroomConstraints(Request $request) {
@@ -1171,9 +1216,178 @@ class Controller extends BaseController{
             }
             return redirect()->route('student.update.form', ['id' => $id])->with('status', 'Elève modifié avec succès !');
         }
+        
+    public function subjectsConstraintsForm(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
+        $times = $this->repository->schedules();
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('subjects_constraints', ['subjects'=> $subjects,
+                                    'times' => $times,
+                                    'start_morning' => $startMorning,
+                                    'start_afternoon' => $startAfternoon]);
+    }
+
+    public function subjectConstraintsForm(Request $request, string $idEns){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subject = $this->repository->getSubject($idEns);
+        $subjects = $this->repository->subjects();
+        $times = $this->repository->schedules();
+        $constraints1 = $this->repository->getSubjectConstraints($idEns, 1);
+        $constraints2 = $this->repository->getSubjectConstraints($idEns, 2); 
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('subject_constraints', ['subject' => $subject,
+                                    'subjects'=> $subjects,
+                                    'times' => $times,
+                                    'first_cons' => $constraints1,
+                                    'sec_cons' => $constraints2,
+                                    'start_morning' => $startMorning,
+                                    'start_afternoon' => $startAfternoon]);
+    }
+
+    public function updateSubjectConstraints(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required_without:level'],
+            'level' => ['required_without:id'],
+            'first' => ['array'],
+            'second' => ['array'] 
+        ];
+        $messages = [
+            'id.required_withount' => 'Vous devez sélectionner un enseignement ou un niveau.',
+            'level.required_without' => 'Vous devez sélectionner un enseignement ou un niveau.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        if(!$request->has('first'))
+            $validatedData['first'] = [];
+        if(!$request->has('second'))
+            $validatedData['second'] = [];
+        if($request->has('id') && $validatedData['id'] != "all"){
+            try{
+                $this->repository->addSubjectConstraints($validatedData['id'], $validatedData['first'], $validatedData['second']);
+            } catch (Exception $exception) {
+                return redirect()->route('subjects.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+            }
+        }
+        else {
+            try{
+                $this->repository->addLevelConstraints($validatedData['level'], $validatedData['first'], $validatedData['second']);
+            } catch (Exception $exception) {
+                return redirect()->route('subjects.constraints')->withInput()->withErrors("Impossible d'actualiser les contraintes.");
+            }
+        }
+        return redirect()->route('subjects.constraints')->with('status', 'Contraintes actualisées avec succès');
+    }
+
+    public function showDataPreprocess(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjectsNoTeacher();
+        $teachers = $this->repository->teachersLackVolume();
+        $studentsNoDiv = $this->repository->studentsNoDivision();
+        $studentsNoLV1 = $this->repository->studentsNoLV1();
+        $studentsNoLV2 = $this->repository->studentsNoLV2();
+        $studentsNoLV1Gp = $this->repository->studentsNoLV1Group();
+        $studentsNoLV2Gp = $this->repository->studentsNoLV2Group();
+        $divisions = $this->repository->divisionSubjectsCount();
+        $divisionsVol = $this->repository->divisionLackingVolume();
+        $unitCount = $this->repository->getUnitCount();
+        $lastPreprocess = $this->repository->lastPreprocess();
+        
+        $lastBDUpdate = $this->repository->lastDBUpdate();
+        $availability = $this->repository->evaluateAvailability();
+        return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
+                                        'students_no_lv1' => $studentsNoLV1,
+                                        'students_no_lv2' => $studentsNoLV2,
+                                        'students_no_glv1' => $studentsNoLV1Gp,
+                                        'students_no_glv2' => $studentsNoLV2Gp,
+                                        'subjects' => $subjects,
+                                        'teachers' => $teachers,
+                                        'divisions' => $divisions,
+                                        'divisions_vol' => $divisionsVol,
+                                        'unit_count' => $unitCount,
+                                        'last_preprocess' => $lastPreprocess,
+                                        'last_update' => $lastBDUpdate,
+                                        'availability' => $availability]);
+    }
+
+    public function preprocessData(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        try{
+            $this->repository->preprocess();
+        } catch (Exception $exception) {
+            return redirect()->route('data.preprocess')->withInput()->withErrors("Impossible de réaliser le pré-traitement");
+        }
+        return redirect()->route('data.preprocess')->with('status', 'Pré-traitement des données réalisé avec succès');
+    }
+
+    public function showSubjectIncompatibility(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $subjects = $this->repository->subjects();
+        $subjectsLib = $this->repository->subjectsLib();
+        $incomp = $this->repository->scheduleIncompatibilities();
+        return view('subject_incompatibility', ['subjects'=> $subjects,
+                                                'incomp' => $incomp,
+                                                'subjects_lib'=> $subjectsLib]);
+    }
+
+    public function addSubjectIncompatibility(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'subject1' => ['required'],
+            'subject2' => ['required'],
+        ];
+        $messages = [
+            'subject1.required' => 'Vous devez sélectionner un enseignement.',
+            'subject2.required' => 'Vous devez sélectionner un deuxième enseignement.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->addScheduleIncompatibility($validatedData['subject1'], $validatedData['subject2']);
+        } catch (Exception $exception) {
+            return redirect()->route('subject.incompatibility')->withInput()->withErrors("Impossible d'ajouter les contraintes.");
+        }
+        return redirect()->route('subject.incompatibility')->with('status', 'Contrainte ajoutée avec succès');
+    }
+
+    public function deleteSubjectIncompatibility(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'subject1' => ['required'],
+            'subject2' => ['required'],
+        ];
+        $messages = [
+            'subject1.required' => 'Vous devez sélectionner un enseignement.',
+            'subject2.required' => 'Vous devez sélectionner un deuxième enseignement.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->deleteScheduleIncompatibility($validatedData['subject1'], $validatedData['subject2']);
+        } catch (Exception $exception) {
+            return redirect()->route('subject.incompatibility')->withInput()->withErrors("Impossible de supprimer les contraintes.");
+        }
+        return redirect()->route('subject.incompatibility')->with('status', 'Contrainte suprimée avec succès');
+        }
+        
         ###### fiche établissement ########
-        public function showInfo()
-    {
+        public function showInfo(){
         $nombreEleves = $this->repository->getNombreEleves();
         $nombreEnseignants = $this->repository->getNombreEnseignants();
         $nombreDivisionsParNiveau = $this->repository->getNombreDivisionsParNiveau();
@@ -1188,6 +1402,6 @@ class Controller extends BaseController{
             'horairesOuverture' => $horairesOuverture
         ]);
     }
-};
+}
 
 
