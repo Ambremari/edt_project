@@ -18,7 +18,6 @@
                 <th>Jour</th>
                 <th>Heure de début</th>
                 <th>Heure de fin</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>

@@ -937,7 +937,7 @@ class Controller extends BaseController{
 
     public function addSchedule(Request $request){
         $hasKey = $request->session()->has('user');
-        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir') 
+        if (!$hasKey || $request->session()->get('user')['role'] !== 'dir')
             return redirect()->route('login');
 
         $validatedData = $request->validate([
@@ -1013,9 +1013,9 @@ class Controller extends BaseController{
         ];
         $validatedData = $request->validate($rules, $messages);
         try{
-            $this->repository->generateSchedule(['start' => $validatedData['start_day'], 
-                                                 'end' => $validatedData['end_day']], 
-                                                 ['start' => $validatedData['start_break'], 
+            $this->repository->generateSchedule(['start' => $validatedData['start_day'],
+                                                 'end' => $validatedData['end_day']],
+                                                 ['start' => $validatedData['start_break'],
                                                  'end' => $validatedData['end_break']],
                                                 $validatedData['mornings'],
                                                 $validatedData['afternoons'],
@@ -1062,12 +1062,14 @@ class Controller extends BaseController{
         $lessons = $this->repository->lessons();
         $classrooms = $this->repository->classrooms();
         $constraints = $this->repository->getConstraintsClassrooms('', '');
+        $subjects = $this->repository->subjects();
         return view('classrooms_constraints', [
-            'lessons' => $lessons,
-            'classrooms' => $classrooms,
-            'constraints' => $constraints,
+        'lessons' => $lessons,
+        'classrooms' => $classrooms,
+        'constraints' => $constraints,
+        'subjects' => $subjects,
         ]);
-    }
+        }
      function addConstraintsClassrooms(Request $request)
 {
     $hasKey = $request->session()->has('user');
@@ -1154,17 +1156,20 @@ class Controller extends BaseController{
                 ];
                 $validatedData = $request->validate($rules, $messages);
                 $student = [
-                        'NomEtud' => $validatedData['name'],
-                        'PrenomEtud' => $validatedData['firstname'],
-                        'DateNaissEtud' => $validatedData['birthdate'],
-                        'NiveauEtud' => $validatedData['level']];
-        try{
-                $this->repository->insertStudent($student);
-            } catch (Exception $exception) {
-                return redirect()->route('student.form')->withInput()->withErrors("Impossible d'ajouter l'élève.");
+                    'NomEtud' => $validatedData['name'],
+                    'PrenomEtud' => $validatedData['firstname'],
+                    'DateNaissEtud' => $validatedData['birthdate'],
+                    'NiveauEtud' => $validatedData['level']
+                ];
+
+                try {
+                    $this->repository->insertStudent($student);
+                } catch (Exception $exception) {
+                    return redirect()->route('student.form')->withInput()->withErrors("Impossible d'ajouter l'élève.");
+                }
+
+                return redirect()->route('student.form')->with('status', 'Elève ajouté avec succès !');
             }
-        return redirect()->route('student.form')->with('status', 'Elève ajouté avec succès !');
-        }
     public function updateStudentList(Request $request){
         $hasKey = $request->session()->has('user');
             if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
@@ -1216,7 +1221,7 @@ class Controller extends BaseController{
             }
             return redirect()->route('student.update.form', ['id' => $id])->with('status', 'Elève modifié avec succès !');
         }
-        
+
     public function subjectsConstraintsForm(Request $request){
         $hasKey = $request->session()->has('user');
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
@@ -1239,7 +1244,7 @@ class Controller extends BaseController{
         $subjects = $this->repository->subjects();
         $times = $this->repository->schedules();
         $constraints1 = $this->repository->getSubjectConstraints($idEns, 1);
-        $constraints2 = $this->repository->getSubjectConstraints($idEns, 2); 
+        $constraints2 = $this->repository->getSubjectConstraints($idEns, 2);
         $startMorning = $this->repository->getStartTimesMorning();
         $startAfternoon = $this->repository->getStartTimesAfternoon();
         return view('subject_constraints', ['subject' => $subject,
@@ -1259,7 +1264,7 @@ class Controller extends BaseController{
             'id' => ['required_without:level'],
             'level' => ['required_without:id'],
             'first' => ['array'],
-            'second' => ['array'] 
+            'second' => ['array']
         ];
         $messages = [
             'id.required_withount' => 'Vous devez sélectionner un enseignement ou un niveau.',
@@ -1302,7 +1307,7 @@ class Controller extends BaseController{
         $divisionsVol = $this->repository->divisionLackingVolume();
         $unitCount = $this->repository->getUnitCount();
         $lastPreprocess = $this->repository->lastPreprocess();
-        
+
         $lastBDUpdate = $this->repository->lastDBUpdate();
         $availability = $this->repository->evaluateAvailability();
         return view('data_preprocess', ['students_no_div' => $studentsNoDiv,
@@ -1385,7 +1390,7 @@ class Controller extends BaseController{
         }
         return redirect()->route('subject.incompatibility')->with('status', 'Contrainte suprimée avec succès');
         }
-        
+
         ###### fiche établissement ########
         public function showInfo(){
         $nombreEleves = $this->repository->getNombreEleves();

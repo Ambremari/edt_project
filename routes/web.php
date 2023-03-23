@@ -238,7 +238,7 @@ Route::post('/students/update/{id}', [Controller::class, 'updateStudent'])
 
 Route::get('/etablissement/info', [Controller::class, 'showInfo'])
      ->name('info.show');
-    
+
 Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
     ->name('subjects.constraints');
 

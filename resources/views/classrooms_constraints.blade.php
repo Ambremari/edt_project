@@ -4,46 +4,50 @@
 
 @section('content')
 
-<form method="POST" action="{{ route('constraints.classrooms') }}">
+<form method="POST" action="{{ route('constraints.classrooms.update') }}">
     @csrf
-    <div style="display: inline-block">
+    <div class="colleft">
         <div>
             <label for="subject">Enseignement</label>
-            <input type="text" class="form-control" id="subject" placeholder="Rechercher un enseignement" onkeyup="searchSubject()">
+            <select class="form-control" id="subject" name="subject" onchange="getSubjectVolume()">
+                @foreach ($subjects as $row)
+                    <option value="{{ $row['LibelleEns'] }}">{{ $row['LibelleEns'] }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
-    <div style="display: inline-block">
+    <div class="colright">
         <div>
             <label for="volume">Volume horaire hebdomadaire</label>
             <input type="text" class="form-control" id="volume" name="volume" value="" disabled>
         </div>
     </div>
-    <div style="display: inline-block">
+    <div class="central">
         <div class="col-12">
             <div>
                 @csrf
-            <button type="button" class="btn btn-primary" onclick="showForm()">Spécifier une salle</button>
+                <button type="button" class="btn btn-primary" onclick="showForm()">Spécifier une salle</button>
             </div>
         </div>
     </div>
     <div id="form" style="display:none">
-        <div>
+        <div class="colleft">
             <div>
-                <label for="type">Type de salle</label>
+                <label for="type">Salle</label>
                 <select class="form-control" id="type" name="type">
                     @foreach ($classrooms as $classroom)
-                        <option value="{{ $classroom['TypeSalle'] }}">{{ $classroom['TypeSalle'] }}</option>
+                        <option value="{{ $classroom['LibelleSalle'] }}">{{ $classroom['LibelleSalle'] }}</option>
                     @endforeach
                 </select>
             </div>
         </div>
-        <div style="display: inline-block">
+        <div class="colright">
             <div>
                 <label for="volume-infrastructure">Volume horaire hebdomadaire pour cette salle</label>
                 <input type="text" class="form-control" id="volume-infrastructure" name="volume_infrastructure">
             </div>
         </div>
-        <div>
+        <div class="central">
             <div>
                 @csrf
                 <button type="submit" class="btn btn-primary">Valider</button>
@@ -59,26 +63,34 @@
 @endforeach
 </ul>
 @endif
-
 <script>
-    function searchSubject() {
-        var input, filter, ul, li, a, i;
-        input = document.getElementById("subject");
-        filter = input.value.toUpperCase();
-        ul = document.getElementById("subject-list");
-        li = ul.getElementsByTagName("li");
-        for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("a")[0];
-            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                li[i].style.display = "";
-            } else {
-                li[i].style.display = "none";
+    function getSubjectVolume() {
+        var subject = document.getElementById("subject").value;
+        var volumeInput = document.getElementById("volume");
+        var subjects = @json($subjects);
+        for (var i = 0; i < subjects.length; i++) {
+            if (subjects[i].LibelleEns === subject) {
+                volumeInput.value = subjects[i].VolHEns;
+                break;
             }
         }
     }
-
     function showForm() {
-        document.getElementById("form").style.display = "block";
-    }
+    document.getElementById("form").style.display = "block";
+}
 </script>
+@if (session('status'))
+    <div class="alert alert-success">
+        {{ session('status') }}
+    </div>
+@endif
+@if (session('fail'))
+    <div class="alert alert-warning">
+        {{ session('fail') }}
+    </div>
+@endif
 @endsection
+
+
+
+
