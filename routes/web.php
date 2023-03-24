@@ -209,7 +209,8 @@ Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsCl
 Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
 
-Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
+Route::get('/students/update/{IdEleve}', [Controller::class, 'updateStudentForm'])
+    ->where('IdEleve', '[ELV].*')
     ->name('student.update.form');
 
 Route::get('/students/add', [Controller::class, 'addStudentForm'])

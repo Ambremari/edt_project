@@ -1139,27 +1139,29 @@ class Controller extends BaseController{
         if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
             return redirect()->route('login');
             $rules = [
-                    'name' => ['required', 'min:2', 'max:15'],
-                    'firstname' => ['required', 'min:2', 'max:15'],
-                    'birthdate' => ['required'],
-                    'level' => ['required']
-                ];
+                'name' => ['required', 'min:2', 'max:15'],
+                'firstname' => ['required', 'min:2', 'max:15'],
+                'birthdate' => ['required'],
+                'level' => ['required', 'regex:/^[0-9]{1,2}(EME)$/']
+            ];
+
             $messages = [
-                    'name.required' => 'Vous devez saisir un nom.',
-                    'firstname.required' => 'Vous devez saisir un prénom.',
-                    'name.min' => "Le nom doit contenir au moins :min caractères.",
-                    'name.max' => "Le nom doit contenir au plus :max caractères.",
-                    'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
-                    'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
-                    'birthdate.required' => 'Vous devez saisir une année de naissance.',
-                    'level.required' => 'Vous devez saisir un niveau.',
-                ];
+                'name.required' => 'Vous devez saisir un nom.',
+                'firstname.required' => 'Vous devez saisir un prénom.',
+                'name.min' => "Le nom doit contenir au moins :min caractères.",
+                'name.max' => "Le nom doit contenir au plus :max caractères.",
+                'firstname.min' => "Le prénom doit contenir au moins :min caractères.",
+                'firstname.max' => "Le prénom doit contenir au plus :max caractères.",
+                'birthdate.required' => 'Vous devez saisir une année de naissance.',
+                'level.required' => 'Vous devez saisir un niveau.',
+                'level.regex' => 'Le niveau doit être au format XXEME (exemple : 6EME).'
+            ];
                 $validatedData = $request->validate($rules, $messages);
                 $student = [
-                    'NomEtud' => $validatedData['name'],
-                    'PrenomEtud' => $validatedData['firstname'],
-                    'DateNaissEtud' => $validatedData['birthdate'],
-                    'NiveauEtud' => $validatedData['level']
+                    'NomEleve' => $validatedData['name'],
+                    'PrenomEleve' => $validatedData['firstname'],
+                    'AnneeNaisEleve' => $validatedData['birthdate'],
+                    'NiveauEleve' => $validatedData['level']
                 ];
 
                 try {
@@ -1178,12 +1180,16 @@ class Controller extends BaseController{
         return view('student_update', ['students' => $students]);
         }
         public function updateStudentForm(Request $request, String $idEleve) {
-        $hasKey = $request->session()->has('user');
+            $hasKey = $request->session()->has('user');
             if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
                 return redirect()->route('login');
-        $students = $this->repository->students();
-        $student = $this->repository->getStudentId($idEleve);
-        return view('student_update_form', ['idEleve'=>$idEleve,'student'=> $student, 'students' => $students]);
+            $students = $this->repository->students();
+            $student = $this->repository->getStudentId($idEleve);
+            $divisions = $this->repository->divisions();
+            return view('student_update_form', ['idEleve'=>$idEleve,
+                                                'student'=> $student,
+                                                'students' => $students,
+                                                'divisions' => $divisions]);
         }
         public function updateStudent(Request $request, $id){
             $hasKey = $request->session()->has('user');
@@ -1193,7 +1199,7 @@ class Controller extends BaseController{
                 'name' => ['required', 'min:2', 'max:15'],
                 'firstname' => ['required', 'min:2', 'max:15'],
                 'birthdate' => ['required', 'integer'],
-                'level' => ['required']
+                'level' => ['required'],
             ];
             $messages = [
                 'name.required' => 'Vous devez saisir un nom.',
@@ -1208,18 +1214,18 @@ class Controller extends BaseController{
             ];
             $validatedData = $request->validate($rules, $messages);
             $student = [
-                'id' => $id,
-                'NomEtud' => $validatedData['name'],
-                'PrenomEtud' => $validatedData['firstname'],
-                'DateNaissEtud' => $validatedData['birthdate'],
-                'NiveauEtud' => $validatedData['level']
+                'IdEleve' => $id,
+                'NomEleve' => $validatedData['name'],
+                'PrenomEleve' => $validatedData['firstname'],
+                'AnneeNaisEleve' => $validatedData['birthdate'],
+                'NiveauEleve' => $validatedData['level'],
             ];
             try {
                 $this->repository->updateStudent($student);
             } catch (Exception $exception) {
-                return redirect()->route('student.update.form', ['id' => $id])->withInput()->withErrors("Impossible de modifier l'elève.");
+                return redirect()->route('student.update.form', ['IdEleve' => $id])->withInput()->withErrors("Impossible de modifier l'elève.");
             }
-            return redirect()->route('student.update.form', ['id' => $id])->with('status', 'Elève modifié avec succès !');
+            return redirect()->route('student.update.form', ['IdEleve' => $id])->with('status', 'Elève modifié avec succès !');
         }
 
     public function subjectsConstraintsForm(Request $request){
