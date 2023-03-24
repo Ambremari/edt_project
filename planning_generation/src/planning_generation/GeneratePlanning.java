@@ -16,12 +16,20 @@ public class GeneratePlanning {
 		setSchedule(classes, schedules);
 		setClassroom(classes, rooms);
 		
-		Planning randomPlanning = new Planning(classes, groups, subjects);
+		Planning randomPlanning = new Planning(classes, schedules, groups, subjects);
 		System.out.println(randomPlanning);
 		
-		Planning bestPlanning = new Planning(randomPlanning);		
+		Planning bestPlanning = new Planning(randomPlanning);	
 		
-		for(int i = 0 ; i < 100 ; i++) {
+		bestPlanning.available();
+		bestPlanning.evaluatePrimaryCost();
+		System.out.println(bestPlanning);
+
+		bestPlanning.countIncompatible();
+		bestPlanning.evaluatePrimaryCost();
+		System.out.println(bestPlanning);
+		
+		for(int i = 0 ; i < 200 ; i++) {
 			Planning copyPlanning = new Planning(bestPlanning);
 			copyPlanning.permuteTeachers();
 			evaluate(copyPlanning, bestPlanning);

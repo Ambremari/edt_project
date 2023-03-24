@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class Planning {
 	private List<Class> classes;
+	private List<Schedule> schedules;
 	private List<Class> classesToMove;
 	private List<Class> teachersToMove;
 	private List<Class> divisionsToMove;
@@ -16,8 +17,9 @@ public class Planning {
 	private int secondaryCost;
 	private int tertiaryCost;
 
-	public Planning(List<Class> classes, List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility) {
+	public Planning(List<Class> classes, List<Schedule> schedules, List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility) {
 		this.classes = new ArrayList<>(classes);
+		this.schedules = new ArrayList<>(schedules);
 		this.groupsIncompatibility = new ArrayList<>(groupsIncompatibility);
 		this.subjectsIncompatibility = new ArrayList<>(subjectsIncompatibility);
 		init();
@@ -39,6 +41,7 @@ public class Planning {
 			Class newClass = myClass.copyClass();
 			this.classes.add(newClass);
 		}
+		this.schedules = new ArrayList<>(planning.getSchedules());
 		this.groupsIncompatibility = new ArrayList<>(planning.getGroupsIncompatibility());
 		this.subjectsIncompatibility = new ArrayList<>(planning.getSubjectsIncompatibility());
 		init();
@@ -58,6 +61,10 @@ public class Planning {
 	@Override
 	public String toString() {
 		return "\nCout Primaire : " + primaryCost;
+	}
+	
+	public List<Schedule> getSchedules() {
+		return schedules;
 	}
 	
 	public List<GroupLink> getGroupsIncompatibility() {
@@ -117,6 +124,22 @@ public class Planning {
 			return true;
 		return false;
 	}
+	
+	public boolean incompatible(Class class1, Class class2) {
+		if(class1.equals(class2))
+			return false;
+		if(class1.sameTeacher(class2)) 
+			return true;
+		if(class1.sameDivision(class2)) 
+			return true;
+		if(class1.sameGroup(class2)) 
+			return true;
+		if(groupsIncompatibility.contains(new GroupLink(class1.getDivision(), class2.getGroup())))
+			return true;
+		if(subjectsIncompatibility.contains(new SubjectsCouple(class1.getSubject().getId(), class2.getSubject().getId())))
+			return true;
+		return false;
+	}
 
 	public int incompatibleClasses() {
 		for (Class class1 : classes) {
@@ -158,7 +181,7 @@ public class Planning {
 	public List<Class> getClassesIncompatible(Class myClass) {
 		List<Class> res = new ArrayList<>();
 		for (Class other : classes)
-			if (primaryViolation(myClass, other))
+			if (incompatible(myClass, other))
 				res.add(other);
 		return res;
 	}
@@ -399,5 +422,59 @@ public class Planning {
 				res.add(class2);
 		}
 		return res;
+	}
+	
+	public List<Class> getScheduleClasses(Schedule schedule){
+		List<Class> res = new ArrayList<>();
+		for(Class myClass : classes) {
+			if(myClass.getSchedule().equals(schedule))
+				res.add(myClass);
+		}
+		return res;
+	}
+	
+	
+	public void available() {
+		Random random = new Random();
+		for(Class class1 : classesToMove) {
+			List<Class> incompatible = getClassesIncompatible(class1);
+			List<Schedule> res = new ArrayList<>();
+			for(Schedule schedule : schedules) {
+				List<Class> toTest = getScheduleClasses(schedule);
+				if(primaryCheck(incompatible, toTest))
+					res.add(schedule);
+			}
+			if(res.size() > 0)
+				class1.setSchedule(res.get(random.nextInt(res.size())));
+		}
+	}
+	
+	public void countIncompatible() {
+		Class toExchange = null;
+		for(Class class1 : classes) {
+			for(Schedule schedule : schedules) {
+				int count = 0;
+				if(!class1.getSchedule().equals(schedule)) {
+					List<Class> toTest = getScheduleClasses(schedule);
+					for(Class class2 : toTest) {
+						if(incompatible(class1, class2)) {
+							toExchange = class2;
+							count++;
+						}
+					}
+				}
+				if(count == 1) {
+					List<Class> incompatible = getClassesIncompatible(toExchange);
+					if(primaryCheck(incompatible, getClassesSameSchedule(class1))) {
+						int oldCost = getPrimaryCost();
+						class1.permute(toExchange);
+						int newCost = getPrimaryCost();
+						if(newCost >= oldCost)
+							class1.permute(toExchange);
+					}
+				}
+			}
+		}
+		
 	}
 }
