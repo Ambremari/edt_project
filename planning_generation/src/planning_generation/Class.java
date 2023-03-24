@@ -24,6 +24,10 @@ public class Class {
 		this.group = group;	
 	}
 	
+	public Class copyClass() {
+		return new Class(unit, week, schedule.getId(), room.getId(), roomType, teacher.getId(), subject.getId(), division, group);
+	}
+	
 	@Override
 	public String toString() {
 		return unit + " Horaire : " + schedule + " Salle :" + room;
@@ -94,7 +98,7 @@ public class Class {
 	}
 	
 	public boolean sameGroup(Class other) {
-		return group.equals(other.getGroup()) && group.length() != 1;
+		return group.equals(other.getGroup()) && group.length() != 3;
 	}
 	
 	@Override
@@ -108,5 +112,12 @@ public class Class {
 		Schedule temp = this.schedule;
 		setSchedule(other.getSchedule());
 		other.setSchedule(temp);
+	}
+	
+	public void switch3(Class second, Class third) {
+		Schedule temp = this.schedule;
+		setSchedule(third.getSchedule());
+		third.setSchedule(second.getSchedule());
+		second.setSchedule(temp);
 	}
 }

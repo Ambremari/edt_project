@@ -26,6 +26,18 @@ public class CSVReader {
 		for (Schedule schedule : schedules) {
 			System.out.println(schedule);
 		}
+		
+		List<GroupLink> groups = readGroupsFromCSV("data/groups.csv");
+		
+		for (GroupLink couple : groups) {
+			System.out.println(couple);
+		}
+		
+		List<SubjectsCouple> subjects = readSubjectsFromCSV("data/subjects.csv");
+		
+		for (SubjectsCouple couple : subjects) {
+			System.out.println(couple);
+		}
 	}
 
 	static List<Class> readClassesFromCSV(String fileName) {
@@ -116,6 +128,52 @@ public class CSVReader {
 		}
 
 		return schedules;
+	}
+	
+	static List<GroupLink> readGroupsFromCSV(String fileName) {
+		List<GroupLink> groups = new ArrayList<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String line = br.readLine();
+			line = br.readLine();
+
+			while (line != null) {
+				String[] values = line.split(";");
+
+				GroupLink couple = new GroupLink(values[0], values[1]);
+
+				groups.add(couple);
+
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return groups;
+	}
+	
+	static List<SubjectsCouple> readSubjectsFromCSV(String fileName) {
+		List<SubjectsCouple> subjects = new ArrayList<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String line = br.readLine();
+			line = br.readLine();
+
+			while (line != null) {
+				String[] values = line.split(";");
+
+				SubjectsCouple couple = new SubjectsCouple(values[0], values[1]);
+
+				subjects.add(couple);
+
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return subjects;
 	}
 
 }
