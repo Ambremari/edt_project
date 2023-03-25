@@ -97,7 +97,7 @@
         @if (session()->has('user') && session()->get('user')['role'] == 'prof')
         <div class="topnav">
             <div class="dropdown">
-                <span><a href="#">Mon Emploi du Temps</a></span>
+                <span><a href="{{route('planning.teacher')}}">Mon Emploi du Temps</a></span>
             </div>
             <div class="dropdown">
                 <span><a href="{{route('prof.constraints')}}">Mes Contraintes</a></span>

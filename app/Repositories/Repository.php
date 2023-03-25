@@ -1919,4 +1919,16 @@ class Repository {
         return DB::table('Horaires')->orderBy('Jour', 'ASC')->orderBy('HeureDebut', 'ASC')->get();
     }
 
+    ###########PLANNING################
+
+    public function getTeacherPlanning(string $id): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where("L.IdProf", $id)
+                    ->get(['Horaire', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
 }

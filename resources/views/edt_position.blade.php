@@ -77,4 +77,15 @@
             }
         }
     }
+
+    function colorClass(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+
+        for(var i = 0; i < div.length ; i++){
+            var mySpan = div[i].getElementsByTagName("span")[0];
+            var text = mySpan.getAttribute("class");
+            div[i].style.backgroundColor= "#2199AF";
+        }
+    }
 </script>

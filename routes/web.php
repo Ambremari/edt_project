@@ -251,3 +251,6 @@ Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
 
 Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
     ->name('data.preprocess');
+
+Route::get('/edt/prof', [Controller::class, 'showTeacherPlanning'])
+    ->name('planning.teacher');

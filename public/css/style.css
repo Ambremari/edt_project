@@ -543,6 +543,10 @@ table {
 #bodyEdt span {
     display: block;
 }
+#bodyEdt p {
+    padding : 0;
+    margin: 0;
+}
 
 #bodyEdt div{
     position: absolute;

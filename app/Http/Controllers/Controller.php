@@ -1402,6 +1402,23 @@ class Controller extends BaseController{
             'horairesOuverture' => $horairesOuverture
         ]);
     }
+
+    public function showTeacherPlanning(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'prof')
+            return redirect()->route('login');
+        $times = $this->repository->schedules();
+        $id = $request->session()->get('user')['id'];
+        $teacher = $this->repository->getTeacher($id);
+        $planning = $this->repository->getTeacherPlanning($id);
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('teacher_planning', ['times' => $times,
+                                            'teacher' => $teacher,
+                                            'planning' => $planning,
+                                            'start_morning' => $startMorning,
+                                            'start_afternoon' => $startAfternoon]);
+    }
 }
 
 
