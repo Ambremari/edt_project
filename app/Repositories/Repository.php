@@ -13,6 +13,10 @@ class Repository {
         DB::unprepared(file_get_contents('database/build.sql'));
     }
 
+    function updatePlanning(): void {
+        DB::unprepared(file_get_contents('database/update_planning.sql'));
+    }
+
     function fillDatabase(): void{
         $data = new Data();
         $studentData = new StudentData();

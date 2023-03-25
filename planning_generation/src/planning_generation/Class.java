@@ -33,6 +33,11 @@ public class Class {
 		return unit + " Horaire : " + schedule + " Classe :" + division + " matière " + subject.getId();
 	}
 	
+	public String[] getLineToExport() {
+		String [] res = {unit, week, schedule.getId(), room.getId()};
+		return res;
+	}
+	
 	public void setRoom(Room room) {
 		this.room = room;
 	}
@@ -119,5 +124,9 @@ public class Class {
 		setSchedule(third.getSchedule());
 		third.setSchedule(second.getSchedule());
 		second.setSchedule(temp);
+	}
+	
+	public boolean noRoom() {
+		return room.getId().length() == 3;
 	}
 }

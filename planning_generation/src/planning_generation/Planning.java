@@ -8,6 +8,7 @@ public class Planning {
 	private List<Class> classes;
 	private List<Class> firstSet;
 	private List<Schedule> schedules;
+	private List<Room> rooms;
 	private List<Class> classesToMove;
 	private List<Class> teachersToMove;
 	private List<Class> divisionsToMove;
@@ -15,12 +16,15 @@ public class Planning {
 	private List<GroupLink> groupsIncompatibility;
 	private List<SubjectsCouple> subjectsIncompatibility;
 	private int primaryCost;
+	private int missingClassrooms;
 	private int secondaryCost;
 	private int tertiaryCost;
 
-	public Planning(List<Class> classes, List<Schedule> schedules, List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility) {
+	public Planning(List<Class> classes, List<Schedule> schedules, List<Room> rooms,
+			List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility) {
 		this.classes = new ArrayList<>(classes);
 		this.schedules = new ArrayList<>(schedules);
+		this.rooms = new ArrayList<>(rooms);
 		this.firstSet = new ArrayList<>();
 		this.groupsIncompatibility = new ArrayList<>(groupsIncompatibility);
 		this.subjectsIncompatibility = new ArrayList<>(subjectsIncompatibility);
@@ -35,6 +39,7 @@ public class Planning {
 		teachersToMove = new ArrayList<>();
 		divisionsToMove = new ArrayList<>();
 		groupsToMove = new ArrayList<>();
+		this.missingClassrooms = classes.size();
 	}
 	
 	public Planning(Planning planning) {
@@ -44,6 +49,7 @@ public class Planning {
 			this.classes.add(newClass);
 		}
 		this.schedules = new ArrayList<>(planning.getSchedules());
+		this.rooms = new ArrayList<>(planning.getRooms());
 		this.groupsIncompatibility = new ArrayList<>(planning.getGroupsIncompatibility());
 		this.subjectsIncompatibility = new ArrayList<>(planning.getSubjectsIncompatibility());
 		init();
@@ -79,11 +85,13 @@ public class Planning {
 	
 	@Override
 	public String toString() {
-		String res = "Prof à bouger : " + teachersToMove.size();
-		res += "\nDiv à bouger : " + divisionsToMove.size();
-		res += "\nGrp à bouger : " + groupsToMove.size();
-		res += "\nCout Primaire : " + primaryCost;
+		String res = "\nCout Primaire : " + getPrimaryCost();
+		res += "\nSalles manquantes : " + getMissingClassrooms();
 		return res;
+	}
+	
+	public List<Room> getRooms() {
+		return rooms;
 	}
 	
 	public List<Class> getFirstSet() {
@@ -109,6 +117,11 @@ public class Planning {
 	public int getPrimaryCost() {
 		evaluatePrimaryCost();
 		return primaryCost;
+	}
+	
+	public int getMissingClassrooms() {
+		checkClassrooms();
+		return missingClassrooms;
 	}
 
 	public void evaluatePrimaryCost() {
@@ -595,6 +608,46 @@ public class Planning {
 				}
 			}
 		}
-		
+	}
+	
+	
+	
+	public void setClassroom() {
+		Random random = new Random(); 
+		for(Class myClass : classes) {
+			List<Room> roomsAvailable = availableRooms(myClass);
+			List<Room> roomsOfType = roomsOfType(roomsAvailable, myClass.getRoomType());
+			if(roomsOfType.size() > 0) {
+				int randomRoom = random.nextInt(roomsOfType.size());
+				myClass.setRoom(roomsOfType.get(randomRoom));
+			}
+		}
+	}
+	
+	public List<Room> availableRooms(Class myClass){
+		List<Class> planned = getClassesSameSchedule(myClass);
+		List<Room> roomsAvailable = new ArrayList<>(rooms);
+		for(Class other : planned) {
+			Room room = other.getRoom();
+			if(roomsAvailable.contains(room))
+				roomsAvailable.remove(room);
+		}
+		return roomsAvailable;
+	}
+	
+	public List<Room> roomsOfType(List<Room> rooms, String type){
+		List<Room> roomsOfType = new ArrayList<>();
+		for(Room room : rooms) {
+			if(room.isOfType(type))
+				roomsOfType.add(room);
+		}
+		return roomsOfType;
+	}
+	
+	public void checkClassrooms() {
+		missingClassrooms = 0;
+		for(Class myClass : classes)
+			if(myClass.noRoom())
+				missingClassrooms++;
 	}
 }
