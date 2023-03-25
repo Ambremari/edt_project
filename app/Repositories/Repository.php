@@ -1566,10 +1566,23 @@ class Repository {
                                 ->where('IdCours', $constraintsClassroom['IdCours'])
                                 ->get()
                                 ->toArray();
-        if(!empty($existingConstraints))
-            throw new Exception('Les contraintes pour cette salle et cet enseignement existent déjà');
-        DB::table('ContraintesSalles')
-        ->insert($constraintsClassroom);
+
+        if (count($existingConstraints) > 0) {
+            DB::table('ContraintesSalles')
+                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+                ->where('IdCours', $constraintsClassroom['IdCours'])
+                ->update([
+                    'VolHSalle' => $constraintsClassroom['VolHSalle'],
+                    'DureeMinSalle' => $constraintsClassroom['DureeMinSalle']
+                ]);
+        } else {
+            DB::table('ContraintesSalles')->insert([
+                'TypeSalle' => $constraintsClassroom['TypeSalle'],
+                'IdCours' => $constraintsClassroom['IdCours'],
+                'VolHSalle' => $constraintsClassroom['VolHSalle'],
+                'DureeMinSalle' => $constraintsClassroom['DureeMinSalle']
+            ]);
+        }
     }
 
     function updateConstraintsClassrooms(array $constraintsClassroom): void{
@@ -1724,10 +1737,10 @@ class Repository {
         return DB::table("IncompatibilitesHoraires as I")
                     ->join("Enseignements as E", "I.IdEns1", "=", "E.IdEns")
                     ->join("Enseignements as E2", "I.IdEns2", "=", "E2.IdEns")
-                    ->get(['I.*', 
-                        'E.LibelleEns as LibelleEns1', 
-                        'E.NiveauEns as NiveauEns1', 
-                        'E2.LibelleEns as LibelleEns2', 
+                    ->get(['I.*',
+                        'E.LibelleEns as LibelleEns1',
+                        'E.NiveauEns as NiveauEns1',
+                        'E2.LibelleEns as LibelleEns2',
                         'E2.NiveauEns as NiveauEns2'])
                     ->toArray();
     }

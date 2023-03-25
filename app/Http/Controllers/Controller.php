@@ -1061,7 +1061,7 @@ class Controller extends BaseController{
 
         $lessons = $this->repository->lessons();
         $classrooms = $this->repository->classrooms();
-        $constraints = $this->repository->getConstraintsClassrooms('', '');
+        $constraints = $this->repository->constraintsClassrooms();
         $subjects = $this->repository->subjects();
         return view('classrooms_constraints', [
         'lessons' => $lessons,
@@ -1200,6 +1200,7 @@ class Controller extends BaseController{
                 'firstname' => ['required', 'min:2', 'max:15'],
                 'birthdate' => ['required', 'integer'],
                 'level' => ['required'],
+                'division' =>['required']
             ];
             $messages = [
                 'name.required' => 'Vous devez saisir un nom.',
@@ -1211,6 +1212,7 @@ class Controller extends BaseController{
                 'birthdate.required' => 'Vous devez saisir une date de naissance.',
                 'birthdate.integer' => 'Vous devez saisir une date valide.',
                 'level.required' => 'Vous devez saisir un niveau.',
+                'division.required' => 'Vous devez sélectionner une division.'
             ];
             $validatedData = $request->validate($rules, $messages);
             $student = [
@@ -1219,6 +1221,7 @@ class Controller extends BaseController{
                 'PrenomEleve' => $validatedData['firstname'],
                 'AnneeNaisEleve' => $validatedData['birthdate'],
                 'NiveauEleve' => $validatedData['level'],
+                'IdDiv' => $validatedData['division']
             ];
             try {
                 $this->repository->updateStudent($student);
