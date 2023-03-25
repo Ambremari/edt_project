@@ -30,7 +30,7 @@ public class Class {
 	
 	@Override
 	public String toString() {
-		return unit + " Horaire : " + schedule + " Salle :" + room;
+		return unit + " Horaire : " + schedule + " Classe :" + division + " matière " + subject.getId();
 	}
 	
 	public void setRoom(Room room) {
@@ -94,7 +94,7 @@ public class Class {
 	}
 	
 	public boolean sameDivision(Class other) {
-		return division.equals(other.getDivision());
+		return division.equals(other.getDivision()) && division.length() != 3;
 	}
 	
 	public boolean sameGroup(Class other) {

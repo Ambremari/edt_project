@@ -13,23 +13,29 @@ public class GeneratePlanning {
 		List<GroupLink> groups = CSVReader.readGroupsFromCSV("data/groups.csv");
 		List<SubjectsCouple> subjects = CSVReader.readSubjectsFromCSV("data/subjects.csv");
 		
-		setSchedule(classes, schedules);
-		setClassroom(classes, rooms);
+
+//		setClassroom(classes, rooms);
 		
 		Planning randomPlanning = new Planning(classes, schedules, groups, subjects);
-		System.out.println(randomPlanning);
+		randomPlanning.mostContraints();
 		
-		Planning bestPlanning = new Planning(randomPlanning);	
 		
-		bestPlanning.available();
+		//Positioning classes with the most constraints
+		Planning firstSetPlanning = new Planning(randomPlanning.getFirstSet(), schedules, groups, subjects);
+		firstSetPlanning.setRandomSchedule();
+		System.out.println(firstSetPlanning);
+		
+		firstOptim(firstSetPlanning);
+		
+		Planning bestPlanning = new Planning(firstSetPlanning);
+		bestPlanning.addClasses(classes);
 		bestPlanning.evaluatePrimaryCost();
 		System.out.println(bestPlanning);
-
-		bestPlanning.countIncompatible();
-		bestPlanning.evaluatePrimaryCost();
-		System.out.println(bestPlanning);
 		
-		for(int i = 0 ; i < 200 ; i++) {
+		firstOptim(bestPlanning);
+		int i = 0;
+		while(bestPlanning.getPrimaryCost() > 0 && i < 200) {
+			i++;
 			Planning copyPlanning = new Planning(bestPlanning);
 			copyPlanning.permuteTeachers();
 			evaluate(copyPlanning, bestPlanning);
@@ -39,13 +45,17 @@ public class GeneratePlanning {
 			evaluate(copyPlanning, bestPlanning);
 			
 			copyPlanning = new Planning(bestPlanning);
+			copyPlanning.permuteDivisionsGroups();
+			evaluate(copyPlanning, bestPlanning); 
+			
+			copyPlanning = new Planning(bestPlanning);
 			if(copyPlanning.permuteClasses())
 				evaluate(copyPlanning, bestPlanning);
 			
-			copyPlanning = new Planning(bestPlanning);
-			if(copyPlanning.switchClasses())
-				evaluate(copyPlanning, bestPlanning);
-			
+//			copyPlanning = new Planning(bestPlanning);
+//			if(copyPlanning.switchClasses())
+//				evaluate(copyPlanning, bestPlanning);
+//			
 			copyPlanning = new Planning(bestPlanning);
 			copyPlanning.randomPermuteClasses();
 			evaluate(copyPlanning, bestPlanning);
@@ -54,26 +64,36 @@ public class GeneratePlanning {
 			copyPlanning.randomSwitchClasses();
 			evaluate(copyPlanning, bestPlanning);
 		}
+		
+		for (Class myClass : bestPlanning.getClassesToMove()) {
+			System.out.println(myClass);
+		}
+		System.out.println("Nb itération : " + i);
 		System.out.println(bestPlanning);
+		
 	}
+	
+	public static void firstOptim(Planning planning) {
+		planning.available();
+		planning.evaluatePrimaryCost();
+		if(planning.getPrimaryCost() > 0) {
+			planning.countIncompatible();
+			planning.evaluatePrimaryCost();
+		}
+		System.out.println(planning);	
+		}
 	
 	public static void evaluate(Planning newPlanning, Planning bestPlanning) {
 		int newCost = newPlanning.getPrimaryCost();
 		int bestCost = bestPlanning.getPrimaryCost();
 		System.out.println(newCost);
-		if(newCost < bestCost) {
+		if(newCost <= bestCost) {
 			bestPlanning.update(newPlanning);
 			System.out.println("Mouvement");
 		}
 	}
 	
-	public static void setSchedule(List<Class> classes, List<Schedule> schedules) {
-		Random random = new Random(); 
-		for(Class myClass : classes) {
-			int randomSchedule = random.nextInt(schedules.size());
-			myClass.setSchedule(schedules.get(randomSchedule));
-		}
-	}
+	
 	
 	public static void setClassroom(List<Class> classes, List<Room> rooms) {
 		Random random = new Random(); 

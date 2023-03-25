@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class Planning {
 	private List<Class> classes;
+	private List<Class> firstSet;
 	private List<Schedule> schedules;
 	private List<Class> classesToMove;
 	private List<Class> teachersToMove;
@@ -20,6 +21,7 @@ public class Planning {
 	public Planning(List<Class> classes, List<Schedule> schedules, List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility) {
 		this.classes = new ArrayList<>(classes);
 		this.schedules = new ArrayList<>(schedules);
+		this.firstSet = new ArrayList<>();
 		this.groupsIncompatibility = new ArrayList<>(groupsIncompatibility);
 		this.subjectsIncompatibility = new ArrayList<>(subjectsIncompatibility);
 		init();
@@ -58,9 +60,34 @@ public class Planning {
 		}
 	}
 	
+	public void setRandomSchedule() {
+		Random random = new Random(); 
+		for(Class myClass : classes) {
+			int randomSchedule = random.nextInt(schedules.size());
+			myClass.setSchedule(schedules.get(randomSchedule));
+		}
+	}
+	public void addClasses(List<Class> classes) {
+		Random random = new Random();
+		for(Class newClass : classes)
+			if(!this.classes.contains(newClass)) {
+				this.classes.add(newClass);
+				int randomSchedule = random.nextInt(schedules.size());
+				newClass.setSchedule(schedules.get(randomSchedule));
+			}
+		}
+	
 	@Override
 	public String toString() {
-		return "\nCout Primaire : " + primaryCost;
+		String res = "Prof à bouger : " + teachersToMove.size();
+		res += "\nDiv à bouger : " + divisionsToMove.size();
+		res += "\nGrp à bouger : " + groupsToMove.size();
+		res += "\nCout Primaire : " + primaryCost;
+		return res;
+	}
+	
+	public List<Class> getFirstSet() {
+		return firstSet;
 	}
 	
 	public List<Schedule> getSchedules() {
@@ -88,6 +115,10 @@ public class Planning {
 		init();
 		primaryCost = 0;
 		primaryCost += incompatibleClasses();
+	}
+	
+	public List<Class> getClassesToMove() {
+		return classesToMove;
 	}
 	
 	public boolean primaryViolation(Class class1, Class class2) {
@@ -118,8 +149,12 @@ public class Planning {
 				addGroupToMove(class1);
 			return true;
 		}
-		if(groupsIncompatibility.contains(new GroupLink(class1.getDivision(), class2.getGroup())))
+		if(groupsIncompatibility.contains(new GroupLink(class1.getDivision(), class2.getGroup())) || 
+				groupsIncompatibility.contains(new GroupLink(class2.getDivision(), class1.getGroup()))) {
+			if(!groupsToMove.contains(class1))
+				addGroupToMove(class1);
 			return true;
+		}
 		if(subjectsIncompatibility.contains(new SubjectsCouple(class1.getSubject().getId(), class2.getSubject().getId())))
 			return true;
 		return false;
@@ -186,6 +221,15 @@ public class Planning {
 		return res;
 	}
 	
+	public void mostContraints() {
+		for(Class myClass : classes) {
+			List<Class> incompatible = getClassesIncompatible(myClass);
+//			System.out.println(incompatible.size());
+			if(incompatible.size() > 40)
+				firstSet.add(myClass);
+		}
+	}
+	
 	public  boolean primaryCheck(List<Class> incompatible, List<Class> planned) {
 		for (Class myClass : planned)
 			if (incompatible.contains(myClass))
@@ -209,6 +253,7 @@ public class Planning {
 				return true;
 		return false;
 	}
+	
 	public boolean groupInClasses(Class group, Class other) {
 		List<Class> toCheck = getClassesSameSchedule(other);
 		for (Class myClass : toCheck)
@@ -217,41 +262,17 @@ public class Planning {
 		return false;
 	}
 	
-	public boolean teachersChecks(Class class1, Class class2) {
-		if (class1.sameTeacher(class2))
-			return false;
-		if (class1.sameSchedule(class2))
-			return false;
-		//Teacher1 already class at schedule 2
-		if (teacherInClasses(class1, class2))
-			return false;
-		//Teacher2 already class at schedule 1
-		if (teacherInClasses(class2, class1))
-			return false;
-		//division1 already class at schedule 2 and not same division
-		if (divisionInClasses(class1, class2) && !class1.sameDivision(class2))
-			return false;
-		//division2 already class at schedule 1 and not same division
-		if (divisionInClasses(class2, class1) && !class1.sameDivision(class2))
-			return false;
-		return true;
+	public boolean incompatibleGroupInClasses(Class group, Class other) {
+		List<Class> toCheck = getClassesSameSchedule(other);
+		for (Class myClass : toCheck) {
+			if (groupsIncompatibility.contains(new GroupLink(group.getDivision(), myClass.getGroup())))
+				return true;
+			if (groupsIncompatibility.contains(new GroupLink(myClass.getDivision(), group.getGroup())))
+				return true;
+		}
+		return false;
 	}
 	
-	public boolean divisionsChecks(Class class1, Class class2) {
-		if (class1.sameDivision(class2))
-			return false;
-		if (class1.sameSchedule(class2))
-			return false;
-		if (teacherInClasses(class1, class2) && !class1.sameTeacher(class2))
-			return false;
-		if (teacherInClasses(class2, class1) && !class1.sameTeacher(class2))
-			return false;
-		if (divisionInClasses(class1, class2))
-			return false;
-		if (divisionInClasses(class2, class1))
-			return false;
-		return true;
-	}
 	
 	public boolean groupChecks(Class class1, Class class2) {
 		if (class1.sameGroup(class2))
@@ -291,17 +312,37 @@ public class Planning {
 			}
 		}
 	}
+	
+	public boolean divisionsChecks(Class class1, Class class2) {
+		if (class1.sameDivision(class2))
+			return false;
+		if (class1.sameSchedule(class2))
+			return false;
+		if (teacherInClasses(class1, class2) && !class1.sameTeacher(class2))
+			return false;
+		if (teacherInClasses(class2, class1) && !class1.sameTeacher(class2))
+			return false;
+		if (divisionInClasses(class1, class2))
+			return false;
+		if (divisionInClasses(class2, class1))
+			return false;
+		if(incompatibleGroupInClasses(class1, class2))
+			return false;
+		if(incompatibleGroupInClasses(class1, class2)) 
+			return false;
+		return true;
+	}
 
-	public void permuteDivisions() {
+	public boolean permuteDivisions() {
 		Class class1;
 		Class class2;
 		Random random = new Random();
 		boolean check = true;
-		while (check && divisionsToMove.size() > 1) {
+		if(divisionsToMove.size() > 0) {
 			class1 = divisionsToMove.get(random.nextInt(divisionsToMove.size()));
 			int index = 0;
 			do {
-				class2 = classes.get(index);
+				class2 = classes.get(random.nextInt(classes.size()));
 				check = divisionsChecks(class1, class2);
 				index++;
 			} while (!check && index < classes.size() - 1);
@@ -309,20 +350,95 @@ public class Planning {
 				class1.permute(class2);
 				divisionsToMove.remove(class2);
 				divisionsToMove.remove(class1);
+				return true;
 			}
 		}
+		return false;
 	}
 	
-	public void permuteTeachers() {
+	public boolean divisionsGroupsChecks(Class class1, Class class2) {
+		if (class1.sameDivision(class2))
+			return false;
+		if (class1.sameGroup(class2))
+			return false;
+		if (class1.sameSchedule(class2))
+			return false;
+		if (teacherInClasses(class1, class2) && !class1.sameTeacher(class2))
+			return false;
+		if (teacherInClasses(class2, class1) && !class1.sameTeacher(class2))
+			return false;
+		if (divisionInClasses(class1, class2))
+			return false;
+		if (divisionInClasses(class2, class1))
+			return false;
+		if (groupInClasses(class1, class2))
+			return false;
+		if (groupInClasses(class2, class1))
+			return false;
+		if(incompatibleGroupInClasses(class1, class2))
+			return false;
+		if(incompatibleGroupInClasses(class1, class2)) 
+			return false;
+		return true;
+	}
+
+	public boolean permuteDivisionsGroups() {
 		Class class1;
 		Class class2;
 		Random random = new Random();
 		boolean check = true;
-		while (check && teachersToMove.size() > 1) {
+		if(groupsToMove.size() > 0) {
+			class1 = groupsToMove.get(random.nextInt(groupsToMove.size()));
+			int index = 0;
+			do {
+				class2 = classes.get(random.nextInt(classes.size()));
+				check = divisionsGroupsChecks(class1, class2);
+				index++;
+			} while (!check && index < classes.size() - 1);
+			if(check) {
+				class1.permute(class2);
+				groupsToMove.remove(class2);
+				groupsToMove.remove(class1);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean teachersChecks(Class class1, Class class2) {
+		if (class1.sameTeacher(class2))
+			return false;
+		if (class1.sameSchedule(class2))
+			return false;
+		//Teacher1 already class at schedule 2
+		if (teacherInClasses(class1, class2))
+			return false;
+		//Teacher2 already class at schedule 1
+		if (teacherInClasses(class2, class1))
+			return false;
+		//division1 already class at schedule 2 and not same division
+		if (divisionInClasses(class1, class2) && !class1.sameDivision(class2))
+			return false;
+		//division2 already class at schedule 1 and not same division
+		if (divisionInClasses(class2, class1) && !class1.sameDivision(class2))
+			return false;
+		if(incompatibleGroupInClasses(class1, class2))
+			return false;
+		if(incompatibleGroupInClasses(class1, class2)) 
+			return false;
+		return true;
+	}
+	
+	public boolean permuteTeachers() {
+		Class class1;
+		Class class2;
+		Random random = new Random();
+		boolean check;
+		if(teachersToMove.size() > 0) {
 			class1 = teachersToMove.get(random.nextInt(teachersToMove.size()));
 			int index = 0;
 			do {
-				class2 = classes.get(index);
+				class2 = classes.get(random.nextInt(classes.size()));
 				check = teachersChecks(class1, class2);
 				index++;
 			} while (!check && index < classes.size() - 1);
@@ -330,8 +446,10 @@ public class Planning {
 				class1.permute(class2);
 				teachersToMove.remove(class2);
 				teachersToMove.remove(class1);
+				return true;
 			}
 		}
+		return false;
 	}
 	
 
@@ -340,21 +458,23 @@ public class Planning {
 		Class class2;
 		Random random = new Random();
 		boolean check;
-		class1 = classesToMove.get(random.nextInt(classesToMove.size()));
-		List<Class> incompatible = getClassesIncompatible(class1);
-		int index = 0;
-		do {
-			class2 = classes.get(index);
-			check = primaryCheck(incompatible, getClassesSameSchedule(class2));
+		if(classesToMove.size() > 0) {
+			class1 = classesToMove.get(random.nextInt(classesToMove.size()));
+			List<Class> incompatible = getClassesIncompatible(class1);
+			int index = 0;
+			do {
+				class2 = classes.get(index);
+				check = primaryCheck(incompatible, getClassesSameSchedule(class2));
+				if(check) {
+					List<Class> incompatible2 = getClassesIncompatible(class2);
+					check = primaryCheck(incompatible2, getClassesSameSchedule(class1));
+				}
+				index++;
+			} while (!check && index < classes.size() - 1);
 			if(check) {
-				List<Class> incompatible2 = getClassesIncompatible(class2);
-				check = primaryCheck(incompatible2, getClassesSameSchedule(class1));
+				class1.permute(class2);
+				return true;
 			}
-			index++;
-		} while (!check && index < classes.size() - 1);
-		if(check) {
-			class1.permute(class2);
-			return true;
 		}
 		return false;
 	}
@@ -404,7 +524,7 @@ public class Planning {
 				List<Class> incompatible = getClassesIncompatible(class3);
 				check = primaryCheck(incompatible, getClassesSameSchedule(class1));
 				index2++;
-			} while(!check && index < compatible2.size() - 1);
+			} while(!check && index2 < compatible2.size() - 1);
 			index++;
 		} while(!check && index < compatible.size() - 1);
 		if(check) {

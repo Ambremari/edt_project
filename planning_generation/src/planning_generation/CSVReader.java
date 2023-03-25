@@ -36,7 +36,7 @@ public class CSVReader {
 		List<SubjectsCouple> subjects = readSubjectsFromCSV("data/subjects.csv");
 		
 		for (SubjectsCouple couple : subjects) {
-			System.out.println(couple);
+			System.out.println(couple + "test");
 		}
 	}
 
@@ -69,8 +69,8 @@ public class CSVReader {
 		String scheduleId = metadata[2];
 		String roomId = metadata[3];
 		String roomType = metadata[4];
-		String teacherId = metadata[5];
-		String subjectId = metadata[6];
+		String subjectId = metadata[5];
+		String teacherId = metadata[6];
 		String division = metadata[7];
 		String group = metadata[8];
 
