@@ -544,7 +544,7 @@ class Repository {
             'id' => $user['IdEleve'],
             'name'=> $user['NomEleve'],
             'firstname'=> $user['PrenomEleve'],
-            'role'=> 'eleve'];
+            'role'=> 'student'];
     }
 
     function updateStudent(array $student): void{
@@ -1927,7 +1927,26 @@ class Repository {
                     ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
                     ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
                     ->where("L.IdProf", $id)
-                    ->get(['Horaire', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->get(['Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
+    public function getStudentPlanning(string $id): array{
+        $divisions = DB::table("Eleves")
+                        ->where("IdEleve", $id)
+                        ->get("IdDiv")
+                        ->toArray();
+        $groups = DB::table("CompoGroupes")
+                        ->where("IdEleve", $id)
+                        ->get("IdGrp")
+                        ->toArray();
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where("L.IdDiv", $divisions[0]['IdDiv'])
+                    ->orWhereIn("L.IdGrp", $groups)
+                    ->get(['Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
                     ->toArray();
     }
 

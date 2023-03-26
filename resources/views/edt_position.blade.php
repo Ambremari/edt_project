@@ -125,4 +125,17 @@
             }
         }
     }
+
+    function colorSubjects(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+
+        colors = associateColor();
+
+        for(var i = 0; i < div.length ; i++){
+            var mySpan = div[i].getElementsByTagName("span")[0];
+            var text = mySpan.getAttribute("class");
+            div[i].style.backgroundColor= colors.get(text);
+        }
+    }
 </script>

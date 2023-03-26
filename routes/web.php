@@ -32,6 +32,12 @@ Route::post('/firstlogin/teacher', [Controller::class, 'createPasswordTeacher'])
 Route::post('/login/teacher', [Controller::class, 'loginTeacher'])
     ->name('login.teacher');
 
+Route::post('/firstlogin/student', [Controller::class, 'createPasswordStudent'])
+    ->name('first.student');
+
+Route::post('/login/student', [Controller::class, 'loginStudent'])
+    ->name('login.student');
+
 Route::post('/logout', [Controller::class, 'logout'])
     ->name('logout.post');
 
@@ -254,3 +260,6 @@ Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
 
 Route::get('/edt/prof', [Controller::class, 'showTeacherPlanning'])
     ->name('planning.teacher');
+
+Route::get('/edt/eleve', [Controller::class, 'showStudentPlanning'])
+    ->name('planning.student');

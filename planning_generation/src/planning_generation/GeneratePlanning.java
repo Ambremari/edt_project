@@ -33,13 +33,19 @@ public class GeneratePlanning {
 		System.out.println(firstSetPlanning);
 		
 		firstOptim(firstSetPlanning);
+		int i = 0;
+		while(firstSetPlanning.getPrimaryCost() > 0 && i < 1500) {
+			i++;
+			secondOptim(firstSetPlanning);
+		}
+		System.out.println(firstSetPlanning);
 		
 		Planning bestPlanning = new Planning(firstSetPlanning);
 		bestPlanning.addClasses(classes);
 		System.out.println(bestPlanning);
 		
 		firstOptim(bestPlanning);
-		int i = 0;
+		i = 0;
 		while(bestPlanning.getPrimaryCost() > 0 && i < 200) {
 			i++;
 			secondOptim(bestPlanning);
@@ -100,6 +106,7 @@ public class GeneratePlanning {
 	public static void firstOptim(Planning planning) {
 		planning.available();
 		planning.evaluatePrimaryCost();
+		System.out.println(planning);	
 		if(planning.getPrimaryCost() > 0) {
 			planning.countIncompatible();
 			planning.evaluatePrimaryCost();

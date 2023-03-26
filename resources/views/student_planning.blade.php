@@ -3,37 +3,10 @@
 @section('title', 'Mon Emploi du temps')
 
 @section('content')
-<div class="colleft-edt">
-    <ul id="studentList">
-        <li>
-        <input class="form-check-input" type="radio" name="id" value="" id="myFilter" onclick="filterClass()" checked>
-            <label class="radio-link" for="id" style="font-weight: normal;">
-                Toutes mes classes
-            </label>
-        </li>
-        @foreach ($divisions as $class)
-        <li>
-          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleDiv'] }}" id="myFilter" onclick="filterClass()">
-            <label class="radio-link" for="id" style="font-weight: normal;">
-                {{ $class['LibelleDiv'] }}
-            </label>
-        </li>
-        @endforeach
-        @foreach ($groups as $class)
-        <li>
-          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleGrp'] }}" id="myFilter" onclick="filterClass()">
-            <label class="radio-link" for="id" style="font-weight: normal;">
-                {{ $class['LibelleGrp'] }}
-            </label>
-        </li>
-        @endforeach
-    </ul>
-</div>
-<div class="colright-edt">
+<div class="central">
 <div class="info">
-        <span>Volume horaire hebdomadaire : {{ $teacher['VolHReelProf'] }}</span>
+        <span>Classe : {{ $student['LibelleDiv'] }}</span>
     </div>
-
     <div class="edt" id="myEdt">
         <div class="day-edt">
             <div>Lundi</div>
@@ -72,13 +45,9 @@
                 @else
                 <div class="{{ $time['Horaire'] }}">
                 @endif
-                @if($time['LibelleGrp'] == null)
-                <span class="{{ $time['LibelleDiv'] }}">
-                @else
-                <span class="{{ $time['LibelleGrp'] }}">
-                @endif
+                <span class="{{ $time['LibelleEns'] }}">
                     <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
-                    <p>{{ $time['LibelleDiv'] }} {{ $time['LibelleGrp'] }}</p>
+                    <p>{{ $time['PrenomProf'] }} {{ $time['NomProf'] }}</p>
                     <p><i>{{ $time['LibelleSalle'] }}</i></p>
                 </span>
             </div>
@@ -90,6 +59,6 @@
 <script>
 
 position();
-filterClass();
+colorSubjects();
 </script>
 @endsection

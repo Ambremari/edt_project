@@ -1,6 +1,6 @@
 @if ($errors->any())
     <div class="alert alert-warning">
-        La connexion a échouée;
+        La connexion a échoué
     </div>  
 @endif
 <div class="my_input">

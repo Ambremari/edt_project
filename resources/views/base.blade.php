@@ -104,6 +104,14 @@
             </div>
             </div>
         @endif
+
+        @if (session()->has('user') && session()->get('user')['role'] == 'student')
+        <div class="topnav">
+            <div class="dropdown">
+                <span><a href="{{route('planning.student')}}">Mon Emploi du Temps</a></span>
+            </div>
+            </div>
+        @endif
             <h2>@yield('title')</h2>
         <div>
         </div>

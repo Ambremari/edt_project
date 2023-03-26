@@ -591,6 +591,47 @@ class Controller extends BaseController{
         return redirect()->route('welcome.page');
     }
 
+    public function createPasswordStudent(Request $request){
+        $rules = [
+            'id' => ['required', 'exists:Eleves,IdEleve'],
+            'password' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez saisir un identifiant.',
+            'id.exists' => "Cet utilisateur n'existe pas.",
+            'password.required' => "Vous devez saisir un mot de passe.",
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try {
+            $this->repository->createPasswordStudent($validatedData['id'], $validatedData['password']);
+            $user = $this->repository->getUserStudent($validatedData['id'], $validatedData['password']);
+            $request->session()->put('user', $user);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
+        }
+        return redirect()->route('welcome.page');
+    }
+
+    public function loginStudent(Request $request){
+        $rules = [
+            'id' => ['required', 'exists:Eleves,IdEleve'],
+            'password' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez saisir un identifiant.',
+            'id.exists' => "Cet utilisateur n'existe pas.",
+            'password.required' => "Vous devez saisir un mot de passe.",
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try {
+            $user = $this->repository->getUserStudent($validatedData['id'], $validatedData['password']);
+            $request->session()->put('user', $user);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
+        }
+        return redirect()->route('welcome.page');
+    }
+
     public function logout(Request $request) {
         $request->session()->forget('user');
         return redirect()->route('login');
@@ -1420,6 +1461,23 @@ class Controller extends BaseController{
                                             'planning' => $planning,
                                             'divisions' => $divisions,
                                             'groups' => $groups,
+                                            'start_morning' => $startMorning,
+                                            'start_afternoon' => $startAfternoon]);
+    }
+
+    public function showStudentPlanning(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'student')
+            return redirect()->route('login');
+        $times = $this->repository->schedules();
+        $id = $request->session()->get('user')['id'];
+        $student = $this->repository->getStudent($id);
+        $planning = $this->repository->getStudentPlanning($id);
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('student_planning', ['times' => $times,
+                                            'planning' => $planning,
+                                            'student' => $student,
                                             'start_morning' => $startMorning,
                                             'start_afternoon' => $startAfternoon]);
     }
