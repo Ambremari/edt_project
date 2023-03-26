@@ -84,10 +84,16 @@
         </div>
         <div id="bodyEdt">
         @foreach($planning as $time)
-                @if($time['Semaine'] == "A")
+                @if($time['Semaine'] == "A" && $time['Horaire'] == $unit['Horaire'])
+                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; background-color: #FBCEB1">
+                @elseif($time['Semaine'] == "A")
                 <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px">
+                @elseif($time['Semaine'] == "B" && $time['Horaire'] == $unit['Horaire'])
+                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 90px; background-color: #FBCEB1">
                 @elseif($time['Semaine'] == "B")
-                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 90px;">
+                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 90px">
+                @elseif($time['Horaire'] == $unit['Horaire'])
+                <div class="{{ $time['Horaire'] }}" style="background-color: #FBCEB1">
                 @else
                 <div class="{{ $time['Horaire'] }}">
                 @endif
