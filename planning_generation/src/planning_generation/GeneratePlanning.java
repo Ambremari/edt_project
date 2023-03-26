@@ -27,7 +27,7 @@ public class GeneratePlanning {
 		randomPlanning.mostContraints();
 		
 		
-		//Positioning classes with the most constraints
+		//Positioning classes with the most constraints 
 		Planning firstSetPlanning = new Planning(randomPlanning.getFirstSet(), schedules, rooms, groups, subjects);
 		firstSetPlanning.setRandomSchedule();
 		System.out.println(firstSetPlanning);
@@ -46,7 +46,7 @@ public class GeneratePlanning {
 		
 		firstOptim(bestPlanning);
 		i = 0;
-		while(bestPlanning.getPrimaryCost() > 0 && i < 1500) {
+		while(bestPlanning.getPrimaryCost() > 0 && i < 500) {
 			i++;
 			secondOptim(bestPlanning);
 		}
@@ -75,25 +75,25 @@ public class GeneratePlanning {
 
 	private static void secondOptim(Planning bestPlanning) {
 		Planning copyPlanning = new Planning(bestPlanning);
-		copyPlanning.permuteTeachers();
-		evaluate(copyPlanning, bestPlanning);
+		if(copyPlanning.permuteTeachers())
+			evaluate(copyPlanning, bestPlanning);
 		
 		copyPlanning = new Planning(bestPlanning);
-		copyPlanning.permuteDivisions();
-		evaluate(copyPlanning, bestPlanning);
+		if(copyPlanning.permuteDivisions())
+			evaluate(copyPlanning, bestPlanning);
 		
 		copyPlanning = new Planning(bestPlanning);
-		copyPlanning.permuteDivisionsGroups();
-		evaluate(copyPlanning, bestPlanning); 
+		if(copyPlanning.permuteDivisionsGroups())
+			evaluate(copyPlanning, bestPlanning); 
 		
 		copyPlanning = new Planning(bestPlanning);
 		if(copyPlanning.permuteClasses())
 			evaluate(copyPlanning, bestPlanning);
 		
-//			copyPlanning = new Planning(bestPlanning);
-//			if(copyPlanning.switchClasses())
-//				evaluate(copyPlanning, bestPlanning);
-//			
+		copyPlanning = new Planning(bestPlanning);
+		if(copyPlanning.switchClasses())
+			evaluate(copyPlanning, bestPlanning);
+			
 		copyPlanning = new Planning(bestPlanning);
 		copyPlanning.randomPermuteClasses();
 		evaluate(copyPlanning, bestPlanning);

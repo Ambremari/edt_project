@@ -3,36 +3,40 @@ package planning_generation;
 public class Class {
 	private String unit;
 	private Schedule schedule;
+	private String week;
 	private Room room;
 	private String roomType;
 	private Teacher teacher;
 	private Subject subject;
 	private String division;
 	private String group;
+	private Class associated;
 	
 	public Class(String unit, String week, String scheduleId, String roomId, 
 			String roomType, String teacherId, String subjectId, String division, String group) {
 		this.unit = unit;
-		this.schedule = new Schedule(scheduleId, week);
+		this.schedule = new Schedule(scheduleId);
+		this.week = week;
 		this.room = new Room(roomId);
 		this.roomType = roomType;
 		this.teacher = new Teacher(teacherId);
 		this.subject = new Subject(subjectId);
 		this.division = division;
 		this.group = group;	
+		this.associated = null;
 	}
 	
 	public Class copyClass() {
-		return new Class(unit, schedule.getWeek(), schedule.getId(), room.getId(), roomType, teacher.getId(), subject.getId(), division, group);
+		return new Class(unit, week, schedule.getId(), room.getId(), roomType, teacher.getId(), subject.getId(), division, group);
 	}
 	
 	@Override
 	public String toString() {
-		return unit + " Horaire : " + schedule + " Salle " + room + "Classe :" + division + " matière " + subject.getId();
+		return unit + " Horaire : " + schedule + " s" + week + " Salle " + room + "Classe :" + division + " matière " + subject.getId();
 	}
 	
 	public String[] getLineToExport() {
-		String [] res = {unit, schedule.getWeek(), schedule.getId(), room.getId()};
+		String [] res = {unit, week, schedule.getId(), room.getId()};
 		return res;
 	}
 	
@@ -40,17 +44,27 @@ public class Class {
 		this.room = room;
 	}
 	
-	public void setSchedule(Schedule schedule) {
-		this.schedule.setId(schedule.getId());
+	public Class getAssociated() {
+		return associated;
 	}
 	
-	public void setRandomSchedule(Schedule schedule) {
-		this.schedule.setId(schedule.getId());
-		this.schedule.setWeek(schedule.getWeek());
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+	
+	public void setBothSchedule(Schedule schedule) {
+		setSchedule(schedule);
+		if(associated != null)
+			associated.setSchedule(schedule);
+	}
+	
+	public void associate(Class other) {
+		this.associated = other;
+		setSchedule(associated.getSchedule());
 	}
 	
 	public void setWeek(String week) {
-		schedule = new Schedule(schedule.getId(), week);
+		this.week = week;
 	}
 	
 	public String getDivision() {
@@ -78,7 +92,7 @@ public class Class {
 	}
 	
 	public String getWeek() {
-		return schedule.getWeek();
+		return week;
 	}
 	
 	public Room getRoom() {
@@ -93,16 +107,36 @@ public class Class {
 		return teacher.equals(other.getTeacher());
 	}
 	
+	public boolean isAssociated() {
+		return associated != null;
+	}
+	
 	public boolean sameSchedule(Class other) {
-		return schedule.equals(other.getSchedule());
+		if(other.equals(associated))
+			return false;
+		if(isAssociated() || other.isAssociated())
+			return schedule.equals(other.getSchedule());
+		return schedule.equals(other.getSchedule()) && (week.length() == 3 || other.getWeek().length() == 3 || week.equals(other.getWeek()));
 	}
 	
 	public boolean sameRoom(Class other) {
 		return room.equals(other.getRoom());
 	}
 	
+	public boolean sameSubject(Class other) {
+		return subject.equals(other.getSubject());
+	}
+	
+	public boolean associatedWith(Class other) {
+		return other.equals(associated);
+	}
+	
 	public boolean sameDivision(Class other) {
 		return division.equals(other.getDivision()) && division.length() != 3;
+	}
+	
+	public boolean sameWeek(Class other) {
+		return week.equals(other.getWeek());
 	}
 	
 	public boolean sameGroup(Class other) {
@@ -117,23 +151,20 @@ public class Class {
 	}
 	
 	public void permute(Class other) {
-		Schedule temp = new Schedule(schedule.getId(), schedule.getWeek());
-		setSchedule(other.getSchedule());
-		other.setSchedule(temp);
+		Schedule temp = schedule;
+		setBothSchedule(other.getSchedule());
+		other.setBothSchedule(temp);
 	}
 	
 	public void switch3(Class second, Class third) {
-		Schedule temp = new Schedule(schedule.getId(), schedule.getWeek());
-		setSchedule(third.getSchedule());
-		third.setSchedule(second.getSchedule());
-		second.setSchedule(temp);
+		Schedule temp = schedule;
+		setBothSchedule(third.getSchedule());
+		third.setBothSchedule(second.getSchedule());
+		second.setBothSchedule(temp);
 	}
 	
 	public boolean noRoom() {
 		return room.getId().length() == 3;
 	}
-	
-	public boolean sameDuration(Class other) {
-		return schedule.sameDuration(other.getSchedule());
-	}
+
 }

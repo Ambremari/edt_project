@@ -33,15 +33,15 @@ public class CSVReader {
 		
 		List<GroupLink> groups = readGroupsFromCSV("data/groups.csv");
 		
-//		for (GroupLink couple : groups) {
-//			System.out.println(couple);
-//		}
+		for (GroupLink couple : groups) {
+			System.out.println(couple);
+		}
 		
 		List<SubjectsCouple> subjects = readSubjectsFromCSV("data/subjects.csv");
 		
-//		for (SubjectsCouple couple : subjects) {
-//			System.out.println(couple);
-//		}
+		for (SubjectsCouple couple : subjects) {
+			System.out.println(couple);
+		}
 	}
 
 	static List<Class> readClassesFromCSV(String fileName) {
@@ -121,13 +121,7 @@ public class CSVReader {
 			while (line != null) {
 				String[] values = line.split(";");
 
-				Schedule schedule = new Schedule(values[0], "999");
-				schedules.add(schedule);
-				
-				schedule = new Schedule(values[0], "A");
-				schedules.add(schedule);
-				
-				schedule = new Schedule(values[0], "B");
+				Schedule schedule = new Schedule(values[0]);
 				schedules.add(schedule);
 
 				line = br.readLine();

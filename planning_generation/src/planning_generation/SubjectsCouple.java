@@ -21,4 +21,12 @@ public class SubjectsCouple{
 	public String toString() {
 		return subject1.getId() + " " + subject2.getId();
 	}
+	
+	public boolean equals(Object obj) {
+		if(obj instanceof SubjectsCouple) {
+			SubjectsCouple couple = (SubjectsCouple) obj;
+			return subject1.equals(couple.getSubject1()) && subject2.equals(couple.getSubject2());
+		}
+		return false;
+	}
 }
