@@ -1545,59 +1545,66 @@ class Repository {
 
 
 ##### Constraints classrooms #####
-    function constraintsClassrooms() : array{
+    function constraintsClassrooms(): array {
         return DB::table('ContraintesSalles')
-                    ->orderBy('TypeSalle')
-                    ->orderBy('IdCours')
-                    ->get()
-                    ->toArray();
-    }
-    function getConstraintsClassrooms(string $typeSalle, string $idCours): array {
-        return DB::table('ContraintesSalles')
-                    ->where('TypeSalle', (array)$typeSalle)
-                    ->where('IdCours', $idCours)
-                    ->get()
-                    ->toArray();
+            ->orderBy('IdContSalle')
+            ->orderBy('TypeSalle')
+            ->orderBy('IdCours')
+            ->get()
+            ->toArray();
     }
 
-    function addConstraintsClassrooms(array $constraintsClassroom): void{
-        $existingConstraints = DB::table('ContraintesSalles')
-                                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
-                                ->where('IdCours', $constraintsClassroom['IdCours'])
-                                ->get()
-                                ->toArray();
+    function getClassroomConstraints(): array {
+        return DB::table('ContraintesSalles')
+            ->orderBy('IdContSalle')
+            ->get()
+            ->toArray();
+    }
+function addConstraintsClassrooms(array $constraintsClassroom): void{
+    $existingConstraints = DB::table('ContraintesSalles')
+        ->where('IdContSalle', $constraintsClassroom['IdContSalle'])
+        ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+        ->where('IdCours', $constraintsClassroom['IdCours'])
+        ->get()
+        ->toArray();
 
-        if (count($existingConstraints) > 0) {
-            DB::table('ContraintesSalles')
-                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
-                ->where('IdCours', $constraintsClassroom['IdCours'])
-                ->update([
-                    'VolHSalle' => $constraintsClassroom['VolHSalle'],
-                    'DureeMinSalle' => $constraintsClassroom['DureeMinSalle']
-                ]);
-        } else {
-            DB::table('ContraintesSalles')->insert([
-                'TypeSalle' => $constraintsClassroom['TypeSalle'],
-                'IdCours' => $constraintsClassroom['IdCours'],
+    if (count($existingConstraints) > 0) {
+        DB::table('ContraintesSalles')
+            ->where('IdContSalle', $constraintsClassroom['IdContSalle'])
+            ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+            ->where('IdCours', $constraintsClassroom['IdCours'])
+            ->update([
                 'VolHSalle' => $constraintsClassroom['VolHSalle'],
                 'DureeMinSalle' => $constraintsClassroom['DureeMinSalle']
             ]);
-        }
+    } else {
+        DB::table('ContraintesSalles')->insert([
+            'IdContSalle'=> $constraintsClassroom['IdContSalle'],
+            'TypeSalle' => $constraintsClassroom['TypeSalle'],
+            'IdCours' => $constraintsClassroom['IdCours'],
+            'VolHSalle' => $constraintsClassroom['VolHSalle'],
+            'DureeMinSalle' => $constraintsClassroom['DureeMinSalle']
+        ]);
     }
+}
 
-    function updateConstraintsClassrooms(array $constraintsClassroom): void{
-        $existingConstraints = DB::table('ContraintesSalles')
-                                ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
-                                ->where('IdCours', $constraintsClassroom['IdCours'])
-                                ->get()
-                                ->toArray();
-        if(empty($existingConstraints))
-            throw new Exception('Contraintes inconnues');
-        DB::table('ContraintesSalles')
-            ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
-            ->where('IdCours', $constraintsClassroom['IdCours'])
-            ->update($constraintsClassroom);
+function updateConstraintsClassrooms(array $constraintsClassroom): void{
+    $existingConstraints = DB::table('ContraintesSalles')
+        ->where('IdContSalle', $constraintsClassroom['IdContSalle'])
+        ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+        ->where('IdCours', $constraintsClassroom['IdCours'])
+        ->get()
+        ->toArray();
+    if (empty($existingConstraints)) {
+        throw new Exception('Contraintes inconnues');
     }
+    DB::table('ContraintesSalles')
+        ->where('IdContSalle', $constraintsClassroom['IdContSalle'])
+        ->where('TypeSalle', $constraintsClassroom['TypeSalle'])
+        ->where('IdCours', $constraintsClassroom['IdCours'])
+        ->update($constraintsClassroom);
+}
+
 
 
     function getStartTimesMorning(): array{

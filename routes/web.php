@@ -199,15 +199,22 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
-
 Route::get('/constraints/classrooms', [Controller::class, 'classroomConstraints'])
     ->name('constraints.classrooms');
 
 Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsClassrooms'])
     ->name('constraints.classrooms.add');
 
-Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
+Route::post('/constraints/classrooms/update/{IdContSalle}', [Controller::class, 'updateConstraintsClassrooms'])
+    ->where('IdContSalle', '[CR].*')
     ->name('constraints.classrooms.update');
+
+Route::get('/constraints/classrooms/add', [Controller::class, 'addConstraintsClassroomsForm'])
+    ->name('constraints.classrooms.add.form');
+
+Route::get('/constraints/classrooms/update/{IdContSalle}', [Controller::class, 'updateConstraintsClassroomsForm'])
+    ->where('IdContSalle', '[CR].*')
+    ->name('constraints.classrooms.update.form');
 
 Route::get('/students/update/{IdEleve}', [Controller::class, 'updateStudentForm'])
     ->where('IdEleve', '[ELV].*')

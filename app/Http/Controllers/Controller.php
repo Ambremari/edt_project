@@ -1054,51 +1054,74 @@ class Controller extends BaseController{
         return redirect()->route('schedule.form')->with('status', "Horaire {$validatedData['horaire']} modifié avec succès !");
     }
     ### classrooms constraints ####
-    public function classroomConstraints(Request $request) {
+    public function classroomConstraints(Request $request)
+    {
         $hasKey = $request->session()->has('user');
-        if (!$hasKey || $request->session()->get('user')['role'] != 'dir')
+        if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
             return redirect()->route('login');
+        }
+
+        $constraints = $this->repository->getClassroomConstraints();
+        $lessons = $this->repository->lessons();
+        $classrooms = $this->repository->classrooms();
+        $subjects = $this->repository->subjects();
+
+        return view('classrooms_constraints_add', [
+            'constraints' => $constraints,
+            'lessons' => $lessons,
+            'classrooms' => $classrooms,
+            'subjects' => $subjects,
+        ]);
+    }
+    public function addConstraintsClassrooms(Request $request)
+    {
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
+            return redirect()->route('login');
+        }
+
+        $validatedData = $request->validate([
+            'TypeSalle' => 'required|exists:TypesSalles,TypeSalle',
+            'IdCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
+            'VolHSalle' => 'required|numeric',
+            'DureeMinSalle' => 'required|integer|min:1',
+        ], [
+            'TypeSalle.required' => 'Le type de salle est obligatoire.',
+            'TypeSalle.exists' => 'Le type de salle sélectionné est invalide.',
+            'IdCours.required' => 'L\'identifiant du cours est obligatoire.',
+            'IdCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
+            'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
+            'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
+            'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
+            'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
+            'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
+            'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
+        ]);
+
+        try {
+            $this->repository->addConstraintsClassrooms($validatedData);
+            return redirect()->route('constraints.classrooms.add.form')->with('status', 'Contrainte ajoutée avec succès !');
+        } catch (Exception $exception) {
+            return redirect()->route('constraints.classrooms.add.form')->withInput()->withErrors("Impossible d'ajouter la contrainte.");
+        }
+    }
+    public function addConstraintsClassroomsForm(Request $request)
+    {
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
+            return redirect()->route('login');
+        }
 
         $lessons = $this->repository->lessons();
         $classrooms = $this->repository->classrooms();
-        $constraints = $this->repository->constraintsClassrooms();
         $subjects = $this->repository->subjects();
+
         return view('classrooms_constraints', [
-        'lessons' => $lessons,
-        'classrooms' => $classrooms,
-        'constraints' => $constraints,
-        'subjects' => $subjects,
+            'lessons' => $lessons,
+            'classrooms' => $classrooms,
+            'subjects' => $subjects,
         ]);
-        }
-     function addConstraintsClassrooms(Request $request)
-{
-    $hasKey = $request->session()->has('user');
-    if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
-        return redirect()->route('login');
     }
-
-    $validatedData = $request->validate([
-        'TypeSalle' => 'required|exists:TypesSalles,TypeSalle',
-        'IdCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
-        'VolHSalle' => 'required|numeric',
-        'DureeMinSalle' => 'required|integer|min:1',
-    ], [
-        'TypeSalle.required' => 'Le type de salle est obligatoire.',
-        'TypeSalle.exists' => 'Le type de salle sélectionné est invalide.',
-        'IdCours.required' => 'L\'identifiant du cours est obligatoire.',
-        'IdCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
-        'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
-        'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
-        'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
-        'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
-        'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
-        'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
-    ]);
-
-    $this->repository->addConstraintsClassrooms($validatedData);
-
-    return redirect()->route('constraints.classrooms')->with('status', 'Contrainte ajoutée avec succès !');
-}
      function updateConstraintsClassrooms(Request $request){
     $hasKey = $request->session()->has('user');
     if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
@@ -1123,9 +1146,30 @@ class Controller extends BaseController{
         'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
     ]);
 
-    $this->repository->updateConstraintsClassrooms($validatedData);
+    try{
+        $this->repository->addConstraintsClassrooms($validatedData);
+    } catch (Exception $exception) {
+        return redirect()->route('constraints.classrooms.update.form')->withInput()->withErrors("Impossible d'ajouter la contrainte.");
+    }
+    return redirect()->route('constraints.classrooms.update.form')->with('status', 'Contrainte ajoutée avec succès !');
+    }
+    public function updateConstraintsClassroomsForm(Request $request, $id) {
+        $hasKey = $request->session()->has('user');
+        if (!$hasKey || $request->session()->get('user')['role'] != 'dir') {
+            return redirect()->route('login');
+        }
 
-    return redirect()->route('constraints.classrooms')->with('status', 'Contrainte modifiée avec succès !');
+        $constraint = $this->repository->constraintsClassrooms();
+        $lessons = $this->repository->lessons();
+        $classrooms = $this->repository->classrooms();
+        $subjects = $this->repository->subjects();
+
+        return view('classrooms_constraints_update', [
+            'constraint' => $constraint,
+            'lessons' => $lessons,
+            'classrooms' => $classrooms,
+            'subjects' => $subjects,
+        ]);
     }
      ###### STUDENTS ##########
      public function addStudentForm(Request $request){

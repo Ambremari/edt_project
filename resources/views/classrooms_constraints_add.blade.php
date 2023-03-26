@@ -3,8 +3,22 @@
 @section('title','Contraintes matérielles des enseignements')
 
 @section('content')
-<form method="POST" action="{{ route('constraints.classrooms.update') }}">
-    @csrf
+<div class="colup">
+    <div class="colup">
+        <form method="POST" action="{{ route('constraints.classrooms.add') }}">
+            @csrf
+            @method('POST')
+    @if ($errors->any())
+        <div class="alert alert-warning">
+            La contrainte n'a pas pu être ajoutée &#9785;
+        </div>
+    @endif
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
+    <input type="hidden" id="course_id" name="course_id" value="">
     <div class="colleft">
         <div>
             <label for="subject">Enseignement</label>
@@ -34,8 +48,8 @@
         <div class="colleft">
             <div>
                 <label for="type">Salle</label>
-                <select class="form-control" id="type" name="type">
-                    <option value="" selected>Tous</option>
+                <select class="form-control" id="type" name="type" required>
+                    <option value="" selected disabled hidden>Choisir une salle</option>
                     @foreach ($classrooms as $classroom)
                         <option value="{{ $classroom['LibelleSalle'] }}">{{ $classroom['LibelleSalle'] }} ({{ $classroom['TypeSalle'] }})</option>
                     @endforeach
@@ -45,7 +59,7 @@
         <div class="colright">
             <div>
                 <label for="volume-infrastructure">Volume horaire hebdomadaire pour cette salle</label>
-                <input type="text" class="form-control" id="volume-infrastructure" name="volume_infrastructure">
+                <input type="text" class="form-control" id="volume-infrastructure" name="volume_infrastructure" required>
             </div>
         </div>
         <div class="central">
@@ -55,6 +69,7 @@
             </div>
         </div>
     </div>
+</div>
 </form>
 <div class="coldown">
     <div class="filter">
@@ -101,7 +116,7 @@
                     <td>{{ $constraint['TypeSalle'] }}</td>
                     <td>{{ $constraint['IdCours'] }}</td>
                     <td>{{ $constraint['VolHSalle'] }} heures</td>
-                    <td><button type="button" class="btn btn-primary">Modifier</button></td>
+                    <td><a href="{{ route('constraints.classrooms.update.form', ['IdContSalle' => $constraint['IdContSalle']]) }}">Modifier</a></td>
                 </tr>
             @endforeach
         </tbody>
@@ -163,18 +178,6 @@ function filterScheduels() {
 }
 
 </script>
-@if (session('status'))
-    <div class="alert alert-success">
-
-
-        {{ session('status') }}
-    </div>
-@endif
-@if (session('fail'))
-    <div class="alert alert-warning">
-        {{ session('fail') }}
-    </div>
-@endif
 @endsection
 
 
