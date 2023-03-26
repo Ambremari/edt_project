@@ -68,19 +68,27 @@
                 @if($time['Semaine'] == "A")
                 <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px">
                 @elseif($time['Semaine'] == "B")
-                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 70px;">
+                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 90px;">
                 @else
                 <div class="{{ $time['Horaire'] }}">
                 @endif
                 @if($time['LibelleGrp'] == null)
                 <span class="{{ $time['LibelleDiv'] }}">
-                @else
-                <span class="{{ $time['LibelleGrp'] }}">
-                @endif
-                    <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
-                    <p>{{ $time['LibelleDiv'] }} {{ $time['LibelleGrp'] }}</p>
+                <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
+                    <p>{{ $time['LibelleDiv'] }}</p>
                     <p><i>{{ $time['LibelleSalle'] }}</i></p>
                 </span>
+                @else
+                    @if($time['LibelleDiv'] == null)
+                    <span class="{{ $time['LibelleGrp'] }}">
+                    @else
+                    <span class="{{ $time['LibelleDiv'] }}">
+                    @endif
+                    <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
+                    <p>{{ $time['LibelleGrp'] }}</p>
+                    <p><i>{{ $time['LibelleSalle'] }}</i></p>
+                </span>
+                @endif
             </div>
         @endforeach
         </div>

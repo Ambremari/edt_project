@@ -41,7 +41,7 @@
                 @if($time['Semaine'] == "A")
                 <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px">
                 @elseif($time['Semaine'] == "B")
-                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 70px;">
+                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 90px;">
                 @else
                 <div class="{{ $time['Horaire'] }}">
                 @endif

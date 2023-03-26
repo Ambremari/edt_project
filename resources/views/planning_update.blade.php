@@ -23,10 +23,10 @@
             <p>{{ $unit['LibelleGrp'] }}</p>
             <p><i>{{ $unit['NomProf'] }} {{ $unit['PrenomProf'] }}</i></p>
             <label for="type">Horaire</label>
-            <select class="form-control" id="mySelect" 
+            <select class="form-control" id="selectSchedule" 
                 name="schedule" minlength="2" maxlength="15"
                 aria-describedby="type_feedback"
-                value="{{ $unit['Horaire'] }}" required>
+                onchange= colorSchedule() required>
                 @foreach($times as $time)
                 <option value="{{ $time['Horaire'] }}" {{ $time['Horaire'] == $unit['Horaire'] ? "selected" : "" }}>{{ $time['Horaire'] }}</option>
                 @endforeach
@@ -34,8 +34,7 @@
             <label for="type">Semaine</label>
             <select class="form-control" id="mySelect" 
                 name="week" minlength="2" maxlength="15"
-                aria-describedby="type_feedback"
-                value="{{ $unit['Semaine'] }}" required>
+                aria-describedby="type_feedback" required>
                 <option value=null {{ null == $unit['Semaine'] ? "selected" : "" }}></option>
                 <option value="A" {{ "A" == $unit['Semaine'] ? "selected" : "" }}>A</option>
                 <option value="B" {{ "B" == $unit['Semaine'] ? "selected" : "" }}>B</option>
@@ -43,8 +42,7 @@
             <label for="type">Salle</label>
             <select class="form-control" id="mySelect" 
                 name="room" minlength="2" maxlength="15"
-                aria-describedby="type_feedback"
-                value="{{ $unit['IdSalle'] }}" required>
+                aria-describedby="type_feedback" required>
                 @foreach($classrooms as $room)
                 <option value="{{ $room['IdSalle'] }}" {{ $room['IdSalle'] == $unit['IdSalle'] ? "selected" : "" }}>{{ $room['LibelleSalle'] }}</option>
                 @endforeach
@@ -89,7 +87,7 @@
                 @if($time['Semaine'] == "A")
                 <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px">
                 @elseif($time['Semaine'] == "B")
-                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 70px;">
+                <div class="{{ $time['Horaire'] }}" style="width:70px; font-size: 12px ; margin-left: 90px;">
                 @else
                 <div class="{{ $time['Horaire'] }}">
                 @endif
@@ -112,11 +110,6 @@
         @endforeach
         @foreach($times as $time)
             <div class="{{ $time['Horaire'] }}" style="background-color : transparent;">
-                <span style="position: absolute; bottom: 5px;">
-                    <input class="checkbox" type="radio" name="newSchedule" 
-                    value="{{ $time['Horaire'] }}" id="mybox" onclick="color1()" 
-                    {{ $time['Horaire'] == $unit['Horaire'] ? "checked" : "" }}> 
-                </span>
             </div>
         @endforeach
         </div>
@@ -144,5 +137,20 @@ function searchClass() {
 }
 
 position();
+colorSchedule();
+function colorSchedule(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+        var select = document.getElementById("selectSchedule");
+        var selected = select.value;
+
+        for(var i = 0; i < div.length ; i++){
+            var text = div[i].getAttribute("class");
+            if(text == selected)
+                div[i].style.borderColor = "#F53C3C";
+            else
+                div[i].style.borderColor = "#ddd";
+        }
+    }
 </script>
 @endsection

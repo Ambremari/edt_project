@@ -1936,7 +1936,7 @@ class Repository {
                     ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
                     ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
                     ->where('Unite', $unit)
-                    ->get(['Unite', 'Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle', 'S.IdSalle'])
+                    ->get(['Unite', 'Horaire', 'Semaine', 'L.*', 'LibelleSalle', 'S.IdSalle'])
                     ->toArray();
         return $res[0];
     }
@@ -1946,7 +1946,7 @@ class Repository {
             ->where('Unite', $unit['id'])
             ->update(['Horaire' => $unit['schedule'],
                       'IdSalle' => $unit['room']]);
-        if($unit['room'] == "A" || $unit['room'] == "B"){
+        if($unit['week'] == "A" || $unit['week'] == "B"){
             DB::table("Unites")
                 ->where('Unite', $unit['id'])
                 ->update(['Semaine' => $unit['week']]);
@@ -1966,12 +1966,30 @@ class Repository {
     }
 
     public function getUnitIncompatibility(string $unit): array{
+        $myUnit = $this->getUnit($unit);
+        $incompatibleGrp = DB::table('LiensGroupes')
+                            ->where('IdDiv', $myUnit['IdDiv'])
+                            ->get('IdGrp')
+                            ->toArray();
+        $incompatibleDiv = DB::table('LiensGroupes')
+                            ->Where('IdGrp', $myUnit['IdGrp'])
+                            ->get('IdDiv')
+                            ->toArray();
+        $incompatibleEns = DB::table('IncompatibilitesHoraires')
+                            ->where('IdEns1', $myUnit['IdEns'])
+                            ->get('IdEns2 as IdEns')
+                            ->toArray();
         return DB::table("Unites as U")
                     ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
                     ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
                     ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
-                    ->where('Unite', $unit)
-                    ->get(['Unite', 'Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->where('IdDiv', $myUnit['IdDiv'])
+                    ->where('IdGrp', $myUnit['IdGrp'])
+                    ->orWhere('IdProf', $myUnit['IdProf'])
+                    ->orWhereIn('IdDiv', $incompatibleDiv)
+                    ->orWhereIn('IdGrp', $incompatibleGrp)
+                    ->orWhereIn('IdEns', $incompatibleEns)
+                    ->get(['Unite', 'Horaire', 'Semaine', 'L.*', 'LibelleSalle'])
                     ->toArray();
     }
 
@@ -2022,6 +2040,7 @@ class Repository {
                     ->select(DB::raw('UNIQUE LibelleGrp'))
                     ->where("L.IdProf", $id)
                     ->whereNotNull("LibelleGrp")
+                    ->whereNull('LibelleDiv')
                     ->get()
                     ->toArray();
     }
