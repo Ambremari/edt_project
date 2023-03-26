@@ -263,3 +263,12 @@ Route::get('/edt/prof', [Controller::class, 'showTeacherPlanning'])
 
 Route::get('/edt/eleve', [Controller::class, 'showStudentPlanning'])
     ->name('planning.student');
+
+Route::get('/edt/modif', [Controller::class, 'showPlanning'])
+    ->name('planning.show');
+
+Route::get('/edt/modif/{unit}', [Controller::class, 'moveClassPlanning'])
+    ->name('planning.move');
+
+Route::post('/edt/modif/{unit}', [Controller::class, 'updatePlanning'])
+    ->name('planning.update');

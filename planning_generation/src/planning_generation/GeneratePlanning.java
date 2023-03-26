@@ -46,7 +46,7 @@ public class GeneratePlanning {
 		
 		firstOptim(bestPlanning);
 		i = 0;
-		while(bestPlanning.getPrimaryCost() > 0 && i < 200) {
+		while(bestPlanning.getPrimaryCost() > 0 && i < 1500) {
 			i++;
 			secondOptim(bestPlanning);
 		}

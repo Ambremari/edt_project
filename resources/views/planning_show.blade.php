@@ -1,38 +1,42 @@
 @extends('base')
 
-@section('title', 'Mon Emploi du temps')
+@section('title', 'Modification emploi du temps')
 
 @section('content')
 <div class="colleft-edt">
-    <ul id="studentList" style="margin: 20%">
-        <li style="padding-left: 10%">
-        <input class="form-check-input" type="radio" name="id" value="" id="myFilter" onclick="filterClass()" checked>
-            <label class="radio-link" for="id" style="font-weight: normal;">
-                Toutes mes classes
-            </label>
-        </li>
-        @foreach ($divisions as $class)
-        <li style="padding-left: 10%">
+<input type="text" id="studentInput" onkeyup="searchClass()" placeholder="Rechercher une classe...">
+    <ul id="studentList" style="height: 300px;">
+    @foreach ($divisions as $class)
+        <li><span>
           <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleDiv'] }}" id="myFilter" onclick="filterClass()">
             <label class="radio-link" for="id" style="font-weight: normal;">
                 {{ $class['LibelleDiv'] }}
             </label>
-        </li>
+        </span></li>
         @endforeach
         @foreach ($groups as $class)
-        <li style="padding-left: 10%">
+        <li><span>
           <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleGrp'] }}" id="myFilter" onclick="filterClass()">
             <label class="radio-link" for="id" style="font-weight: normal;">
                 {{ $class['LibelleGrp'] }}
             </label>
-        </li>
+        </span></li>
+        @endforeach
+    </ul>
+
+    <input type="text" id="studentInput" onkeyup="searchTeacher()" placeholder="Rechercher un enseignant...">
+    <ul id="studentList" style="height: 300px;">
+    @foreach ($teachers as $teacher)
+        <li><span>
+          <input class="form-check-input" type="radio" name="id" value="{{ $teacher['IdProf'] }}" id="myFilter" onclick="filterTeacher()">
+            <label class="radio-link" for="id" style="font-weight: normal;">
+                {{ $teacher['PrenomProf'] }} {{ $teacher['NomProf'] }}
+            </label>
+        </span></li>
         @endforeach
     </ul>
 </div>
 <div class="colright-edt">
-<div class="info">
-        <span>Volume horaire hebdomadaire : {{ $teacher['VolHReelProf'] }}</span>
-    </div>
 
     <div class="edt" id="myEdt">
         <div class="day-edt">
@@ -72,22 +76,49 @@
                 @else
                 <div class="{{ $time['Horaire'] }}">
                 @endif
+                <a href="{{route('planning.move', ['unit' => $time['Unite']])}}">
                 @if($time['LibelleGrp'] == null)
                 <span class="{{ $time['LibelleDiv'] }}">
-                @else
-                <span class="{{ $time['LibelleGrp'] }}">
-                @endif
-                    <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
-                    <p>{{ $time['LibelleDiv'] }} {{ $time['LibelleGrp'] }}</p>
+                <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
+                    <p>{{ $time['LibelleDiv'] }}</p>
                     <p><i>{{ $time['LibelleSalle'] }}</i></p>
                 </span>
-            </div>
+                @else
+                    @if($time['LibelleDiv'] == null)
+                    <span class="{{ $time['LibelleGrp'] }}">
+                    @else
+                    <span class="{{ $time['LibelleDiv'] }}">
+                    @endif
+                    <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
+                    <p>{{ $time['LibelleGrp'] }}</p>
+                    <p><i>{{ $time['LibelleSalle'] }}</i></p>
+                </span>
+                @endif
+                </a></div>
         @endforeach
         </div>
     </div>
 </div>
 @include("edt_position")
 <script>
+
+function searchClass() {
+  var input, filter, ul, li, a, i, txtValue;
+  input = document.getElementById('studentInput');
+  filter = input.value.toUpperCase();
+  ul = document.getElementById("studentList");
+  li = ul.getElementsByTagName('li');
+
+  for (i = 0; i < li.length; i++) {
+    a = li[i].getElementsByTagName("span")[0];
+    txtValue = a.textContent || a.innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      li[i].style.display = "";
+    } else {
+      li[i].style.display = "none";
+    }
+  }
+}
 
 position();
 filterClass();

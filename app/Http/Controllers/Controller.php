@@ -1481,6 +1481,69 @@ class Controller extends BaseController{
                                             'start_morning' => $startMorning,
                                             'start_afternoon' => $startAfternoon]);
     }
+
+    public function showPlanning(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $times = $this->repository->schedules();
+        $planning = $this->repository->getAllPlanning();
+        $teachers = $this->repository->teachers();
+        $divisions = $this->repository->divisions();
+        $groups = $this->repository->groups();
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        return view('planning_show', ['times' => $times,
+                                            'teachers' => $teachers,
+                                            'planning' => $planning,
+                                            'divisions' => $divisions,
+                                            'groups' => $groups,
+                                            'start_morning' => $startMorning,
+                                            'start_afternoon' => $startAfternoon]);
+    }
+
+    public function moveClassPlanning(Request $request, string $unit){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $times = $this->repository->schedules();
+        $planning = $this->repository->getUnitIncompatibility($unit);
+        $unitInfo = $this->repository->getUnit($unit);
+        $startMorning = $this->repository->getStartTimesMorning();
+        $startAfternoon = $this->repository->getStartTimesAfternoon();
+        $classrooms = $this->repository->getClassroomsOfSameType($unit);
+        return view('planning_update', ['times' => $times,
+                                            'planning' => $planning,
+                                            'classrooms' => $classrooms,
+                                            'unit' => $unitInfo,
+                                            'start_morning' => $startMorning,
+                                            'start_afternoon' => $startAfternoon]);
+    }
+
+    public function updatePlanning(Request $request){
+        $hasKey = $request->session()->has('user');
+        if(!$hasKey || $request->session()->get('user')['role'] != 'dir')
+            return redirect()->route('login');
+        $rules = [
+            'id' => ['required'],
+            'schedule' => ['required'],
+            'week' => ['required'],
+            'room' => ['required']
+        ];
+        $messages = [
+            'id.required' => 'Vous devez sélectionner un cours.',
+            'schedule.required' => 'Vous devez sélectionner un horaire.',
+            'week.required' => 'Vous devez sélectionner une semaine.',
+            'room.required' => 'Vous devez sélectionner une salle.',
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try{
+            $this->repository->updateUnit($validatedData);
+        } catch (Exception $exception) {
+            return redirect()->route('planning.move', ['unit' => $validatedData['id']])->withInput()->withErrors("Impossible de modifier le planning.");
+        }
+        return redirect()->route('planning.move', ['unit' => $validatedData['id']])->with('status', 'Planning modifié avec succès.');
+    }
 }
 
 

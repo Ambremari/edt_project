@@ -87,7 +87,7 @@
                     <a href="{{ route('constraints.classrooms') }}">Contraintes matérielles</a>
                     <a href="{{ route('data.preprocess') }}">Pré-traitement</a>
                     <a href="#">Génération automatique</a>
-                    <a href="#">Modification manuelle</a>
+                    <a href="{{ route('planning.show') }}">Modification manuelle</a>
                     <a href="#">Optimisation</a>
                 </div>
             </div>

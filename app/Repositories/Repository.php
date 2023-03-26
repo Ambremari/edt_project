@@ -1921,6 +1921,60 @@ class Repository {
 
     ###########PLANNING################
 
+    public function getAllPlanning(): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->get(['Unite', 'Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
+    public function getUnit(string $unit): array{
+        $res = DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where('Unite', $unit)
+                    ->get(['Unite', 'Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle', 'S.IdSalle'])
+                    ->toArray();
+        return $res[0];
+    }
+
+    public function updateUnit(array $unit): void{
+        DB::table("Unites")
+            ->where('Unite', $unit['id'])
+            ->update(['Horaire' => $unit['schedule'],
+                      'IdSalle' => $unit['room']]);
+        if($unit['room'] == "A" || $unit['room'] == "B"){
+            DB::table("Unites")
+                ->where('Unite', $unit['id'])
+                ->update(['Semaine' => $unit['week']]);
+        }
+    }
+
+    public function getClassroomsOfSameType(string $unit): array{
+        $type = DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->where("Unite", $unit)
+                    ->get("TypeSalle")
+                    ->toArray();
+        return DB::table("Salles")
+                    ->whereIn("TypeSalle", $type)
+                    ->get()
+                    ->toArray();
+    }
+
+    public function getUnitIncompatibility(string $unit): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where('Unite', $unit)
+                    ->get(['Unite', 'Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
     public function getTeacherPlanning(string $id): array{
         return DB::table("Unites as U")
                     ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
