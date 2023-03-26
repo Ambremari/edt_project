@@ -1931,4 +1931,26 @@ class Repository {
                     ->toArray();
     }
 
+    public function getTeacherDiv(string $id): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->select(DB::raw('UNIQUE LibelleDiv'))
+                    ->where("L.IdProf", $id)
+                    ->whereNotNull('LibelleDiv')
+                    ->get()
+                    ->toArray();
+    }
+
+    public function getTeacherGrp(string $id): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->select(DB::raw('UNIQUE LibelleGrp'))
+                    ->where("L.IdProf", $id)
+                    ->whereNotNull("LibelleGrp")
+                    ->get()
+                    ->toArray();
+    }
+
 }

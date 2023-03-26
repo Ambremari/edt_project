@@ -3,7 +3,33 @@
 @section('title', 'Mon Emploi du temps')
 
 @section('content')
-<div class="central">
+<div class="colleft-edt">
+    <ul id="studentList">
+        <li>
+        <input class="form-check-input" type="radio" name="id" value="" id="myFilter" onclick="filterClass()" checked>
+            <label class="radio-link" for="id" style="font-weight: normal;">
+                Toutes mes classes
+            </label>
+        </li>
+        @foreach ($divisions as $class)
+        <li>
+          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleDiv'] }}" id="myFilter" onclick="filterClass()">
+            <label class="radio-link" for="id" style="font-weight: normal;">
+                {{ $class['LibelleDiv'] }}
+            </label>
+        </li>
+        @endforeach
+        @foreach ($groups as $class)
+        <li>
+          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleGrp'] }}" id="myFilter" onclick="filterClass()">
+            <label class="radio-link" for="id" style="font-weight: normal;">
+                {{ $class['LibelleGrp'] }}
+            </label>
+        </li>
+        @endforeach
+    </ul>
+</div>
+<div class="colright-edt">
 <div class="info">
         <span>Volume horaire hebdomadaire : {{ $teacher['VolHReelProf'] }}</span>
     </div>
@@ -40,7 +66,11 @@
         <div id="bodyEdt">
         @foreach($planning as $time)
             <div class="{{ $time['Horaire'] }}">
-                <span class="{{ $time['LibelleEns'] }}">
+                @if($time['LibelleGrp'] == null)
+                <span class="{{ $time['LibelleDiv'] }}">
+                @else
+                <span class="{{ $time['LibelleGrp'] }}">
+                @endif
                     <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
                     <p>{{ $time['LibelleDiv'] }} {{ $time['LibelleGrp'] }}</p>
                     <p><i>{{ $time['LibelleSalle'] }}</i></p>
@@ -54,6 +84,6 @@
 <script>
 
 position();
-colorClass();
+filterClass();
 </script>
 @endsection

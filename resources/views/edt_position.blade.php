@@ -78,14 +78,51 @@
         }
     }
 
-    function colorClass(){
+    function associateColor(){
+        var colors = ["#FBCEB1", "#F2D2BD", "#E97451",	"#E3963E","#F28C28",	
+                    "#D27D2D",	"#B87333","#FF7F50",	"#F88379",	"#8B4000",	
+                    "#FAD5A5","#E49B0F","#FFC000",	"#DAA520",	"#FFD580"];
+        var index = 0;
+        var getColor = new Map();
         var table = document.getElementById("bodyEdt");
         var div = table.getElementsByTagName("div");
+        for(var i = 0; i < div.length ; i++){
+            var mySpan = div[i].getElementsByTagName("span")[0];
+            var text = mySpan.getAttribute("class");
+            if(!getColor.has(text)){
+                getColor.set(text, colors[index])
+                index++;
+                if(index >= colors.length)
+                    index = 0;
+            }
+        }
+
+        return getColor;
+    }
+
+    function filterClass(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+        var input = document.getElementsByTagName("input");
+        
+        for(var i = 0; i < input.length ; i++){
+            if(input[i].checked)
+                var filter = input[i].value;
+        }
+
+        for(var i = 0; i < div.length ; i++){
+            div[i].style.display = "none";
+        }
+
+        colors = associateColor();
 
         for(var i = 0; i < div.length ; i++){
             var mySpan = div[i].getElementsByTagName("span")[0];
             var text = mySpan.getAttribute("class");
-            div[i].style.backgroundColor= "#2199AF";
+            if(filter == "" || filter == text){
+                div[i].style.display = "";
+                div[i].style.backgroundColor= colors.get(text);
+            }
         }
     }
 </script>

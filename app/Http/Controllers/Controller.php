@@ -1411,11 +1411,15 @@ class Controller extends BaseController{
         $id = $request->session()->get('user')['id'];
         $teacher = $this->repository->getTeacher($id);
         $planning = $this->repository->getTeacherPlanning($id);
+        $divisions = $this->repository->getTeacherDiv($id);
+        $groups = $this->repository->getTeacherGrp($id);
         $startMorning = $this->repository->getStartTimesMorning();
         $startAfternoon = $this->repository->getStartTimesAfternoon();
         return view('teacher_planning', ['times' => $times,
                                             'teacher' => $teacher,
                                             'planning' => $planning,
+                                            'divisions' => $divisions,
+                                            'groups' => $groups,
                                             'start_morning' => $startMorning,
                                             'start_afternoon' => $startAfternoon]);
     }
