@@ -31,7 +31,7 @@ public class Class {
 	public Class copyClass() {
 		return new Class(unit, week, schedule.getId(), room.getId(), roomType, teacher.getId(), subject.getId(), division, group, constraint);
 	}
-	
+
 	@Override
 	public String toString() {
 		return unit + " Horaire : " + schedule + " s" + week + " Salle " + room + "Classe :" + division + " matière " + subject.getId();
@@ -41,11 +41,11 @@ public class Class {
 		String [] res = {unit, week, schedule.getId(), room.getId()};
 		return res;
 	}
-	
+
 	public void setRoom(Room room) {
 		this.room = room;
 	}
-	
+
 	public Class getAssociated() {
 		return associated;
 	}
@@ -72,47 +72,47 @@ public class Class {
 	public void setWeek(String week) {
 		this.week = week;
 	}
-	
+
 	public String getDivision() {
 		return division;
 	}
-	
+
 	public String getGroup() {
 		return group;
 	}
-	
+
 	public String getRoomType() {
 		return roomType;
 	}
-	
+
 	public Subject getSubject() {
 		return subject;
 	}
-	
+
 	public Teacher getTeacher() {
 		return teacher;
 	}
-	
+
 	public String getUnit() {
 		return unit;
 	}
-	
+
 	public String getWeek() {
 		return week;
 	}
-	
+
 	public Room getRoom() {
 		return room;
 	}
-	
+
 	public Schedule getSchedule() {
 		return schedule;
 	}
-	
+
 	public boolean sameTeacher(Class other) {
 		return teacher.equals(other.getTeacher());
 	}
-	
+
 	public boolean isAssociated() {
 		return associated != null;
 	}
