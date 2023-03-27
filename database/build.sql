@@ -207,10 +207,10 @@ CREATE TABLE IncompatibilitesHoraires(
 );
 
 CREATE TABLE Unites(
-   Unite VARCHAR(10) CHECK (Unite LIKE 'U%'),
+   Unite VARCHAR(10),
    Semaine CHAR(1) CHECK (Semaine IN ('A', 'B')),
-   Horaire CHAR(4) CHECK (Horaire LIKE '[A-Z]{3}[1-9]'),
-   IdSalle VARCHAR(10) CHECK (IdSalle LIKE 'SAL%'),
+   Horaire CHAR(4),
+   IdSalle VARCHAR(10),
    IdContSalle VARCHAR(10),
    PRIMARY KEY(Unite),
    FOREIGN KEY(Horaire) REFERENCES Horaires(Horaire),
@@ -354,7 +354,7 @@ AS
 
 CREATE OR REPLACE VIEW ToExport
 AS 
-	SELECT Unite, Semaine, Horaire, IdSalle, U.IdContSalle, IdEns, IdProf, IdDiv, IdGrp
+	SELECT Unite, Semaine, Horaire, IdSalle, Cs.TypeSalle, IdEns, IdProf, IdDiv, IdGrp
 	FROM (Unites U JOIN ContraintesSalles Cs ON U.IdContSalle = Cs.IdContSalle)
       JOIN Cours C ON Cs.IdCours = C.IdCours;
 	   

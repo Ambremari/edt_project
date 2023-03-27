@@ -30,8 +30,8 @@
                     <div class="dropdown-sub">
                         <a href="#">Elèves</a>
                         <div class="dropdown-subcontent">
-                            <a href="#">Saisie</a>
-                            <a href="#">Modification</a>
+                            <a href="{{route('student.form')}}">Saisie</a>
+                            <a href="{{route('student.update.list')}}">Modification</a>
                             <a href="{{route('student.option')}}">Scolarité</a>
                             <a href="{{route('students.show')}}">Fiches</a>
                         </div>
@@ -74,8 +74,8 @@
                 <span><a href="#">Etablissement</a></span>
                 <div class="dropdown-content">
                     <a href="{{route('classroom.form')}}">Infrastructures</a>
-                    <a href="{{ route('schedule.form')}}">Horaires</a>
-                    <a href="#">Fiche établissement</a>
+                    <a href="{{ route('schedule.show')}}">Horaires</a>
+                    <a href="{{ route('info.show')}}">Fiche établissement</a>
                 </div>
             </div>
 
@@ -87,7 +87,7 @@
                     <a href="{{ route('constraints.classrooms') }}">Contraintes matérielles</a>
                     <a href="{{ route('data.preprocess') }}">Pré-traitement</a>
                     <a href="#">Génération automatique</a>
-                    <a href="#">Modification manuelle</a>
+                    <a href="{{ route('planning.show') }}">Modification manuelle</a>
                     <a href="#">Optimisation</a>
                 </div>
             </div>
@@ -97,10 +97,18 @@
         @if (session()->has('user') && session()->get('user')['role'] == 'prof')
         <div class="topnav">
             <div class="dropdown">
-                <span><a href="#">Mon Emploi du Temps</a></span>
+                <span><a href="{{route('planning.teacher')}}">Mon Emploi du Temps</a></span>
             </div>
             <div class="dropdown">
                 <span><a href="{{route('prof.constraints')}}">Mes Contraintes</a></span>
+            </div>
+            </div>
+        @endif
+
+        @if (session()->has('user') && session()->get('user')['role'] == 'student')
+        <div class="topnav">
+            <div class="dropdown">
+                <span><a href="{{route('planning.student')}}">Mon Emploi du Temps</a></span>
             </div>
             </div>
         @endif

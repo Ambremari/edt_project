@@ -27,7 +27,7 @@
                 <label for="heure_fin">Heure de fin</label>
                 <input type="time" id="heure_fin" name="heure_fin" value="{{ $schedule['HeureFin'] }}" required>
             </div>
-            @csrf
+        <div>
             <button type="submit">Modifier</button>
         </div>
     </form>

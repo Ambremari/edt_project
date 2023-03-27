@@ -9,7 +9,7 @@
     @if ($errors->any())
         <div class="alert alert-warning">
             La salle n'a pas pu être ajoutée &#9785;
-        </div>  
+        </div>
     @endif
     @if (session('status'))
         <div class="alert alert-success">

@@ -75,7 +75,7 @@ h2 {
     position: relative;
     display: block;
 }
-  
+
 .dropdown-content {
     display: none;
     position: absolute;
@@ -91,7 +91,7 @@ h2 {
     min-width: 160px;
     z-index: 1;
   }
-  
+
   .dropdown:hover .dropdown-content {
     display: block;
   }
@@ -108,6 +108,25 @@ h2 {
   .dropdown-subcontent a:hover {
     background-color: #f1f1f1;
 }
+
+.warning {
+    margin: 10px;
+    padding-top : 50px;
+    display: inline-block;
+  }
+.warning-content {
+    display: none;
+    position: absolute;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    max-width: 300px;
+    z-index: 1;
+  }
+
+.warning:hover .warning-content {
+    display: block;
+  }
 
 .content{
     clear: left;
@@ -225,13 +244,13 @@ button {
 .colleft-edt{
     text-align: center;
     float: left;
-    width: 40%;
+    width: 38%;
 }
 
 .colright-edt{
     text-align: center;
     float: left;
-    width: 60%;
+    width: 62%;
     margin-left: -50px;
 }
 
@@ -249,12 +268,12 @@ button {
 
 #teacherInput{
     background-image: url('/css/searchicon.png'); 
-    background-position: 10px 12px; 
+    background-position: 5px 0px; 
     background-repeat: no-repeat; 
     width: 40%; 
     font-size: 16px; 
-    padding: 12px 20px 12px 40px; 
-    border: 1px solid #ddd; 
+    padding: 16px 20px 16px 45px; 
+    border: 0px solid #ddd; 
     margin-bottom: 12px;
     margin-right: 6%;
 }
@@ -271,16 +290,16 @@ button {
   }
 
 #teacherList li a {
-    border: 1px solid #ddd; 
-    margin-top: -1px; 
-    background-color: #f6f6f6; 
-    padding: 12px; 
-    text-decoration: none; 
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
 }
-  
+
   #teacherList li a:hover:not(.header) {
     background-color: #eee;
   }
@@ -295,6 +314,18 @@ th, td {
 table {
     margin-left: auto;
     margin-right: auto;
+}
+
+.schedule th, .schedule td{
+    padding: 0;
+    padding-right: 50px;
+    width : auto;
+    text-align: center;
+    background-color: #f6f5f5;
+}
+
+.schedule table{
+    margin-bottom: 20px;
 }
 
 .myTable{
@@ -363,13 +394,13 @@ table {
   }
 
   #divisionList span {
-    background-color: #f9f9f9; 
-    padding: 12px; 
+    background-color: #f9f9f9;
+    padding: 12px;
     margin: 5px;
-    text-decoration: none; 
-    font-size: 14px; 
-    color: black; 
-    display: inline-block; 
+    text-decoration: none;
+    font-size: 14px;
+    color: black;
+    display: inline-block;
     border-radius: 8px;
 }
 
@@ -398,28 +429,28 @@ table {
   }
 
 #studentList li a {
-    border: 1px solid #ddd; 
-    margin-top: -1px; 
-    background-color: #f6f6f6; 
-    padding: 12px; 
-    text-decoration: none; 
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
 }
-  
+
 #studentList li a:hover:not(.header) {
     background-color: #eee;
   }
 
 #studentInput{
     background-image: url('/css/searchicon.png'); 
-    background-position: 10px 12px; 
+    background-position: 5px 0px; 
     background-repeat: no-repeat; 
     width: 40%; 
     font-size: 16px; 
-    padding: 12px 20px 12px 40px; 
-    border: 1px solid #ddd; 
+    padding: 16px 40px 16px 45px; 
+    border: 0px solid #ddd; 
     margin-bottom: 12px;
     margin-right: 6%;
 }
@@ -439,17 +470,21 @@ table {
     text-align: left;
     margin-bottom: 20px;
     margin-left: 20%;
+    width: 50%;
+}
+.filterbox select{
+    margin-top: 10px;
 }
 
 #studentList span {
-    border: 1px solid #ddd; 
-    margin-top: -1px; 
-    background-color: #f6f6f6; 
-    padding: 12px; 
-    text-decoration: none; 
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    border: 1px solid #ddd;
+    margin-top: -1px;
+    background-color: #f6f6f6;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
 }
 
 .divisionList {
@@ -464,13 +499,13 @@ table {
   }
 
 .divisionList span {
-    background-color: #f9f9f9; 
-    padding: 12px; 
+    background-color: #f9f9f9;
+    padding: 12px;
     margin: 5px;
-    text-decoration: none; 
-    font-size: 14px; 
-    color: black; 
-    display: inline-block; 
+    text-decoration: none;
+    font-size: 14px;
+    color: black;
+    display: inline-block;
     border-radius: 8px;
 }
 
@@ -482,7 +517,7 @@ table {
     width: 1085px;
     margin-bottom: 20px;
     margin-top: 10px;
-    
+
 }
 .day-edt {
     margin: 0px;
@@ -512,6 +547,15 @@ table {
 #bodyEdt span {
     display: block;
 }
+#bodyEdt p {
+    padding : 0;
+    margin: 0;
+}
+
+
+#bodyEdt a:hover{
+    color: #f6f5f5;
+}
 
 #bodyEdt div{
     position: absolute;
@@ -521,6 +565,10 @@ table {
     border: 2px solid #ddd;
     background-color: #f9f9f9;
     padding: 10px;
+}
+
+#edt-box {
+    background-color : transparent;
 }
 
 .col-edt {
@@ -561,20 +609,20 @@ table {
   }
 
 .infos button{
-    margin-top: -1px; 
-    background-color: #DEEAEA; 
-    padding: 12px; 
-    text-decoration: none; 
+    margin-top: -1px;
+    background-color: #DEEAEA;
+    padding: 12px;
+    text-decoration: none;
     font-weight: normal;
-    font-size: 18px; 
+    font-size: 18px;
     cursor: pointer;
-    color: black; 
+    color: black;
     width: 90%;
-    display: block; 
+    display: block;
 }
 
 .infos button.active{
-    background-color: #F7D5D5; 
+    background-color: #F7D5D5;
 }
 
 .tabcontentinfo{
@@ -588,6 +636,8 @@ table {
     margin: 10px;
 }
 
+
 .alert {
     margin: 10px;
 }
+

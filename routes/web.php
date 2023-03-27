@@ -32,6 +32,12 @@ Route::post('/firstlogin/teacher', [Controller::class, 'createPasswordTeacher'])
 Route::post('/login/teacher', [Controller::class, 'loginTeacher'])
     ->name('login.teacher');
 
+Route::post('/firstlogin/student', [Controller::class, 'createPasswordStudent'])
+    ->name('first.student');
+
+Route::post('/login/student', [Controller::class, 'loginStudent'])
+    ->name('login.student');
+
 Route::post('/logout', [Controller::class, 'logout'])
     ->name('logout.post');
 
@@ -175,6 +181,11 @@ Route::get('/grp/fill', [Controller::class, 'fillGroupForm'])
 Route::post('/grp/fill', [Controller::class, 'fillGroup'])
     ->name('group.fill');
 
+Route::get('/college/horaires', [Controller::class, 'showSchedules'])
+    ->name('schedule.show');
+
+Route::post('/college/horaires', [Controller::class, 'generateSchedules'])
+    ->name('schedule.generate');
 
 Route::get('/schedule/add', [Controller::class, 'addScheduleForm'])
     ->name('schedule.form');
@@ -204,18 +215,11 @@ Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsCl
 Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
     ->name('constraints.classrooms.update');
 
-Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
-    ->name('subjects.constraints');
+Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
+    ->name('student.update.form');
 
-Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
-    ->where('idEns', '[ENS].*')
-    ->name('subject.constraints');
-
-Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
-    ->name('subject.constraints.update');
-
-Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
-    ->name('data.preprocess');
+Route::get('/students/add', [Controller::class, 'addStudentForm'])
+     ->name('student.form');
 
 Route::post('/edt/data', [Controller::class, 'preprocessData'])
     ->name('data.preprocess');
@@ -229,7 +233,42 @@ Route::post('/edt/ens/incomp', [Controller::class, 'addSubjectIncompatibility'])
 Route::post('/edt/ens/incomp/delete', [Controller::class, 'deleteSubjectIncompatibility'])
     ->name('subject.incompatibility.delete');
 
+Route::post('/students/add', [Controller::class, 'addStudent'])
+     ->name('student.add');
 
+Route::get('/students/update', [Controller::class, 'updateStudentList'])
+     ->name('student.update.list');
 
+Route::post('/students/update/{id}', [Controller::class, 'updateStudent'])
+     ->name('student.update');
 
+Route::get('/etablissement/info', [Controller::class, 'showInfo'])
+     ->name('info.show');
+    
+Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
+    ->name('subjects.constraints');
 
+Route::get('/edt/horaires/{idEns}', [Controller::class, 'subjectConstraintsForm'])
+    ->where('idEns', '[ENS].*')
+    ->name('subject.constraints');
+
+Route::post('/edt/horaires', [Controller::class, 'updateSubjectConstraints'])
+    ->name('subject.constraints.update');
+
+Route::get('/edt/data', [Controller::class, 'showDataPreprocess'])
+    ->name('data.preprocess');
+
+Route::get('/edt/prof', [Controller::class, 'showTeacherPlanning'])
+    ->name('planning.teacher');
+
+Route::get('/edt/eleve', [Controller::class, 'showStudentPlanning'])
+    ->name('planning.student');
+
+Route::get('/edt/modif', [Controller::class, 'showPlanning'])
+    ->name('planning.show');
+
+Route::get('/edt/modif/{unit}', [Controller::class, 'moveClassPlanning'])
+    ->name('planning.move');
+
+Route::post('/edt/modif/{unit}', [Controller::class, 'updatePlanning'])
+    ->name('planning.update');
