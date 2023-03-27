@@ -23,6 +23,7 @@ Affectation des Groupes
     <option class="{{ $division['NiveauDiv'] }}" value="{{ $division['IdDiv'] }}">{{ $division['LibelleDiv'] }}</option>
   @endforeach
 </select>
+<span style="display: block">
 <label for="grade">Options</label>
 <select class="form-control" id="optionList" name="option" onchange="filterOption()">
   <option value="" selected></option>
@@ -30,6 +31,7 @@ Affectation des Groupes
     <option class="{{ $option['NiveauEns'] }}" value="{{ $option['IdEns'] }}">{{ $option['LibelleEns'] }}</option>
   @endforeach
 </select>
+</span>
 </div>
 <table id="myTable" style="display: none">
         @foreach($option_choices as $item)

@@ -11,6 +11,11 @@ public class Subject {
 		this.constraints = new Vector<Schedule>();
 	}
 	
+	@Override
+	public String toString() {
+		return getId();
+	}
+	
 	public String getId() {
 		return id;
 	}

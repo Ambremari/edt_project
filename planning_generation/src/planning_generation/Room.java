@@ -20,7 +20,7 @@ public class Room {
 	
 	@Override
 	public String toString() {
-		return id;
+		return id + " " + type;
 	}
 	
 	public void setType(String type) {

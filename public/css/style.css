@@ -244,13 +244,13 @@ button {
 .colleft-edt{
     text-align: center;
     float: left;
-    width: 40%;
+    width: 38%;
 }
 
 .colright-edt{
     text-align: center;
     float: left;
-    width: 60%;
+    width: 62%;
     margin-left: -50px;
 }
 
@@ -470,6 +470,10 @@ table {
     text-align: left;
     margin-bottom: 20px;
     margin-left: 20%;
+    width: 50%;
+}
+.filterbox select{
+    margin-top: 10px;
 }
 
 #studentList span {
@@ -543,6 +547,15 @@ table {
 #bodyEdt span {
     display: block;
 }
+#bodyEdt p {
+    padding : 0;
+    margin: 0;
+}
+
+
+#bodyEdt a:hover{
+    color: #f6f5f5;
+}
 
 #bodyEdt div{
     position: absolute;
@@ -552,6 +565,10 @@ table {
     border: 2px solid #ddd;
     background-color: #f9f9f9;
     padding: 10px;
+}
+
+#edt-box {
+    background-color : transparent;
 }
 
 .col-edt {

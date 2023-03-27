@@ -13,6 +13,10 @@ class Repository {
         DB::unprepared(file_get_contents('database/build.sql'));
     }
 
+    function updatePlanning(): void {
+        DB::unprepared(file_get_contents('database/update_planning.sql'));
+    }
+
     function fillDatabase(): void{
         $data = new Data();
         $studentData = new StudentData();
@@ -543,7 +547,7 @@ class Repository {
             'id' => $user['IdEleve'],
             'name'=> $user['NomEleve'],
             'firstname'=> $user['PrenomEleve'],
-            'role'=> 'eleve'];
+            'role'=> 'student'];
     }
 
     function updateStudent(array $student): void{
@@ -1940,6 +1944,140 @@ function updateConstraintsClassrooms(array $constraintsClassroom): void{
     public function getHorairesOuverture()
     {
         return DB::table('Horaires')->orderBy('Jour', 'ASC')->orderBy('HeureDebut', 'ASC')->get();
+    }
+
+    ###########PLANNING################
+
+    public function getAllPlanning(): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->get(['Unite', 'Horaire', 'Semaine', 'IdProf', 'IdGrp','LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
+    public function getUnit(string $unit): array{
+        $res = DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where('Unite', $unit)
+                    ->get(['Unite', 'Horaire', 'Semaine', 'L.*', 'LibelleSalle', 'S.IdSalle'])
+                    ->toArray();
+        return $res[0];
+    }
+
+    public function getGroups(): array{
+        return DB::table("LibellesCours as L")
+                    ->join("Groupes as G", "G.IdGrp", "=", "L.IdGrp")
+                    ->whereNotNull('L.IdGrp')
+                    ->get()
+                    ->toArray();
+    }
+
+    public function updateUnit(array $unit): void{
+        DB::table("Unites")
+            ->where('Unite', $unit['id'])
+            ->update(['Horaire' => $unit['schedule'],
+                      'IdSalle' => $unit['room']]);
+        if($unit['week'] == "A" || $unit['week'] == "B"){
+            DB::table("Unites")
+                ->where('Unite', $unit['id'])
+                ->update(['Semaine' => $unit['week']]);
+        }
+    }
+
+    public function getClassroomsOfSameType(string $unit): array{
+        $type = DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->where("Unite", $unit)
+                    ->get("TypeSalle")
+                    ->toArray();
+        return DB::table("Salles")
+                    ->whereIn("TypeSalle", $type)
+                    ->get()
+                    ->toArray();
+    }
+
+    public function getUnitIncompatibility(string $unit): array{
+        $myUnit = $this->getUnit($unit);
+        $incompatibleGrp = DB::table('LiensGroupes')
+                            ->where('IdDiv', $myUnit['IdDiv'])
+                            ->get('IdGrp')
+                            ->toArray();
+        $incompatibleDiv = DB::table('LiensGroupes')
+                            ->Where('IdGrp', $myUnit['IdGrp'])
+                            ->get('IdDiv')
+                            ->toArray();
+        $incompatibleEns = DB::table('IncompatibilitesHoraires')
+                            ->where('IdEns1', $myUnit['IdEns'])
+                            ->get('IdEns2 as IdEns')
+                            ->toArray();
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where('IdDiv', $myUnit['IdDiv'])
+                    ->where('IdGrp', $myUnit['IdGrp'])
+                    ->orWhere('IdProf', $myUnit['IdProf'])
+                    ->orWhereIn('IdDiv', $incompatibleDiv)
+                    ->orWhereIn('IdGrp', $incompatibleGrp)
+                    ->orWhereIn('IdEns', $incompatibleEns)
+                    ->get(['Unite', 'Horaire', 'Semaine', 'L.*', 'LibelleSalle'])
+                    ->toArray();
+    }
+
+    public function getTeacherPlanning(string $id): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where("L.IdProf", $id)
+                    ->get(['Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
+    public function getStudentPlanning(string $id): array{
+        $divisions = DB::table("Eleves")
+                        ->where("IdEleve", $id)
+                        ->get("IdDiv")
+                        ->toArray();
+        $groups = DB::table("CompoGroupes")
+                        ->where("IdEleve", $id)
+                        ->get("IdGrp")
+                        ->toArray();
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
+                    ->where("L.IdDiv", $divisions[0]['IdDiv'])
+                    ->orWhereIn("L.IdGrp", $groups)
+                    ->get(['Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->toArray();
+    }
+
+    public function getTeacherDiv(string $id): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->select(DB::raw('UNIQUE LibelleDiv'))
+                    ->where("L.IdProf", $id)
+                    ->whereNotNull('LibelleDiv')
+                    ->get()
+                    ->toArray();
+    }
+
+    public function getTeacherGrp(string $id): array{
+        return DB::table("Unites as U")
+                    ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
+                    ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
+                    ->select(DB::raw('UNIQUE LibelleGrp'))
+                    ->where("L.IdProf", $id)
+                    ->whereNotNull("LibelleGrp")
+                    ->whereNull('LibelleDiv')
+                    ->get()
+                    ->toArray();
     }
 
 }
