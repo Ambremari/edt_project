@@ -37,7 +37,7 @@
         </div>
     </div>
     <div class="central">
-        <div class="col-12">
+        <div>
             <div>
                 @csrf
                 <button type="button" class="btn btn-primary" onclick="showForm()">Spécifier une salle</button>
@@ -51,7 +51,7 @@
                 <select class="form-control" id="type" name="type" required>
                     <option value="" selected disabled hidden>Choisir une salle</option>
                     @foreach ($classrooms as $classroom)
-                        <option value="{{ $classroom['LibelleSalle'] }}">{{ $classroom['LibelleSalle'] }} ({{ $classroom['TypeSalle'] }})</option>
+                        <option value="{{ $classroom['TypeSalle'] }}">{{ $classroom['LibelleSalle'] }} ({{ $classroom['TypeSalle'] }})</option>
                     @endforeach
                 </select>
             </div>

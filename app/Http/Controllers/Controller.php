@@ -1082,24 +1082,16 @@ class Controller extends BaseController{
 
         $validatedData = $request->validate([
             'TypeSalle' => 'required|exists:TypesSalles,TypeSalle',
-            'IdCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
             'VolHSalle' => 'required|numeric',
-            'DureeMinSalle' => 'required|integer|min:1',
         ], [
             'TypeSalle.required' => 'Le type de salle est obligatoire.',
             'TypeSalle.exists' => 'Le type de salle sélectionné est invalide.',
-            'IdCours.required' => 'L\'identifiant du cours est obligatoire.',
-            'IdCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
-            'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
             'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
             'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
-            'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
-            'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
-            'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
         ]);
 
         try {
-            $this->repository->addConstraintsClassrooms($validatedData);
+            $this->repository->insertClassroomConstraints($validatedData);
             return redirect()->route('constraints.classrooms.add.form')->with('status', 'Contrainte ajoutée avec succès !');
         } catch (Exception $exception) {
             return redirect()->route('constraints.classrooms.add.form')->withInput()->withErrors("Impossible d'ajouter la contrainte.");
@@ -1116,7 +1108,7 @@ class Controller extends BaseController{
         $classrooms = $this->repository->classrooms();
         $subjects = $this->repository->subjects();
 
-        return view('classrooms_constraints', [
+        return view('classrooms_constraints_add', [
             'lessons' => $lessons,
             'classrooms' => $classrooms,
             'subjects' => $subjects,
@@ -1141,13 +1133,10 @@ class Controller extends BaseController{
         'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
         'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
         'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
-        'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
-        'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
-        'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
     ]);
 
     try{
-        $this->repository->addConstraintsClassrooms($validatedData);
+        $this->repository->insertClassroomConstraints($validatedData);
     } catch (Exception $exception) {
         return redirect()->route('constraints.classrooms.update.form')->withInput()->withErrors("Impossible d'ajouter la contrainte.");
     }
