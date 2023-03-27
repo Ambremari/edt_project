@@ -796,23 +796,7 @@ class Data
             ['IdDiv' => 'DIV014',
             'LibelleDiv' => '3èmeC',
             'NiveauDiv' => '3EME',
-            'EffectifPrevDiv' => 35],
-            ['IdDiv' => 'DIV031',
-            'LibelleDiv' => '6èmeD',
-            'NiveauDiv' => '6EME',
-            'EffectifPrevDiv' => 35],
-            ['IdDiv' => 'DIV032',
-            'LibelleDiv' => '5èmeD',
-            'NiveauDiv' => '5EME',
-            'EffectifPrevDiv' => 35],
-            ['IdDiv' => 'DIV033',
-            'LibelleDiv' => '4èmeD',
-            'NiveauDiv' => '4EME',
-            'EffectifPrevDiv' => 35],
-            ['IdDiv' => 'DIV034',
-            'LibelleDiv' => '3èmeD',
-            'NiveauDiv' => '3EME',
-            'EffectifPrevDiv' => 35],
+            'EffectifPrevDiv' => 35]
         ];
     }
 

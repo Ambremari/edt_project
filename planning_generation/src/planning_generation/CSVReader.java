@@ -1,10 +1,14 @@
 package planning_generation;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CSVReader {
 
@@ -25,6 +29,24 @@ public class CSVReader {
 
 		for (Schedule schedule : schedules) {
 			System.out.println(schedule);
+		}
+		
+		List<GroupLink> groups = readGroupsFromCSV("data/groups.csv");
+		
+		for (GroupLink couple : groups) {
+			System.out.println(couple);
+		}
+		
+		List<SubjectsCouple> subjects = readSubjectsFromCSV("data/subjects.csv");
+		
+		for (SubjectsCouple couple : subjects) {
+			System.out.println(couple);
+		}
+		
+		List<String> durationConstraints = readStringFromCSV("data/duration.csv");
+		
+		for (String couple : durationConstraints) {
+			System.out.println(couple);
 		}
 	}
 
@@ -54,15 +76,16 @@ public class CSVReader {
 	private static Class createClass(String[] metadata) {
 		String unit = metadata[0];
 		String week = metadata[1];
-		String scheduleId = metadata[2];
-		String roomId = metadata[3];
+		String scheduleId = "999";
+		String roomId = "999";
 		String roomType = metadata[4];
-		String teacherId = metadata[5];
-		String subjectId = metadata[6];
+		String subjectId = metadata[5];
+		String teacherId = metadata[6];
 		String division = metadata[7];
 		String group = metadata[8];
+		String constraint = metadata[9];
 
-		return new Class(unit, week, scheduleId, roomId, roomType, teacherId, subjectId, division, group);
+		return new Class(unit, week, scheduleId, roomId, roomType, teacherId, subjectId, division, group, constraint);
 	}
 
 	static List<Room> readClassroomsFromCSV(String fileName) {
@@ -106,7 +129,6 @@ public class CSVReader {
 				String[] values = line.split(";");
 
 				Schedule schedule = new Schedule(values[0]);
-
 				schedules.add(schedule);
 
 				line = br.readLine();
@@ -116,6 +138,75 @@ public class CSVReader {
 		}
 
 		return schedules;
+	}
+	
+	static List<GroupLink> readGroupsFromCSV(String fileName) {
+		List<GroupLink> groups = new ArrayList<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String line = br.readLine();
+			line = br.readLine();
+
+			while (line != null) {
+				String[] values = line.split(";");
+
+				GroupLink couple = new GroupLink(values[0], values[1]);
+
+				groups.add(couple);
+
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return groups;
+	}
+	
+	static List<SubjectsCouple> readSubjectsFromCSV(String fileName) {
+		List<SubjectsCouple> subjects = new ArrayList<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String line = br.readLine();
+			line = br.readLine();
+
+			while (line != null) {
+				String[] values = line.split(";");
+
+				SubjectsCouple couple = new SubjectsCouple(values[0], values[1]);
+
+				subjects.add(couple);
+
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return subjects;
+	}
+	
+	static List<String> readStringFromCSV(String fileName) {
+		List<String> myStrings = new ArrayList<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String line = br.readLine();
+			line = br.readLine();
+
+			while (line != null) {
+				String[] values = line.split(";");
+
+				String myString = values[0];
+
+				myStrings.add(myString);
+
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return myStrings;
 	}
 
 }

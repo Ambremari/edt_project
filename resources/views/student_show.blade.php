@@ -25,7 +25,7 @@ Elève {{ $student['PrenomEleve'] }} {{ $student['NomEleve'] }}
                 {{ $student['LibelleDiv'] }} 
             <div class="divisionList">
                 @foreach ($lessons as $row)
-                    @if ($student['IdDiv'] != null && $row['IdDiv'] == $student['IdDiv'])
+                    @if ($student['IdDiv'] != null && $row['IdDiv'] == $student['IdDiv'] && $row['IdGrp'] == null)
                     <span>{{ $row['LibelleEns'] }}</span>
                     @endif
                 @endforeach

@@ -43,6 +43,7 @@
             @endfor
             <div style="height: 40px;">
             </div>
+            @for($i = 1; $i <= count($start_afternoon) ; $i++)
             <div class= "times-edt">
                 <div class="start-time">{{ $start_afternoon[($i-1)]['HeureDebut'] }}</div>
                 <p>S{{ $i }}</p>
