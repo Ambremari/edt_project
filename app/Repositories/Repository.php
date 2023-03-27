@@ -1926,7 +1926,7 @@ class Repository {
                     ->join("ContraintesSalles as Cs", "U.IdContSalle", "=", "Cs.IdContSalle")
                     ->join("LibellesCours as L", "Cs.IdCours", "=", "L.IdCours")
                     ->join("Salles as S", "U.IdSalle", "=", "S.IdSalle")
-                    ->get(['Unite', 'Horaire', 'Semaine', 'LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
+                    ->get(['Unite', 'Horaire', 'Semaine', 'IdProf', 'IdGrp','LibelleEns', 'LibelleDiv', 'LibelleGrp', 'NomProf', 'PrenomProf', 'LibelleSalle'])
                     ->toArray();
     }
 
@@ -1939,6 +1939,14 @@ class Repository {
                     ->get(['Unite', 'Horaire', 'Semaine', 'L.*', 'LibelleSalle', 'S.IdSalle'])
                     ->toArray();
         return $res[0];
+    }
+
+    public function getGroups(): array{
+        return DB::table("LibellesCours as L")
+                    ->join("Groupes as G", "G.IdGrp", "=", "L.IdGrp")
+                    ->whereNotNull('L.IdGrp')
+                    ->get()
+                    ->toArray();
     }
 
     public function updateUnit(array $unit): void{

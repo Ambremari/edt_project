@@ -8,19 +8,21 @@
     <ul id="studentList" style="height: 300px;">
     @foreach ($divisions as $class)
         <li><span>
-          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleDiv'] }}" id="myFilter" onclick="filterClass()">
+          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleDiv'] }}" id="myFilter" onclick="newFilterClass()">
             <label class="radio-link" for="id" style="font-weight: normal;">
                 {{ $class['LibelleDiv'] }}
             </label>
         </span></li>
         @endforeach
         @foreach ($groups as $class)
+        @if($class['IdDiv'] == null)
         <li><span>
-          <input class="form-check-input" type="radio" name="id" value="{{ $class['LibelleGrp'] }}" id="myFilter" onclick="filterClass()">
+          <input class="form-check-input" type="radio" name="id" value="{{ $class['IdGrp'] }}" id="myFilter" onclick="newFilterClass()">
             <label class="radio-link" for="id" style="font-weight: normal;">
-                {{ $class['LibelleGrp'] }}
+                {{ $class['LibelleGrp'] }} {{ $class['NiveauGrp'] }}
             </label>
         </span></li>
+        @endif
         @endforeach
     </ul>
 
@@ -77,6 +79,7 @@
                 <div class="{{ $time['Horaire'] }}">
                 @endif
                 <a href="{{route('planning.move', ['unit' => $time['Unite']])}}">
+                <span class="{{ $time['IdProf'] }}"></span>
                 @if($time['LibelleGrp'] == null)
                 <span class="{{ $time['LibelleDiv'] }}">
                 <p style="font-weight: bold">{{ $time['LibelleEns'] }}</p>
@@ -85,7 +88,7 @@
                 </span>
                 @else
                     @if($time['LibelleDiv'] == null)
-                    <span class="{{ $time['LibelleGrp'] }}">
+                    <span class="{{ $time['IdGrp'] }}">
                     @else
                     <span class="{{ $time['LibelleDiv'] }}">
                     @endif
@@ -121,6 +124,85 @@ function searchClass() {
 }
 
 position();
-filterClass();
+function newAssociateColor(){
+        var colors = ["#FBCEB1", "#F2D2BD", "#E97451",	"#E3963E","#F28C28",	
+                    "#D27D2D",	"#B87333","#FF7F50",	"#F88379",	"#8B4000",	
+                    "#FAD5A5","#E49B0F","#FFC000",	"#DAA520",	"#FFD580"];
+        var index = 0;
+        var getColor = new Map();
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+        for(var i = 0; i < div.length ; i++){
+            var mySpan = div[i].getElementsByTagName("span")[1];
+            var text = mySpan.getAttribute("class");
+            if(!getColor.has(text)){
+                getColor.set(text, colors[index])
+                index++;
+                if(index >= colors.length)
+                    index = 0;
+            }
+        }
+        return getColor;
+    }
+
+function newFilterClass(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+        var input = document.getElementsByTagName("input");
+        
+        for(var i = 0; i < input.length ; i++){
+            if(input[i].checked)
+                var filter = input[i].value;
+        }
+
+        for(var i = 0; i < div.length ; i++){
+            div[i].style.display = "none";
+        }
+
+        colors = associateColor();
+
+        for(var i = 0; i < div.length ; i++){
+            var mySpan = div[i].getElementsByTagName("span")[1];
+            var text = mySpan.getAttribute("class");
+            var myProf = div[i].getElementsByTagName("span")[0];
+            var prof = myProf.getAttribute("class");
+            if(filter == "" || filter == text){
+                div[i].style.display = "";
+                div[i].style.backgroundColor= colors.get(prof);
+            }
+        }
+    }
+newFilterClass();
+
+function filterTeacher(){
+        var table = document.getElementById("bodyEdt");
+        var div = table.getElementsByTagName("div");
+        var input = document.getElementsByTagName("input");
+        
+        for(var i = 0; i < input.length ; i++){
+            if(input[i].checked)
+                var filter = input[i].value;
+        }
+
+        for(var i = 0; i < div.length ; i++){
+            div[i].style.display = "none";
+        }
+
+        colors = newAssociateColor();
+
+        for(var i = 0; i < div.length ; i++){
+            var mySpan = div[i].getElementsByTagName("span")[0];
+            var text = mySpan.getAttribute("class");
+            var myProf = div[i].getElementsByTagName("span")[1];
+            var prof = myProf.getAttribute("class");
+            if(filter == "" || filter == text){
+                div[i].style.display = "";
+                div[i].style.backgroundColor= colors.get(prof);
+            }
+        }
+    }
+newFilterClass();
+
+
 </script>
 @endsection

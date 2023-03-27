@@ -1490,7 +1490,7 @@ class Controller extends BaseController{
         $planning = $this->repository->getAllPlanning();
         $teachers = $this->repository->teachers();
         $divisions = $this->repository->divisions();
-        $groups = $this->repository->groups();
+        $groups = $this->repository->getGroups();
         $startMorning = $this->repository->getStartTimesMorning();
         $startAfternoon = $this->repository->getStartTimesAfternoon();
         return view('planning_show', ['times' => $times,
