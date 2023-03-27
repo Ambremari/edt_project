@@ -42,6 +42,12 @@ public class CSVReader {
 		for (SubjectsCouple couple : subjects) {
 			System.out.println(couple);
 		}
+		
+		List<String> durationConstraints = readStringFromCSV("data/duration.csv");
+		
+		for (String couple : durationConstraints) {
+			System.out.println(couple);
+		}
 	}
 
 	static List<Class> readClassesFromCSV(String fileName) {
@@ -70,15 +76,16 @@ public class CSVReader {
 	private static Class createClass(String[] metadata) {
 		String unit = metadata[0];
 		String week = metadata[1];
-		String scheduleId = metadata[2];
-		String roomId = metadata[3];
+		String scheduleId = "999";
+		String roomId = "999";
 		String roomType = metadata[4];
 		String subjectId = metadata[5];
 		String teacherId = metadata[6];
 		String division = metadata[7];
 		String group = metadata[8];
+		String constraint = metadata[9];
 
-		return new Class(unit, week, scheduleId, roomId, roomType, teacherId, subjectId, division, group);
+		return new Class(unit, week, scheduleId, roomId, roomType, teacherId, subjectId, division, group, constraint);
 	}
 
 	static List<Room> readClassroomsFromCSV(String fileName) {
@@ -179,6 +186,27 @@ public class CSVReader {
 		return subjects;
 	}
 	
-	
+	static List<String> readStringFromCSV(String fileName) {
+		List<String> myStrings = new ArrayList<>();
+
+		try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+			String line = br.readLine();
+			line = br.readLine();
+
+			while (line != null) {
+				String[] values = line.split(";");
+
+				String myString = values[0];
+
+				myStrings.add(myString);
+
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return myStrings;
+	}
 
 }

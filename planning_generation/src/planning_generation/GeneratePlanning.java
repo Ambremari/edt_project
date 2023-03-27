@@ -22,19 +22,22 @@ public class GeneratePlanning {
 		List<Schedule> schedules = CSVReader.readSchedulesFromCSV("data/schedules.csv");
 		List<GroupLink> groups = CSVReader.readGroupsFromCSV("data/groups.csv");
 		List<SubjectsCouple> subjects = CSVReader.readSubjectsFromCSV("data/subjects.csv");
+		List<String> durationConstraints = CSVReader.readStringFromCSV("data/duration.csv");
 		
-		Planning randomPlanning = new Planning(classes, schedules, rooms, groups, subjects);
+		Planning randomPlanning = new Planning(classes, schedules, rooms, groups, subjects, durationConstraints);
 		randomPlanning.mostContraints();
 		
-		
 		//Positioning classes with the most constraints 
-		Planning firstSetPlanning = new Planning(randomPlanning.getFirstSet(), schedules, rooms, groups, subjects);
+		 Planning firstSetPlanning = new Planning(randomPlanning.getFirstSet(), schedules, rooms, groups, subjects, durationConstraints);
 		firstSetPlanning.setRandomSchedule();
+		System.out.println(firstSetPlanning);
+		
+		firstSetPlanning.associateClasses();
 		System.out.println(firstSetPlanning);
 		
 		firstOptim(firstSetPlanning);
 		int i = 0;
-		while(firstSetPlanning.getPrimaryCost() > 0 && i < 1500) {
+		while(firstSetPlanning.getPrimaryCost() > 0) {
 			i++;
 			secondOptim(firstSetPlanning);
 		}
@@ -46,8 +49,9 @@ public class GeneratePlanning {
 		
 		firstOptim(bestPlanning);
 		i = 0;
-		while(bestPlanning.getPrimaryCost() > 0 && i < 500) {
+		while(bestPlanning.getPrimaryCost() > 0 && i < 6000) {
 			i++;
+			System.out.println("itération : " + i);
 			secondOptim(bestPlanning);
 		}
 		
@@ -75,25 +79,41 @@ public class GeneratePlanning {
 
 	private static void secondOptim(Planning bestPlanning) {
 		Planning copyPlanning = new Planning(bestPlanning);
-		if(copyPlanning.permuteTeachers())
+		if(copyPlanning.permuteTeachers()) {
 			evaluate(copyPlanning, bestPlanning);
+			copyPlanning = new Planning(bestPlanning);
+		}
 		
-		copyPlanning = new Planning(bestPlanning);
-		if(copyPlanning.permuteDivisions())
+		if(copyPlanning.permuteDivisions()){
 			evaluate(copyPlanning, bestPlanning);
+			copyPlanning = new Planning(bestPlanning);
+		}
 		
-		copyPlanning = new Planning(bestPlanning);
-		if(copyPlanning.permuteDivisionsGroups())
-			evaluate(copyPlanning, bestPlanning); 
-		
-		copyPlanning = new Planning(bestPlanning);
-		if(copyPlanning.permuteClasses())
+		if(copyPlanning.permuteSubjects()){
 			evaluate(copyPlanning, bestPlanning);
+			copyPlanning = new Planning(bestPlanning);
+		}
 		
-		copyPlanning = new Planning(bestPlanning);
-		if(copyPlanning.switchClasses())
+		if(copyPlanning.permuteDivisionsGroups()){
 			evaluate(copyPlanning, bestPlanning);
-			
+			copyPlanning = new Planning(bestPlanning);
+		}
+		
+		if(copyPlanning.permuteClasses()){
+			evaluate(copyPlanning, bestPlanning);
+			copyPlanning = new Planning(bestPlanning);
+		}
+		
+		if(copyPlanning.permuteClassesToMove()){
+			evaluate(copyPlanning, bestPlanning);
+			copyPlanning = new Planning(bestPlanning);
+		}
+		 
+		if(copyPlanning.switchClasses()){
+			evaluate(copyPlanning, bestPlanning);
+			copyPlanning = new Planning(bestPlanning);
+		}
+		
 		copyPlanning = new Planning(bestPlanning);
 		copyPlanning.randomPermuteClasses();
 		evaluate(copyPlanning, bestPlanning);
@@ -101,15 +121,27 @@ public class GeneratePlanning {
 		copyPlanning = new Planning(bestPlanning);
 		copyPlanning.randomSwitchClasses();
 		evaluate(copyPlanning, bestPlanning);
+			
+		copyPlanning = new Planning(bestPlanning);
+		copyPlanning.randomPermuteClasses();
+		evaluateRandom(copyPlanning, bestPlanning);
+		
+		copyPlanning = new Planning(bestPlanning);
+		copyPlanning.randomSwitchClasses();
+		evaluateRandom(copyPlanning, bestPlanning);
+		
+		copyPlanning = new Planning(bestPlanning);
+		copyPlanning.available();
+		evaluateRandom(copyPlanning, bestPlanning);
 	}
 	
 	public static void firstOptim(Planning planning) {
 		planning.available();
-		planning.evaluatePrimaryCost();
+		planning.evaluateCost();
 		System.out.println(planning);	
 		if(planning.getPrimaryCost() > 0) {
 			planning.countIncompatible();
-			planning.evaluatePrimaryCost();
+			planning.evaluateCost();
 		}
 		System.out.println(planning);	
 		}
@@ -119,6 +151,18 @@ public class GeneratePlanning {
 		int bestCost = bestPlanning.getPrimaryCost();
 		System.out.println(newCost);
 		if(newCost <= bestCost) {
+			bestPlanning.update(newPlanning);
+			System.out.println("Mouvement");
+		}
+	}
+	
+	public static void evaluateRandom(Planning newPlanning, Planning bestPlanning) {
+		int newCost = newPlanning.getPrimaryCost();
+		int bestCost = bestPlanning.getPrimaryCost();
+		int newBonus = newPlanning.getBonus();
+		int oldBonus = bestPlanning.getBonus();
+		System.out.println(newCost);
+		if(newCost < bestCost || (newCost <= bestCost && newBonus > oldBonus)) {
 			bestPlanning.update(newPlanning);
 			System.out.println("Mouvement");
 		}

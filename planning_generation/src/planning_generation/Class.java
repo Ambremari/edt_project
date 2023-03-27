@@ -10,10 +10,11 @@ public class Class {
 	private Subject subject;
 	private String division;
 	private String group;
+	private String constraint;
 	private Class associated;
 	
 	public Class(String unit, String week, String scheduleId, String roomId, 
-			String roomType, String teacherId, String subjectId, String division, String group) {
+			String roomType, String teacherId, String subjectId, String division, String group, String constraint) {
 		this.unit = unit;
 		this.schedule = new Schedule(scheduleId);
 		this.week = week;
@@ -23,11 +24,12 @@ public class Class {
 		this.subject = new Subject(subjectId);
 		this.division = division;
 		this.group = group;	
+		this.constraint = constraint;	
 		this.associated = null;
 	}
 	
 	public Class copyClass() {
-		return new Class(unit, week, schedule.getId(), room.getId(), roomType, teacher.getId(), subject.getId(), division, group);
+		return new Class(unit, week, schedule.getId(), room.getId(), roomType, teacher.getId(), subject.getId(), division, group, constraint);
 	}
 	
 	@Override
@@ -46,6 +48,10 @@ public class Class {
 	
 	public Class getAssociated() {
 		return associated;
+	}
+	
+	public String getConstraint() {
+		return constraint;
 	}
 	
 	public void setSchedule(Schedule schedule) {
@@ -131,12 +137,29 @@ public class Class {
 		return other.equals(associated);
 	}
 	
+	public boolean sameConstraint(Class other) {
+		return constraint.equals(other.getConstraint());
+	}
+	
 	public boolean sameDivision(Class other) {
 		return division.equals(other.getDivision()) && division.length() != 3;
 	}
 	
 	public boolean sameWeek(Class other) {
 		return week.equals(other.getWeek());
+	}
+	
+	public boolean sameDay(Class other) {
+		return schedule.getDay().equals(other.getSchedule().getDay());
+	}
+	
+	public boolean sameHalf(Class other) {
+		return schedule.getHalf().equals(other.getSchedule().getHalf());
+	}
+	
+	public boolean consecutive(Class other) {
+		return sameDay(other) && sameHalf(other) && 
+				(schedule.getHour() == other.getSchedule().getHour() + 1 || schedule.getHour() == other.getSchedule().getHour() - 1);
 	}
 	
 	public boolean sameGroup(Class other) {
