@@ -1104,7 +1104,7 @@ class Controller extends BaseController{
 
         $constraints = $this->repository->getClassroomConstraints();
         $lessons = $this->repository->lessons();
-        $classrooms = $this->repository->classrooms();
+        $classrooms = $this->repository->types();
         $subjects = $this->repository->subjects();
 
         return view('classrooms_constraints_add', [
@@ -1122,21 +1122,20 @@ class Controller extends BaseController{
         }
 
         $validatedData = $request->validate([
-            'TypeSalle' => 'required|exists:TypesSalles,TypeSalle',
-            'IdCours' => 'required|exists:Cours,IdCours|regex:/^CR.+$/',
-            'VolHSalle' => 'required|numeric',
-            'DureeMinSalle' => 'required|integer|min:1',
+            'type' => 'required|exists:TypesSalles,TypeSalle',
+            'subject' => 'required|exists:Enseignements, IdEns',
+            'timeamount' => 'required|numeric',
+            'mintime' => 'required|integer|min:1',
         ], [
-            'TypeSalle.required' => 'Le type de salle est obligatoire.',
-            'TypeSalle.exists' => 'Le type de salle sélectionné est invalide.',
-            'IdCours.required' => 'L\'identifiant du cours est obligatoire.',
-            'IdCours.exists' => 'L\'identifiant du cours sélectionné est invalide.',
-            'IdCours.regex' => 'L\'identifiant du cours doit commencer par les caractères "CR".',
-            'VolHSalle.required' => 'Le volume horaire de la salle est obligatoire.',
-            'VolHSalle.numeric' => 'Le volume horaire de la salle doit être numérique.',
-            'DureeMinSalle.required' => 'La durée minimale de la salle est obligatoire.',
-            'DureeMinSalle.integer' => 'La durée minimale de la salle doit être un nombre entier.',
-            'DureeMinSalle.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
+            'type.required' => 'Le type de salle est obligatoire.',
+            'type.exists' => 'Le type de salle sélectionné est invalide.',
+            'subject.required' => 'L\'identifiant du cours est obligatoire.',
+            'subject.exists' => 'L\'identifiant du cours sélectionné est invalide.',
+            'timeamount.required' => 'Le volume horaire de la salle est obligatoire.',
+            'timeamount.numeric' => 'Le volume horaire de la salle doit être numérique.',
+            'mintime.required' => 'La durée minimale de la salle est obligatoire.',
+            'mintime.integer' => 'La durée minimale de la salle doit être un nombre entier.',
+            'mintime.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
         ]);
 
         try {

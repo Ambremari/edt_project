@@ -4,69 +4,57 @@
 
 @section('content')
 <div class="colup">
-    <div class="colup">
-        <form method="POST" action="{{ route('constraints.classrooms.add') }}">
-            @csrf
-            @method('POST')
-    @if ($errors->any())
-        <div class="alert alert-warning">
-            La contrainte n'a pas pu être ajoutée &#9785;
-        </div>
-    @endif
-    @if (session('status'))
-        <div class="alert alert-success">
-            {{ session('status') }}
-        </div>
-    @endif
-    <input type="hidden" id="course_id" name="course_id" value="">
-    <div class="colleft">
-        <div>
+    <form method="POST" action="{{ route('constraints.classrooms.add') }}">
+        @csrf
+        @if ($errors->any())
+            <div class="alert alert-warning">
+                La contrainte n'a pas pu être ajoutée &#9785;
+            </div>
+        @endif
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+    <div>
+        <div class="my_input" style="display: inline-block">
             <label for="subject">Enseignement</label>
             <select class="form-control" id="subject" name="subject" onchange="getSubjectVolume()">
                 <option value="" selected>Tous</option>
                 @foreach ($subjects as $row)
-                    <option value="{{ $row['LibelleEns'] }}">{{ $row['LibelleEns'] }}  ({{$row['NiveauEns']}})</option>
+                    <option value="{{ $row['IdEns'] }}">{{ $row['LibelleEns'] }}  ({{$row['NiveauEns']}})</option>
                 @endforeach
             </select>
         </div>
-    </div>
-    <div class="colright">
-        <div>
+    
+        <div class="my_input" style="display: inline-block">
             <label for="volume">Volume horaire hebdomadaire</label>
-            <input type="text" class="form-control" id="volume" name="volume" value="" disabled>
+            <input type="text" class="form-control" id="volume" name="volume" value="" style="width:45px" disabled>
         </div>
     </div>
-    <div class="central">
-        <div class="col-12">
-            <div>
-                @csrf
-                <button type="button" class="btn btn-primary" onclick="showForm()">Spécifier une salle</button>
-            </div>
-        </div>
-    </div>
+        <button type="button" onclick="showForm()">Spécifier une salle</button>
     <div id="form" style="display:none">
-        <div class="colleft">
-            <div>
+        <div>
+            <div class="my_input" style="display: inline-block">
                 <label for="type">Salle</label>
                 <select class="form-control" id="type" name="type" required>
-                    <option value="" selected disabled hidden>Choisir une salle</option>
+                    <option value="" selected disabled hidden>Choisir un type de salle</option>
                     @foreach ($classrooms as $classroom)
-                        <option value="{{ $classroom['LibelleSalle'] }}">{{ $classroom['LibelleSalle'] }} ({{ $classroom['TypeSalle'] }})</option>
+                        <option value="{{ $classroom['TypeSalle'] }}">{{ $classroom['TypeSalle'] }}</option>
                     @endforeach
                 </select>
             </div>
-        </div>
-        <div class="colright">
-            <div>
-                <label for="volume-infrastructure">Volume horaire hebdomadaire pour cette salle</label>
-                <input type="text" class="form-control" id="volume-infrastructure" name="volume_infrastructure" required>
+            <div class="my_input" style="display: inline-block">
+                <label for="volume-infrastructure">Volume horaire hebdomadaire </label>
+                <input type="number" style="width:45px"  step=".5" class="form-control" id="volume-infrastructure" name="timeamount" required>
             </div>
+            <div class="my_input" style="display: inline-block">
+                <label for="mintime">Durée minimale d'un cours</label>
+                <input type="number" style="width:45px" class="form-control" id="mintime" name="mintime" required>
+            </div>     
         </div>
-        <div class="central">
-            <div>
-                @csrf
-                <button type="submit" class="btn btn-primary">Valider</button>
-            </div>
+    <button type="submit" class="btn btn-primary">Valider</button>
+    </div>
         </div>
     </div>
 </div>
@@ -96,9 +84,7 @@
         <option value="4.5">4.5</option>
     </select>
     </div>
-@if (count($constraints) > 0)
 <div>
-    <label>Contraintes : </label>
     <table class="table">
         <thead>
             <tr>
@@ -122,7 +108,6 @@
         </tbody>
     </table>
 </div>
-@endif
 <script>
 function filterClassrooms() {
     var input, filter, table, tr, td, i, txtValue;
@@ -167,15 +152,15 @@ function filterScheduels() {
         var volumeInput = document.getElementById("volume");
         var subjects = @json($subjects);
         for (var i = 0; i < subjects.length; i++) {
-            if (subjects[i].LibelleEns === subject) {
+            if (subjects[i].IdEns === subject) {
                 volumeInput.value = subjects[i].VolHEns;
                 break;
             }
         }
     }
     function showForm() {
-    document.getElementById("form").style.display = "block";
-}
+        document.getElementById("form").style.display = "block";
+    }
 
 </script>
 @endsection
