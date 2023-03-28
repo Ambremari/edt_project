@@ -69,6 +69,7 @@
             <div class="my_input">
                 <label for="division">Division</label>
                 <select id="division" name="division" aria-describedby="division_feedback">
+                    <option value=""></option>
                     @foreach ($divisions as $row)
                         <option value="{{ $row['IdDiv'] }}" @if($student['IdDiv'] == $row['IdDiv']) selected @endif>{{ $row['LibelleDiv'] }} ({{ $row['NiveauDiv'] }})</option>
                     @endforeach

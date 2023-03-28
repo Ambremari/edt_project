@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Validation\Rules\Exists;
 
 class Controller extends BaseController{
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
@@ -1274,7 +1275,7 @@ class Controller extends BaseController{
                 'firstname' => ['required', 'min:2', 'max:15'],
                 'birthdate' => ['required', 'integer'],
                 'level' => ['required'],
-                'division' =>['required']
+                'division' => []
             ];
             $messages = [
                 'name.required' => 'Vous devez saisir un nom.',
@@ -1286,7 +1287,7 @@ class Controller extends BaseController{
                 'birthdate.required' => 'Vous devez saisir une date de naissance.',
                 'birthdate.integer' => 'Vous devez saisir une date valide.',
                 'level.required' => 'Vous devez saisir un niveau.',
-                'division.required' => 'Vous devez sélectionner une division.'
+
             ];
             $validatedData = $request->validate($rules, $messages);
             $student = [
@@ -1295,8 +1296,9 @@ class Controller extends BaseController{
                 'PrenomEleve' => $validatedData['firstname'],
                 'AnneeNaisEleve' => $validatedData['birthdate'],
                 'NiveauEleve' => $validatedData['level'],
-                'IdDiv' => $validatedData['division']
             ];
+            if($validatedData['division'] != "")
+                $student['IdDiv']=$validatedData['division'];
             try {
                 $this->repository->updateStudent($student);
             } catch (Exception $exception) {

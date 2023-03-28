@@ -8,84 +8,84 @@ Affectation des Groupes
 <form method="POST" action="{{route('group.fill')}}">
     @csrf
 <div class="colleft">
-<div class="filterbox">
-<label for="grade">Niveau</label>
-<select class="form-control" id="mySelect" onchange="filterLevel()">
-    <option value="6EME">6ème</option>
-    <option value="5EME">5ème</option>
-    <option value="4EME">4ème</option>
-    <option value="3EME">3ème</option>
-</select>
-<label for="grade">Divisions</label>
-<select class="form-control" id="divList" name="div" onchange="filterOption()">
-  <option value="" selected></option>
-  @foreach ($divisions as $division)
-    <option class="{{ $division['NiveauDiv'] }}" value="{{ $division['IdDiv'] }}">{{ $division['LibelleDiv'] }}</option>
-  @endforeach
-</select>
-<span style="display: block">
-<label for="grade">Options</label>
-<select class="form-control" id="optionList" name="option" onchange="filterOption()">
-  <option value="" selected></option>
-  @foreach ($options as $option)
-    <option class="{{ $option['NiveauEns'] }}" value="{{ $option['IdEns'] }}">{{ $option['LibelleEns'] }}</option>
-  @endforeach
-</select>
-</span>
-</div>
-<table id="myTable" style="display: none">
-        @foreach($option_choices as $item)
-        <tr>
-            <td>{{ $item['IdEleve'] }}</td>
-            <td>{{ $item['IdEns'] }}</td>
-        </tr>
-        @endforeach
-</table>
-<table id="divTable" style="display: none">
-        @foreach($group_links as $link)
-        <tr>
-            <td>{{ $link['IdDiv'] }}</td>
-            <td>{{ $link['IdGrp'] }}</td>
-        </tr>
-        @endforeach
-</table>
-
-<input type="text" id="studentInput" onkeyup="searchStudent()" placeholder="Rechercher un élève...">
-<ul id="studentList">
-    @foreach ($students as $row)
-    <li class="{{ $row['IdEleve'] }}"><div class="{{ $row['IdDiv'] }}"><span class="{{ $row['NiveauEleve'] }}">
-    <input class="form-check-input" type="checkbox" name="students[]" value="{{ $row['IdEleve'] }}" id="option">
-    <label class="form-check-label" for="option">
-      {{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}
-    </label>
-    </span></div></li>
+    <div class="filterbox">
+    <label for="grade">Niveau</label>
+    <select class="form-control" id="mySelect" onchange="filterLevel()">
+        <option value="6EME">6ème</option>
+        <option value="5EME">5ème</option>
+        <option value="4EME">4ème</option>
+        <option value="3EME">3ème</option>
+    </select>
+    <label for="grade">Divisions</label>
+    <select class="form-control" id="divList" name="div" onchange="filterOption()">
+    <option value="" selected></option>
+    @foreach ($divisions as $division)
+        <option class="{{ $division['NiveauDiv'] }}" value="{{ $division['IdDiv'] }}">{{ $division['LibelleDiv'] }}</option>
     @endforeach
-</ul>
+    </select>
+    <span style="display: block">
+    <label for="grade">Options</label>
+    <select class="form-control" id="optionList" name="option" onchange="filterOption()">
+    <option value="" selected></option>
+    @foreach ($options as $option)
+        <option class="{{ $option['NiveauEns'] }}" value="{{ $option['IdEns'] }}">{{ $option['LibelleEns'] }}</option>
+    @endforeach
+    </select>
+    </span>
+    </div>
+    <table id="myTable" style="display: none">
+            @foreach($option_choices as $item)
+            <tr>
+                <td>{{ $item['IdEleve'] }}</td>
+                <td>{{ $item['IdEns'] }}</td>
+            </tr>
+            @endforeach
+    </table>
+    <table id="divTable" style="display: none">
+            @foreach($group_links as $link)
+            <tr>
+                <td>{{ $link['IdDiv'] }}</td>
+                <td>{{ $link['IdGrp'] }}</td>
+            </tr>
+            @endforeach
+    </table>
+
+    <input type="text" id="studentInput" onkeyup="searchStudent()" placeholder="Rechercher un élève...">
+    <ul id="studentList">
+        @foreach ($students as $row)
+        <li class="{{ $row['IdEleve'] }}"><div class="{{ $row['IdDiv'] }}"><span class="{{ $row['NiveauEleve'] }}">
+        <input class="form-check-input" type="checkbox" name="students[]" value="{{ $row['IdEleve'] }}" id="option">
+        <label class="form-check-label" for="option">
+        {{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}
+        </label>
+        </span></div></li>
+        @endforeach
+    </ul>
 </div>
 <div class="colright">
-@if ($errors->any())
-        <div class="alert alert-warning">
-        L'affectation n'a pas été prise en compte &#9785;
-        </div>  
-    @endif
-    @if (session('status'))
-        <div class="alert alert-success">
-            {{ session('status') }}
+    @if ($errors->any())
+            <div class="alert alert-warning">
+            L'affectation n'a pas été prise en compte &#9785;
+            </div>
+        @endif
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+    <div class="class_check" id="divOptions">
+        @foreach ($groups as $row)
+        <span class="{{ $row['NiveauGrp'] }}">
+        <div class="{{ $row['IdGrp'] }}">
+            <input type="radio" name="id" id="id" value="{{ $row['IdGrp'] }}">
+            <label for="id">
+            {{ $row['LibelleGrp'] }} (Effectif : {{ $row['EffectifReelGrp'] }}/{{ $row['EffectifPrevGrp'] }})
+            </label>
         </div>
-    @endif
-<div class="class_check" id="divOptions">
-    @foreach ($groups as $row)
-    <span class="{{ $row['NiveauGrp'] }}">
-      <div class="{{ $row['IdGrp'] }}">
-        <input type="radio" name="id" id="id" value="{{ $row['IdGrp'] }}">
-        <label for="id">
-        {{ $row['LibelleGrp'] }} (Effectif : {{ $row['EffectifReelGrp'] }}/{{ $row['EffectifPrevGrp'] }})
-        </label>
-      </div>
-    </span>
-    @endforeach
-</div>
-<button type="submit">Affecter</button>
+        </span>
+        @endforeach
+    </div>
+    <button type="submit">Affecter</button>
 </div>
 </form>
 
@@ -121,7 +121,7 @@ function filterOption() {
                     var student = li[j].getAttribute("class");
                     if(student == txtEleve || filterOption == "")
                         li[j].style.display = "";
-                } 
+                }
             }
         }
     }
@@ -133,12 +133,12 @@ function filterOption() {
     var div = li[i].getElementsByTagName("div")[0];
     var studDiv = div.getAttribute("class");
     if (div) {
-      if ((studDiv == filterDiv || filterDiv == "" ) && li[i].style.display == "") 
+      if ((studDiv == filterDiv || filterDiv == "" ) && li[i].style.display == "")
         li[i].style.display = "";
       else
         li[i].style.display = "none";
     }
-  } 
+  }
 
   var divTable = document.getElementById("divTable");
   var divTr = divTable.getElementsByTagName("tr");
@@ -166,7 +166,7 @@ function filterOption() {
               var pattern = new RegExp(filterOptionLib);
               if((group == txtGrp || filterDiv == "") && nvGrp == filterLevel && (filterOption == "" || pattern.test(libGrp)))
                   span[j].style.display = "";
-          } 
+          }
         }
       }
   }

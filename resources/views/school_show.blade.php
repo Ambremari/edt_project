@@ -39,15 +39,16 @@ Fiche établissement
     </ul>
     </div>
 </div>
-<div class="colright"> 
-    <h5>Nombre d'infrastructures par type </h5>
+<div class="colright">
     <div style="margin-left: 20%;">
+    <h5>Nombre d'infrastructures par type </h5>
+
     <ul id="subjectList">
         @foreach ($nombreInfrastructuresParType as $infrastructure)
         <li>{{ $infrastructure['TypeSalle'] }} : {{ $infrastructure['count'] }}</li>
         @endforeach
     </ul>
-    </div>  
+    </div>
 </div>
 </div>
 @endsection
