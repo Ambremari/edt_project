@@ -26,8 +26,8 @@
         @endforeach
     </ul>
 
-    <input type="text" id="studentInput" onkeyup="searchTeacher()" placeholder="Rechercher un enseignant...">
-    <ul id="studentList" style="height: 300px;">
+    <input type="text" id="teacherInput" onkeyup="searchTeacher()" placeholder="Rechercher un enseignant...">
+    <ul id="teacherList" style="height: 300px;">
     @foreach ($teachers as $teacher)
         <li><span>
           <input class="form-check-input" type="radio" name="id" value="{{ $teacher['IdProf'] }}" id="myFilter" onclick="filterTeacher()">
@@ -110,6 +110,24 @@ function searchClass() {
   input = document.getElementById('studentInput');
   filter = input.value.toUpperCase();
   ul = document.getElementById("studentList");
+  li = ul.getElementsByTagName('li');
+
+  for (i = 0; i < li.length; i++) {
+    a = li[i].getElementsByTagName("span")[0];
+    txtValue = a.textContent || a.innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      li[i].style.display = "";
+    } else {
+      li[i].style.display = "none";
+    }
+  }
+}
+
+function searchTeacher() {
+  var input, filter, ul, li, a, i, txtValue;
+  input = document.getElementById('teacherInput');
+  filter = input.value.toUpperCase();
+  ul = document.getElementById("teacherList");
   li = ul.getElementsByTagName('li');
 
   for (i = 0; i < li.length; i++) {
