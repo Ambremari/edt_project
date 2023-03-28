@@ -1174,7 +1174,6 @@ class Controller extends BaseController{
             'mintime.min' => 'La durée minimale de la salle doit être supérieure ou égale à 1.',
             'group.required' => 'Vous devez faire un choix entre le groupe et la classe',
         ]);
-
         try {
             $this->repository->deleteConstraintsClassrooms($validatedData);
         } catch (Exception $exception) {

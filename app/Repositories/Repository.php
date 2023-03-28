@@ -28,6 +28,7 @@ class Repository {
         $classrooms = $data->classrooms();
         $students = $studentData->students();
         $schedule = $data->schedule();
+        $constraints=$data->constraintsClassrooms();
         $this->generateSchedule($schedule[0], $schedule[1], $schedule[2], $schedule[3], $schedule[4]);
         foreach($teachers as $row)
             $this->insertTeacher($row);
@@ -43,6 +44,8 @@ class Repository {
             $this->insertClassroom($row);
         foreach($students as $row)
             $this->insertStudent($row);
+        foreach($constraints as $row)
+            $this->insertClassroomConstraints($row);
         $this->addRandomDivision();
         $this->setOptionIncompatibility();
         $this->generateScheduleIncompatibility();
