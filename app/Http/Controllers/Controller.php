@@ -1475,15 +1475,16 @@ class Controller extends BaseController{
         }
 
         ###### fiche établissement ########
-        public function showInfo(){
+    public function showInfo(){
         $nombreEleves = $this->repository->getNombreEleves();
         $nombreEnseignants = $this->repository->getNombreEnseignants();
         $nombreDivisionsParNiveau = $this->repository->getNombreDivisionsParNiveau();
         $nombreInfrastructuresParType = $this->repository->getNombreInfrastructuresParType();
         $horairesOuverture = $this->repository->getHorairesOuverture();
-
+        $collegeSchedule = $this->repository->collegeSchedule();
         return view('school_show', [
             'nombreEleves' => $nombreEleves,
+            'college_schedule' => $collegeSchedule,
             'nombreEnseignants' => $nombreEnseignants,
             'nombreDivisionsParNiveau' => $nombreDivisionsParNiveau,
             'nombreInfrastructuresParType' => $nombreInfrastructuresParType,
