@@ -26,5 +26,6 @@
     ~~~
 
 Compatible avec Firefox, Brave
+
 Non compatible avec Safari
 
