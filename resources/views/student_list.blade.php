@@ -1,7 +1,7 @@
 <input type="text" id="studentInput" onkeyup="searchStudent()" placeholder="Rechercher un élève...">
 <ul id="studentList">
     @foreach ($students as $row)
-    <li><a href="{{route('student.update.form', ['id' => $row['IdEleve']])}}">{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</a></li>
+    <li><a href="{{route('student.update.form', ['IdEleve' => $row['IdEleve']])}}">{{ $row['NomEleve'] }} {{ $row['PrenomEleve'] }}</a></li>
     @endforeach
 </ul>
 <script>

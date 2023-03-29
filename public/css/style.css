@@ -13,6 +13,9 @@ h1 {
     width: 35%;
     font-weight: bolder;
 }
+h5 {
+    font-size: 16px;
+}
 
 .header {
     padding-left: 2%;
@@ -427,6 +430,7 @@ table {
     height: 800px;
     overflow: auto;
   }
+
 
 #studentList li a {
     border: 1px solid #ddd;

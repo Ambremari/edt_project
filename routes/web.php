@@ -205,17 +205,17 @@ Route::get('/prof/constraints', [Controller::class, 'profConstraints'])
 Route::post('/prof/constraints', [Controller::class, 'updateProfConstraints'])
     ->name('update.prof.constraints');
 
-
 Route::get('/constraints/classrooms', [Controller::class, 'classroomConstraints'])
     ->name('constraints.classrooms');
 
 Route::post('/constraints/classrooms/add', [Controller::class, 'addConstraintsClassrooms'])
     ->name('constraints.classrooms.add');
 
-Route::post('/constraints/classrooms/update', [Controller::class, 'updateConstraintsClassrooms'])
-    ->name('constraints.classrooms.update');
+Route::post('/constraints/classrooms/delete', [Controller::class, 'deleteConstraintsClassrooms'])
+    ->name('constraints.classrooms.delete');
 
-Route::get('/students/update/{id}', [Controller::class, 'updateStudentForm'])
+Route::get('/students/update/{IdEleve}', [Controller::class, 'updateStudentForm'])
+    ->where('IdEleve', '[ELV].*')
     ->name('student.update.form');
 
 Route::get('/students/add', [Controller::class, 'addStudentForm'])
@@ -244,7 +244,7 @@ Route::post('/students/update/{id}', [Controller::class, 'updateStudent'])
 
 Route::get('/etablissement/info', [Controller::class, 'showInfo'])
      ->name('info.show');
-    
+
 Route::get('/edt/horaires', [Controller::class, 'subjectsConstraintsForm'])
     ->name('subjects.constraints');
 

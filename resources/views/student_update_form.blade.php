@@ -7,7 +7,7 @@
     @include('student_list')
 </div>
 <div class="colright">
-    <form method="POST" action="{{ route('student.update', ['id' => $student['IdEleve']]) }}">
+    <form method="POST" action="{{ route('student.update.form', ['IdEleve' => $student['IdEleve']]) }}">
         @csrf
         @if ($errors->any())
             <div class="alert alert-warning">
@@ -63,6 +63,19 @@
             </div>
             @error('level')
             <div id="level_feedback" class="invalid-feedback">
+                {{ $message }}
+            </div>
+            @enderror
+            <div class="my_input">
+                <label for="division">Division</label>
+                <select id="division" name="division" aria-describedby="division_feedback">
+                    @foreach ($divisions as $row)
+                        <option value="{{ $row['IdDiv'] }}" @if($student['IdDiv'] == $row['IdDiv']) selected @endif>{{ $row['LibelleDiv'] }} ({{ $row['NiveauDiv'] }})</option>
+                    @endforeach
+                </select>
+            </div>
+            @error('division')
+            <div id="division_feedback" class="invalid-feedback">
                 {{ $message }}
             </div>
             @enderror

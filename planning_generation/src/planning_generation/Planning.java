@@ -9,6 +9,7 @@ public class Planning {
 	private List<Class> firstSet;
 	private List<Schedule> schedules;
 	private List<Room> rooms;
+	private List<String> durationConstraints;
 	private List<Class> classesToMove;
 	private List<Class> teachersToMove;
 	private List<Class> divisionsToMove;
@@ -17,21 +18,23 @@ public class Planning {
 	private List<GroupLink> groupsIncompatibility;
 	private List<SubjectsCouple> subjectsIncompatibility;
 	private int primaryCost;
+	private int bonus;
 	private int missingClassrooms;
 	private int secondaryCost;
 	private int tertiaryCost;
 
 	public Planning(List<Class> classes, List<Schedule> schedules, List<Room> rooms,
-			List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility) {
+			List<GroupLink> groupsIncompatibility, List<SubjectsCouple> subjectsIncompatibility, List<String> durationConstraints) {
 		this.classes = new ArrayList<>(classes);
 		this.schedules = new ArrayList<>(schedules);
 		this.rooms = new ArrayList<>(rooms);
 		this.firstSet = new ArrayList<>();
 		this.groupsIncompatibility = new ArrayList<>(groupsIncompatibility);
 		this.subjectsIncompatibility = new ArrayList<>(subjectsIncompatibility);
+		this.durationConstraints = new ArrayList<>(durationConstraints);
 		init();
 		associateClasses();
-		evaluatePrimaryCost();
+		evaluateCost();
 		this.secondaryCost = 0;
 		this.tertiaryCost = 0;
 	}
@@ -42,6 +45,10 @@ public class Planning {
 		divisionsToMove = new ArrayList<>();
 		groupsToMove = new ArrayList<>();
 		subjectsToMove = new ArrayList<>();
+		primaryCost = 0;
+		secondaryCost = 0;
+		tertiaryCost = 0;
+		bonus = 0;
 		this.missingClassrooms = classes.size();
 		}
 	
@@ -56,10 +63,9 @@ public class Planning {
 		this.rooms = new ArrayList<>(planning.getRooms());
 		this.groupsIncompatibility = new ArrayList<>(planning.getGroupsIncompatibility());
 		this.subjectsIncompatibility = new ArrayList<>(planning.getSubjectsIncompatibility());
+		this.durationConstraints = new ArrayList<>(planning.getDurationConstraints());
 		init();
-		evaluatePrimaryCost();
-		this.secondaryCost = 0;
-		this.tertiaryCost = 0;
+		evaluateCost();
 	}
 	
 	public void update(Planning planning) {
@@ -68,6 +74,7 @@ public class Planning {
 			Class newClass = myClass.copyClass();
 			this.classes.add(newClass);
 		}
+		associateClasses();
 	}
 	
 	public void setRandomSchedule() {
@@ -113,6 +120,7 @@ public class Planning {
 	@Override
 	public String toString() {
 		String res = "\nCout Primaire : " + getPrimaryCost();
+		res += "\nBonus : " + getBonus();
 		res += "\nProf à bouger" + teachersToMove.size();
 		res += "\nDiv à bouger" + divisionsToMove.size();
 		res += "\nGrp à bouger" + groupsToMove.size();
@@ -141,13 +149,21 @@ public class Planning {
 		return subjectsIncompatibility;
 	}
 	
+	public List<String> getDurationConstraints() {
+		return durationConstraints;
+	}
+	
 	public List<Class> getClasses() {
 		return classes;
 	}
 
 	public int getPrimaryCost() {
-		evaluatePrimaryCost();
+		evaluateCost();
 		return primaryCost;
+	}
+	
+	public int getBonus() {
+		return bonus;
 	}
 	
 	public int getMissingClassrooms() {
@@ -155,10 +171,10 @@ public class Planning {
 		return missingClassrooms;
 	}
 
-	public void evaluatePrimaryCost() {
+	public void evaluateCost() {
 		init();
-		primaryCost = 0;
-		primaryCost += incompatibleClasses();
+		loopClasses();
+		
 	}
 	
 	public List<Class> getClassesToMove() {
@@ -202,8 +218,30 @@ public class Planning {
 		}
 		return false;
 	}
+	
+	public void loopClasses() {
+		for (Class class1 : classes) {
+			if(class1.getGroup().length() != 3 && class1.getSchedule().getHour() >= 3)
+				bonus++;
+			for (Class class2 : classes) {
+				if(class1.sameConstraint(class2) && durationConstraints.contains(class1.getConstraint()) && class1.consecutive(class2))
+					bonus += 2;
+				else if(class1.sameDay(class2) && class1.sameSubject(class2) && class1.sameDivision(class2) && class1.sameGroup(class2))
+					bonus--;
+				if(!class1.sameWeek(class2) && class1.getWeek().length() != 3 && class2.getWeek().length() != 3)
+					bonus++;
+				if (primaryViolation(class1, class2)) {
+					if(!changeWeek(class1, class2) && !classesToMove.contains(class1))
+						addClassToMove(class1);
+				}
+			}
+		}
+		primaryCost = classesToMove.size();
+	}
 
 	private boolean changeWeek(Class class1, Class class2) {
+		if(class1.associatedWith(class2))
+			return false;
 		if(class1.getWeek() == "A" && class2.getWeek() == "A" ) {
 			class1.setWeek("B");
 			return true;
@@ -212,10 +250,6 @@ public class Planning {
 			class1.setWeek("A");
 			return true;
 		}
-		if(class1.getWeek() == "B" && class2.getWeek() == "A")
-			return true;
-		if(class1.getWeek() == "A" && class2.getWeek() == "B")
-			return true;
 		return false;
 	}
 	
@@ -237,17 +271,6 @@ public class Planning {
 		if(subjectsIncompatibility.contains(new SubjectsCouple(class1.getSubject().getId(), class2.getSubject().getId())))
 			return true;
 		return false;
-	}
-
-	public int incompatibleClasses() {
-		for (Class class1 : classes) {
-			for (Class class2 : classes)
-				if (primaryViolation(class1, class2)) {
-					if(!classesToMove.contains(class1))
-						addClassToMove(class1);
-				}
-		}
-		return classesToMove.size();
 	}
 
 	
@@ -292,7 +315,7 @@ public class Planning {
 		for(Class myClass : classes) {
 			List<Class> incompatible = getClassesIncompatible(myClass);
 //			System.out.println(incompatible.size());
-			if(incompatible.size() > 65)
+			if(incompatible.size() > 71)
 				firstSet.add(myClass);
 		}
 	}
@@ -406,10 +429,10 @@ public class Planning {
 			return false;
 		if(incompatibleGroupInClasses(class2, class1)) 
 			return false;
-//		if(incompatibleSubjectInClasses(class1, class2)) 
-//			return false;
-//		if(incompatibleSubjectInClasses(class2, class1)) 
-//			return false;
+		if(incompatibleSubjectInClasses(class1, class2) && !class1.sameSubject(class2)) 
+			return false;
+		if(incompatibleSubjectInClasses(class2, class1) && !class1.sameSubject(class2)) 
+			return false;
 		return true;
 	}
 
@@ -427,6 +450,10 @@ public class Planning {
 				index++;
 			} while (!check && index < classes.size() - 1);
 			if(check) {
+				if(changeWeek(class1, class2)) {
+					class1.setSchedule(class1.getSchedule());
+					return true;
+				}
 				class1.permute(class2);
 				divisionsToMove.remove(class2);
 				divisionsToMove.remove(class1);
@@ -443,10 +470,10 @@ public class Planning {
 			return false;
 		if (class1.sameSchedule(class2))
 			return false;
-		if (teacherInClasses(class1, class2) && !class1.sameTeacher(class2))
-			return false;
-		if (teacherInClasses(class2, class1) && !class1.sameTeacher(class2))
-			return false;
+//		if (teacherInClasses(class1, class2) && !class1.sameTeacher(class2))
+//			return false;
+//		if (teacherInClasses(class2, class1) && !class1.sameTeacher(class2))
+//			return false;
 		if (divisionInClasses(class1, class2))
 			return false;
 		if (divisionInClasses(class2, class1))
@@ -459,9 +486,9 @@ public class Planning {
 			return false;
 		if(incompatibleGroupInClasses(class2, class1)) 
 			return false;
-		if(incompatibleSubjectInClasses(class1, class2)) 
+		if(incompatibleSubjectInClasses(class1, class2) && !class1.sameSubject(class2)) 
 			return false;
-		if(incompatibleSubjectInClasses(class2, class1)) 
+		if(incompatibleSubjectInClasses(class2, class1) && !class1.sameSubject(class2)) 
 			return false;
 		return true;
 	}
@@ -480,9 +507,64 @@ public class Planning {
 				index++;
 			} while (!check && index < classes.size() - 1);
 			if(check) {
+				if(changeWeek(class1, class2)) {
+					class1.setSchedule(class1.getSchedule());
+					return true;
+				}
 				class1.permute(class2);
-				groupsToMove.remove(class2);
-				groupsToMove.remove(class1);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean subjectsChecks(Class class1, Class class2) {
+		if(class1.sameSubject(class2))
+			return false;
+		if (class1.sameSchedule(class2))
+			return false;
+//		if (teacherInClasses(class1, class2) && !class1.sameTeacher(class2))
+//			return false;
+//		if (teacherInClasses(class2, class1) && !class1.sameTeacher(class2))
+//			return false;
+		if (divisionInClasses(class1, class2) && !class1.sameDivision(class2))
+			return false;
+		if (divisionInClasses(class2, class1) && !class1.sameDivision(class2))
+			return false;
+//		if (groupInClasses(class1, class2) && !class1.sameGroup(class2))
+//			return false;
+//		if (groupInClasses(class2, class1) && !class1.sameGroup(class2))
+//			return false;
+		if(incompatibleGroupInClasses(class1, class2))
+			return false;
+		if(incompatibleGroupInClasses(class2, class1)) 
+			return false;
+		if(incompatibleSubjectInClasses(class1, class2)) 
+			return false;
+		if(incompatibleSubjectInClasses(class2, class1)) 
+			return false;
+		return true;
+	}
+	
+	public boolean permuteSubjects() {
+		Class class1;
+		Class class2;
+		Random random = new Random();
+		boolean check = true;
+		if(subjectsToMove.size() > 0) {
+			class1 = subjectsToMove.get(random.nextInt(subjectsToMove.size()));
+			int index = 0;
+			do {
+				class2 = classes.get(random.nextInt(classes.size()));
+				check = subjectsChecks(class1, class2);
+				index++;
+			} while (!check && index < classes.size() - 1);
+			if(check) {
+				if(changeWeek(class1, class2)) {
+					class1.setSchedule(class1.getSchedule());
+					return true;
+				}
+				class1.permute(class2);
 				return true;
 			}
 		}
@@ -506,14 +588,14 @@ public class Planning {
 		//division2 already class at schedule 1 and not same division
 		if (divisionInClasses(class2, class1) && !class1.sameDivision(class2))
 			return false;
-		if(incompatibleGroupInClasses(class1, class2))
+		if(incompatibleGroupInClasses(class1, class2) && !class1.sameDivision(class2))
 			return false;
-//		if(incompatibleGroupInClasses(class2, class1)) 
-//			return false;
-//		if(incompatibleSubjectInClasses(class1, class2)) 
-//			return false;
-//		if(incompatibleSubjectInClasses(class2, class1)) 
-//			return false;
+		if(incompatibleGroupInClasses(class2, class1) && !class1.sameDivision(class2)) 
+			return false;
+		if(incompatibleSubjectInClasses(class1, class2) && !class1.sameSubject(class2)) 
+			return false;
+		if(incompatibleSubjectInClasses(class2, class1) && !class1.sameSubject(class2) ) 
+			return false;
 		return true;
 	}
 	
@@ -531,9 +613,11 @@ public class Planning {
 				index++;
 			} while (!check && index < classes.size() - 1);
 			if(check) {
+				if(changeWeek(class1, class2)) {
+					class1.setSchedule(class1.getSchedule());
+					return true;
+				}
 				class1.permute(class2);
-				teachersToMove.remove(class2);
-				teachersToMove.remove(class1);
 				return true;
 			}
 		}
@@ -547,6 +631,36 @@ public class Planning {
 		Random random = new Random();
 		boolean check;
 		if(classesToMove.size() > 0) {
+			class1 = classes.get(random.nextInt(classes.size()));
+			List<Class> incompatible = getClassesIncompatible(class1);
+			int index = 0;
+			do {
+				class2 = classes.get(index);
+				check = checkNoIncompatibleClasses(incompatible, getClassesSameSchedule(class2));
+				if(check) {
+					if(changeWeek(class1, class2)) {
+						class1.setSchedule(class1.getSchedule());
+						return true;
+					}
+					List<Class> incompatible2 = getClassesIncompatible(class2);
+					check = checkNoIncompatibleClasses(incompatible2, getClassesSameSchedule(class1));
+				}
+				index++;
+			} while (!check && index < classes.size() - 1);
+			if(check) {
+				class1.permute(class2);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean permuteClassesToMove() {
+		Class class1;
+		Class class2;
+		Random random = new Random();
+		boolean check;
+		if(classesToMove.size() > 0) {
 			class1 = classesToMove.get(random.nextInt(classesToMove.size()));
 			List<Class> incompatible = getClassesIncompatible(class1);
 			int index = 0;
@@ -554,6 +668,10 @@ public class Planning {
 				class2 = classes.get(index);
 				check = checkNoIncompatibleClasses(incompatible, getClassesSameSchedule(class2));
 				if(check) {
+					if(changeWeek(class1, class2)) {
+						class1.setSchedule(class1.getSchedule());
+						return true;
+					}
 					List<Class> incompatible2 = getClassesIncompatible(class2);
 					check = checkNoIncompatibleClasses(incompatible2, getClassesSameSchedule(class1));
 				}
@@ -601,8 +719,8 @@ public class Planning {
 		Class class3;
 		Random random = new Random();
 		boolean check;
-		if(classesToMove.size() > 0) {
-			class1 = classesToMove.get(random.nextInt(classesToMove.size()));
+		if(classes.size() > 0) {
+			class1 = classes.get(random.nextInt(classes.size()));
 			List<Class> compatible = compatibles(class1);
 			int index = 0;
 			do {
@@ -678,6 +796,9 @@ public class Planning {
 					}
 				}
 				if(count == 1) {
+					if(changeWeek(class1, toExchange)) {
+						class1.setSchedule(toExchange.getSchedule());
+					} else {
 						List<Class> incompatible = getClassesIncompatible(toExchange);
 						if(checkNoIncompatibleClasses(incompatible, getClassesSameSchedule(class1))) {
 							int oldCost = getPrimaryCost();
@@ -685,6 +806,7 @@ public class Planning {
 							int newCost = getPrimaryCost();
 							if(newCost >= oldCost)
 								class1.permute(toExchange);
+						}
 					}
 				}
 			}
